@@ -11,12 +11,15 @@ Lickui is a tiny browser based Binance Futures History explorer, that rexposes s
 - Coinbase alerts (new coin additions)
 
 ### Usage :
+- Clone the repository  `git clone https://github.com/colxi/lickui`
 - Rename `config.example.json` to `config.json`
-- Set your binance api keys in `config.json`
+- Set your binance api api key and secret in `config.json` (must have Futures permission enabled)
 - Run on your terminal `yarn start` (for first execution run first `yarn` to initialize dependencies)
-- Acces your server ip in your browser (eg. `http://127.0.0.1`)
+- Access using your browser (eg. `http://127.0.0.1`)
 
 ## Security
 By default Lickui will only accept local connections, in order also to allow internet acces, you can specify the public ip in `config.json`, and create firewall riles if needed.
 
+
+## Screenshot
 ![alt text](https://github.com/colxi/lickui/blob/main/docs/lickui.png?raw=true)
