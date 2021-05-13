@@ -17,7 +17,7 @@ Lickui is a tiny browser based Binance Futures History explorer, that rexposes s
 Installing Lickui :
 - Clone the repository  `git clone https://github.com/colxi/lickui`
 - Rename `config.example.json` to `config.json`
-- Set your binance api api key and secret in `config.json` (must have Futures permission enabled)
+- Set your binance api key and secret in `config.json` (must have Futures permission enabled)
 
 Running Lickui :
 - Run on your terminal `yarn start` (for first execution run first `yarn` to initialize dependencies)
