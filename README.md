@@ -18,3 +18,5 @@ Lickui is a tiny browser based Binance Futures History explorer, that rexposes s
 
 ## Security
 By default Lickui will only accept local connections, in order also to allow internet acces, you can specify the public ip in `config.json`, and create firewall riles if needed.
+
+![alt text](https://github.com/colxi/lickui/blob/main/docs/lickui.png?raw=true)
