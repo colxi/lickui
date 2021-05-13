@@ -3,8 +3,8 @@
   "binanceApiSecret": "YOUR_SECRET",
   "updateIntervalInMillis": 60000,
   "databaseName": "lickHunterDb",
-  "apiServiceIp": "111.222.333.444",
-  "httpServiceIp": "111.222.333.444",
+  "apiServiceIp": "127.0.0.1",
+  "httpServiceIp": "127.0.0.1",
   "apiServicePort": 3300,
   "httpServicePort": 80
 }
