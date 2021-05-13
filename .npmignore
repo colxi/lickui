@@ -1,10 +1,17 @@
 .DS_Store
 ./node_modules
-/dist
 node_modules
 vscode
-types
-coverage/
+/src
+tsconfig.json
+.eslintrc
+.prettierrc
+.eslintignore
+jestconfig.json
+/tests
+/coverage
+/docs
+*.spec.*
 
 # local env files
 .env.local
@@ -24,5 +31,3 @@ yarn-error.log*
 *.sln
 *.sw?
 
-config.json
-db/lickHunterDb

@@ -1,0 +1,330 @@
+<html>
+  <head>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/ts-browser"></script>
+    <script src="./index.js" type="module"></script>
+  </head>
+  <body>
+    <div id="serviceError" hidden="true">&#9888; Error fetching data. Please check service status</div>
+    <header>
+      <h1 class="title">LICKUI <span class="version">0.0.3</span></h1>
+      <div id="timeRangeContainer">
+        <div id="timeRangePicker">
+          <div id="timeRangeArea"></div>
+        </div>
+        <canvas id="timeRange" height="75"></canvas>
+        <div class="dailyProfitContainer">
+          <div>
+            <span>Today's Profit</span>
+            <span id="dailyProfitAmountPercent">--</span>
+          </div>
+          <div id="dailyProfitAmount">--</div>
+        </div>
+        <div id="timeline-details">
+          <div>
+            <div>Start date : <span id="startDate" class="info">--</span></div>
+            <div>Start Balance : <span id="startBalance" class="info">--</span></div>
+          </div>
+          <div>
+            <div>Elapsed days : <span id="elapsedDays" class="info">--</span></div>
+            <div>Total Profit : <span id="totalProfit" class="info">--</span></div>
+            <div>Daily avg : <span id="dailyAverage" class="info">--</span></div>
+          </div>
+          <div>
+            <div>Current Date :  <span id="endDate" class="info">--</span></div>
+            <div>Current Balance : <span id="endBalance" class="info">--</span></div>
+          </div>
+        </div>
+      </div>
+      <div id="coinbaseAlertsContainer">
+        <h3>Coinbase Alerts</h3>
+        <div id="coinbaseAlerts"></div>
+      </div>
+    </header>
+    <div id="layout">      
+        <div id="actions">
+          <select id="timeRangeSelector">
+            <option value="ALL_TIME">All time</option>
+            <option value="LAST_HOUR">Last hour</option>
+            <option value="LAST_12_HOURS">Last 12 hours</option>
+            <option value="LAST_DAY" selected>Last day</option>
+            <option value="LAST_7_DAYS">Last 7 days</option>
+            <option value="LAST_30_DAYS">Last 30 days</option>
+          </select>
+          <div> </div>
+          <div class="button" id="resetDbButton">RESET DB</div> 
+        </div>
+
+        <div class="container">
+          Wallet Balance Explorer 
+          <div id="advanced_balance">
+            <div id="test"></div>
+            <canvas id="totalBalanceChart"></canvas>
+          </div>
+        </div>
+
+        <div class="container">
+          <div> Used balance percentage </div>
+          <div id="usedBalance">
+            <canvas id="balancePercentChart"></canvas>
+          </div>
+          <div class="section_details">
+            <div>
+              <span>Avg :</span>
+              <span id="used_balance_time_range">--</span>
+            </div>
+            <div>
+              <span>Min :</span>
+              <span id="min_balance_time_range">--</span>
+            </div>
+            <div>
+              <span>Max :</span>
+              <span id="max_balance_time_range">--</span>
+            </div>
+            <div>
+              <span>Current :</span>
+              <span id="current_balance_time_range">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="container">
+          Open Orders
+          <div id="openOrders">
+            <canvas id="openOrdersChart"></canvas>
+          </div>
+        </div>
+
+        <div class="container">
+          Unrealized Losts percentage
+          <div id="unrealizedLosts">
+            <canvas id="unrealizedLostsChart"></canvas>
+          </div>
+          <div class="section_details">
+            <div>
+              <span>Avg :</span>
+              <span id="avg_unrealized_losts">--</span>
+            </div>
+            <div>
+              <span>Max :</span>
+              <span id="max_unrealized_losts">--</span>
+            </div>
+            <div>
+              <span>Current :</span>
+              <span id="current_unrealized_losts">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  </body>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
+
+    [hidden]{
+      display:none;
+    }
+
+    body {
+      margin:0px;
+      background: #2b2b43;
+      color :#2286ff;
+	    color:white;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    #serviceError{
+      position: fixed;
+      width: 200px;
+      background: red;
+      margin: auto;
+      margin-top: 20px;
+      right: 20;
+      padding: 20px;
+      border-radius: 5px;
+      text-align: center;
+      opacity: 0.8;
+      z-index: 9999;
+      box-shadow: 0 0 11px 1px black;
+    }
+
+    #layout{
+      padding: 20px;
+      width:750px;
+      margin:auto;
+    }
+
+    .title{
+      background:#3a74af;
+      margin:0px;
+      font-size: 16px;
+      padding: 10px;
+    }
+
+    .version{
+      font-size: 10px;
+    }
+
+    .button{
+      background: #2286ff;
+      color: white;
+      place-self: center;
+      padding: 7px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor:pointer;
+    }
+    .button:hover{
+      background: white;
+      color: #2286ff;
+     
+    }
+
+    .info{
+      color: #2286ff;
+      font-weight: 800;
+    }
+
+    #timeline-details{
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      padding: 35px;
+      font-size: 12px;
+      color: #c3c3e0;
+      text-align: center;
+    }
+
+    #advanced_balance{
+      border: 1px solid #2286ff;
+      padding: 30px;
+      margin-top:5px;
+      margin-bottom: 30px;
+    }
+
+    #timeRangeContainer {
+      width:750px;
+      margin:auto;
+      position: relative;
+      padding: 40px 0px;
+      margin-bottom: 30px;
+      margin-top:40px;
+      padding-top:30px;
+      padding-bottom:0px;
+    }
+  
+    #timeRange {
+      box-shadow: 0px 5px 4px 0px #0000003d;
+      width: 100%;
+      height: 75px;
+      display: block;
+      padding-bottom: 40px;
+    }
+   
+    #timeRangeArea {
+      border: 1px solid #2286ff;
+      border-radius: 10px;
+      position: absolute;
+      height: 100%;
+      /*background: #ff000024; */
+      /* border: 1px solid #2286ff; */
+      left: 0px;
+      right: 0px;
+      margin-bottom: 50px;
+    }
+
+    #timeRangePicker {
+      position: absolute;
+      height: 100%;
+      left: 0px;
+      top: 0px;
+      width: 100%;
+    }
+
+  #usedBalance{
+    border: 1px solid #2286ff;
+    padding: 20px;
+    margin-top:5px;
+    padding: 30px;
+  }
+
+  #openOrders{
+    border: 1px solid #2286ff;
+    padding: 20px;
+    margin-bottom: 50px;
+    margin-top:5px;
+    padding: 30px;
+    background: #2286ff;
+  }
+ 
+  #unrealizedLosts{
+    border: 1px solid #2286ff;
+    padding: 20px;
+    margin-top:5px;
+    padding: 30px;
+  }
+
+
+  .container canvas {
+    width: 100%;
+    height: 400px;
+  }
+
+  #actions{
+    display:grid;
+    grid-template-columns: 200px 1fr 80px;
+    margin-bottom: 30px;
+  }
+
+  #coinbaseAlertsContainer{
+    width: 750px;
+    margin: auto;
+    margin-bottom: 50px;
+    border-bottom: 1px solid #2286ff;
+    padding-bottom: 40px;
+  }
+
+  .alert-entry{
+    margin: 10px;
+  }
+
+  .alert-date{
+    color:#2286ff;
+    font-size:12px
+  }
+
+  .section_details{
+    display: grid;
+    grid-auto-flow: column;
+    text-align: center;
+    background: #2286ff;
+    padding: 15px;
+    border-radius: 0px 0px 4px 4px;
+    margin-bottom: 50px;
+    box-shadow: 0px 4px 17px 0px #0000005e
+  }
+
+  .section_details > div > span:first-child{
+    font-weight:800;
+  }
+
+  .dailyProfitContainer{
+    text-align: center;
+    background: #286cad;
+    padding: 20px;
+  }
+
+  #dailyProfitAmount{
+    font-size: 40px;
+  }
+
+  #dailyProfitAmountPercent {
+    font-size: 11px;
+    background: white;
+    padding: 5px;
+    border-radius: 10px;
+    margin-left: 10px;
+    color: #286dad;
+    font-weight: 800;
+}
+  </style>
+</html>

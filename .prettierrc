@@ -1,0 +1,9 @@
+{
+  "singleQuote": true,
+  "semi": false,
+  "jsxBracketSameLine": true,
+  "html-whitespace-sensitivity": "ignore",
+  "tabWidth": 2,
+  "useTabs": false,
+  "printWidth": 100
+}
