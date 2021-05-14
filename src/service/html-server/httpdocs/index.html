@@ -36,11 +36,19 @@
           </div>
         </div>
       </div>
+      <div id="dailyProfitPercentageContainer">
+        <div class="container">
+          <div id="dailyProfitPercentage">
+            <canvas id="dailyProfitPercentageChart" height="150"></canvas>
+          </div>
+        </div>
+      </div>
       <div id="coinbaseAlertsContainer">
         <h3>Coinbase Alerts</h3>
         <div id="coinbaseAlerts"></div>
       </div>
     </header>
+ 
     <div id="layout">      
         <div id="actions">
           <select id="timeRangeSelector">
@@ -115,6 +123,7 @@
             </div>
           </div>
         </div>
+
       </div>
   </body>
   <style>
@@ -222,14 +231,15 @@
    
     #timeRangeArea {
       border: 1px solid #2286ff;
-      border-radius: 10px;
+      /* border-radius: 10px 10px 0px  0px; */
       position: absolute;
       height: 100%;
       /*background: #ff000024; */
       /* border: 1px solid #2286ff; */
       left: 0px;
       right: 0px;
-      margin-bottom: 50px;
+      margin-bottom: 0px;
+      box-shadow: 0px 5px 4px 0px #0000003d;
     }
 
     #timeRangePicker {
@@ -240,91 +250,111 @@
       width: 100%;
     }
 
-  #usedBalance{
-    border: 1px solid #2286ff;
-    padding: 20px;
-    margin-top:5px;
-    padding: 30px;
-  }
+    #usedBalance{
+      border: 1px solid #2286ff;
+      padding: 20px;
+      margin-top:5px;
+      padding: 30px;
+    }
 
-  #openOrders{
-    border: 1px solid #2286ff;
-    padding: 20px;
-    margin-bottom: 50px;
-    margin-top:5px;
-    padding: 30px;
-    background: #2286ff;
-  }
- 
-  #unrealizedLosts{
-    border: 1px solid #2286ff;
-    padding: 20px;
-    margin-top:5px;
-    padding: 30px;
-  }
+    #dailyProfitPercentage{
+      border: 1px solid #2286ff;
+      padding: 20px;
+      margin-top:5px;
+      padding: 30px;
+    }
+
+    #dailyProfitPercentageContainer{
+      width: 750px;
+      margin: auto;
+      margin-bottom: 50px;
+      border-bottom: 1px solid #2286ff;
+      padding-bottom: 40px;
+    }
 
 
-  .container canvas {
-    width: 100%;
-    height: 400px;
-  }
+    #openOrders{
+      border: 1px solid #2286ff;
+      padding: 20px;
+      margin-bottom: 50px;
+      margin-top:5px;
+      padding: 30px;
+      background: #2286ff;
+    }
+  
+    #unrealizedLosts{
+      border: 1px solid #2286ff;
+      padding: 20px;
+      margin-top:5px;
+      padding: 30px;
+    }
 
-  #actions{
-    display:grid;
-    grid-template-columns: 200px 1fr 80px;
-    margin-bottom: 30px;
-  }
 
-  #coinbaseAlertsContainer{
-    width: 750px;
-    margin: auto;
-    margin-bottom: 50px;
-    border-bottom: 1px solid #2286ff;
-    padding-bottom: 40px;
-  }
+    .container canvas {
+      width: 100%;
+      height: 400px;
+    }
 
-  .alert-entry{
-    margin: 10px;
-  }
+    #actions{
+      display:grid;
+      grid-template-columns: 200px 1fr 80px;
+      margin-bottom: 30px;
+    }
 
-  .alert-date{
-    color:#2286ff;
-    font-size:12px
-  }
+    #coinbaseAlertsContainer{
+      width: 750px;
+      margin: auto;
+      margin-bottom: 50px;
+      border-bottom: 1px solid #2286ff;
+      padding-bottom: 40px;
+    }
 
-  .section_details{
-    display: grid;
-    grid-auto-flow: column;
-    text-align: center;
-    background: #2286ff;
-    padding: 15px;
-    border-radius: 0px 0px 4px 4px;
-    margin-bottom: 50px;
-    box-shadow: 0px 4px 17px 0px #0000005e
-  }
+    .alert-entry{
+      margin: 10px;
+    }
 
-  .section_details > div > span:first-child{
-    font-weight:800;
-  }
+    .alert-date{
+      color:#2286ff;
+      font-size:12px
+    }
 
-  .dailyProfitContainer{
-    text-align: center;
-    background: #286cad;
-    padding: 20px;
-  }
+    .section_details{
+      display: grid;
+      grid-auto-flow: column;
+      text-align: center;
+      background: #2286ff;
+      padding: 15px;
+      border-radius: 0px 0px 4px 4px;
+      margin-bottom: 50px;
+      box-shadow: 0px 4px 17px 0px #0000005e
+    }
 
-  #dailyProfitAmount{
-    font-size: 40px;
-  }
+    .section_details > div > span:first-child{
+      font-weight:800;
+    }
 
-  #dailyProfitAmountPercent {
-    font-size: 11px;
-    background: white;
-    padding: 5px;
-    border-radius: 10px;
-    margin-left: 10px;
-    color: #286dad;
-    font-weight: 800;
-}
+    .dailyProfitContainer{
+      text-align: center;
+      background: #286cad;
+      padding: 20px;
+    }
+
+    #dailyProfitAmount{
+      font-size: 40px;
+    }
+
+    #dailyProfitAmountPercent {
+      font-size: 11px;
+      background: white;
+      padding: 5px;
+      border-radius: 10px;
+      margin-left: 10px;
+      color: #286dad;
+      font-weight: 800;
+    }
+
+    #resetDbButton {
+      background:#ff2253
+    }
   </style>
 </html>

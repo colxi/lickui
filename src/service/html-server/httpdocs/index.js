@@ -8,15 +8,17 @@ import {
   initOpenOrdersChart,
   initTotalBalanceChart,
   initUnrealizedLostsChart,
+  initDailyProfitChart,
   updateOverviewChart,
   updateUsedBalanceChart,
   updateOpenOrdersChart,
   updateTotalBalanceChart,
   updateUnrealizedLostsChart,
+  updateDailyProfitChart,
 } from './common/chart/index.js'
  import {getElapsedDays} from './common/time/index.js'
 
-
+ 
 const TimeRange = {
   ALL_TIME : 'ALL_TIME',
   LAST_HOUR : 'LAST_HOUR',
@@ -37,6 +39,7 @@ async function init() {
   initUsedBalanceChart()
   initOpenOrdersChart()
   initUnrealizedLostsChart()
+  initDailyProfitChart()
   updateData()
   setInterval(updateData, 10000)
 }
@@ -101,6 +104,7 @@ async function updateData(){
 
   updateAccountStats(futuresBalanceHistory)
   updateOverviewChart(futuresBalanceHistory)
+  updateDailyProfitChart(futuresBalanceHistory)
   updateTotalBalanceChart(data)
   updateUsedBalanceChart(data)
   updateOpenOrdersChart(data)
