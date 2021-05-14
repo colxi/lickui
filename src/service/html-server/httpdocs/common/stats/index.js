@@ -25,7 +25,6 @@ export function getAccountStats(futuresBalanceHistory){
   const todayProfit = lastBalance - todayMidnightBalance
   const todayProfitPercentage = todayProfit * 100 / todayMidnightBalance 
 
-  console.log('----',todayProfit, todayProfitPercentage)
 
   return {
     todayProfit,
