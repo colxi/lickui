@@ -1,36 +1,48 @@
 
 let dailyProfitChart = null
 
+function daysInMonth (month, year = new Date().getFullYear()) {
+  return new Date(year, month, 0).getDate();
+}
 
 function groupByDate( data ){
   const distribution={}
 
+  const currentMonth = new Date().getMonth() 
+  const currentYear = new Date().getFullYear() 
+
+  const currentMonthDays = daysInMonth(currentMonth)
+  for(let i = 1 ; i < currentMonthDays +1 ;i++){
+    const key = `${i}/${currentMonth+1}/${currentYear}`
+    distribution[key] = {
+      timestamp : new Date(currentYear, currentMonth, i).setHours(0,0,0,0),
+      profitPercent : 0,
+      profit : 0,
+      data: []
+    }
+  }
+
   for(const entry of data){
     const date = new Date(entry.timestamp)
     const year = date.getFullYear()
-    const month = date.getMonth() +1
+    const month = date.getMonth() 
     const day = date.getDate()
+    if(month !== currentMonth) continue
     
-    const key = `${day}/${month}/${year}`
-    if(!distribution[key]) {
-      distribution[key]  = {
-        timestamp : date.setHours(0,0,0,0),
-        profitPercent : 0,
-        profit : 0,
-        data: []
-      }
-    }
+    const key = `${day}/${month+1}/${year}`
     distribution[key].data.push(entry)
   }
 
+
   for(const entry of Object.values(distribution)){
-    const startPrice = entry.data[0].totalBalance
-    const endPrice = entry.data[entry.data.length-1].totalBalance
+    const startPrice = entry.data[0]?.totalBalance || 0
+    const endPrice = entry.data[entry.data.length-1]?.totalBalance || 0
     const dayProfit = endPrice - startPrice
     const dayProfitPercent = dayProfit * 100 / startPrice
     entry.profitPercent = dayProfitPercent
     entry.profit = dayProfit
   }
+
   return (distribution)
 }
 
