@@ -7,7 +7,7 @@
   <body>
     <div id="serviceError" hidden="true">&#9888; Error fetching data. Please check service status</div>
     <header>
-      <h1 class="title">LICKUI <span class="version">0.0.3</span></h1>
+      <h1 class="title">LICKUI <span class="version">v0.1.7</span></h1>
       <div id="timeRangeContainer">
         <div id="timeRangePicker">
           <div id="timeRangeArea"></div>
@@ -40,6 +40,20 @@
         <div class="container">
           <div id="dailyProfitPercentage">
             <canvas id="dailyProfitPercentageChart" height="150"></canvas>
+          </div>
+        </div>
+        <div class="section_details">
+          <div>
+            <span>Daily avg :</span>
+            <span id="month_daily_average">--</span>
+          </div>
+          <div>
+            <span>Expected profit :</span>
+            <span id="month_expected_profit">--</span>
+          </div>
+          <div>
+            <span>Expected pending :</span>
+            <span id="mont_expected_pending_profit">--</span>
           </div>
         </div>
       </div>

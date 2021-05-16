@@ -84,7 +84,11 @@ export function updateDailyProfitChart(data) {
   const distribution = groupByDate(data)
   const currentBalance = data[data.length-1].totalBalance
   const projection = getCompoundingCalculations(distribution, currentBalance)
-  console.log(projection)
+
+  document.getElementById('month_daily_average').innerText = `${projection.monthAverageDailyProfitPercent.toFixed(2)}%`
+  document.getElementById('month_expected_profit').innerText = `${projection.monthTotalProfit.toFixed(2)}$ (${projection.monthTotalProfitPercent.toFixed(2)}%)`
+  document.getElementById('mont_expected_pending_profit').innerText = `${projection.profitUntillEndOfMonth.toFixed(2)}$`
+  // map data
   const coordinatesData = distribution.map(i => ({
     x: i.timestamp,
     y: i.profitPercent,
@@ -92,7 +96,28 @@ export function updateDailyProfitChart(data) {
       profit: i.profit
     },
   }))
+  // fill with average daily rremaining days
+  for(const day of coordinatesData){
+    const today = Date.now()
+    if(day.x > today) day.y = projection.monthAverageDailyProfitPercent
+  }
+  // set special color to sundays
+  const colors =[]
+  for(const day of coordinatesData){
+    const today = Date.now()
+    if(day.x > today){
+      colors.push('#286cad11')
+    }
+    else{
+      const weekDay = new Date(day.x).getDay()
+      if(weekDay===0) colors.push('#286cad')
+      else colors.push('#2286ff')
+    }
+  }
+  // apply data
   dailyProfitChart.data.datasets[0].data = coordinatesData
+  dailyProfitChart.data.datasets[0].backgroundColor = colors
+  dailyProfitChart.data.datasets[0].borderColor = '#00000000'
   dailyProfitChart.update()
 }
 

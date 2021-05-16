@@ -157,7 +157,6 @@ function updatePositions(futuresPositions, currentBalance){
         <span class="only-desktop">${updateTimeInMin} min</span>
       </div>
     `
-    console.log(position)
   }
   container.innerHTML= html
 }
@@ -193,9 +192,6 @@ async function getCoinbaseAlerts(){
       document.getElementById('coinbaseAlerts').innerHTML +=a
      
   }
- //  console.log( Array.from(content).filter(i=> i.localName === 'item') )
-
-   //window.a= content
 }
 
 init().catch(e => {
