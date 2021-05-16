@@ -10,6 +10,7 @@ interface BinanceBalanceData {
 }
 
 export default class {
+
   static async binanceFetch(url: string): Promise<object> {
     const timestamp = Date.now()
     const queryString = `timestamp=${timestamp}`
@@ -36,11 +37,11 @@ export default class {
     return {
       totalBalance: Number(USDTSymbol.balance),
       availableBalance: Number(USDTSymbol.availableBalance),
-      unrealizedLosts: Number(USDTSymbol.crossUnPnl) >= 0 ? 0 :Math.abs(Number(USDTSymbol.crossUnPnl))
+      unrealizedLosts: Number(USDTSymbol.crossUnPnl) >= 0 ? 0 : Math.abs(Number(USDTSymbol.crossUnPnl))
     }
   }
 
-  static async getOpenFutureOrders(): Promise<any> {
+  static async getOpenFuturesOrders(): Promise<any> {
     let data: any
     try {
       data = await this.binanceFetch('https://fapi.binance.com/fapi/v1/openOrders')
@@ -50,19 +51,30 @@ export default class {
     return data
   }
 
+  static async getOpenFuturesPositions(): Promise<any> {
+    let data: any
+    try {
+      data = await this.binanceFetch('https://fapi.binance.com/fapi/v2/positionRisk')
+    } catch (e) {
+      console.log("Failed:", e)
+    }
+    const filtered = data.filter((i: any) => Number(i.positionAmt) !== 0)
+    return filtered
+  }
+
   static async getBinanceData(): Promise<any> {
     const balance = await this.getFuturesBalance()
     const usedBalance = balance.totalBalance - balance.availableBalance
     const usedBalancePercent = usedBalance * 100 / balance.totalBalance
     const unrealizedLostsPercent = balance.unrealizedLosts * 100 / balance.availableBalance
-    
-    const openOrders: any = await this.getOpenFutureOrders()
+
+    const openOrders = await this.getOpenFuturesOrders()
 
     return {
       totalBalance: balance.totalBalance,
       usedBalance: usedBalance,
       unrealizedLosts: balance.unrealizedLosts,
-      unrealizedLostsPercent:  Number(unrealizedLostsPercent.toFixed(2)),
+      unrealizedLostsPercent: Number(unrealizedLostsPercent.toFixed(2)),
       usedBalancePercent: Number(usedBalancePercent.toFixed(2)),
       openOrders: openOrders.length,
       timestamp: Date.now(),

@@ -43,6 +43,12 @@
           </div>
         </div>
       </div>
+      
+      <div id="openPositionsContainer">
+        <h3>Open Positions (<span id="openPositionsCount">0</span></span>)</h3>
+        <div id="openPositions"></div>
+      </div>
+
       <div id="coinbaseAlertsContainer">
         <h3>Coinbase Alerts</h3>
         <div id="coinbaseAlerts"></div>
@@ -289,6 +295,18 @@
       padding: 30px;
     }
 
+    #openPositionsContainer{
+      width: 750px;
+      margin: auto;
+      margin-bottom: 50px;
+      border-bottom: 1px solid #2286ff;
+      padding-bottom: 40px;
+    }
+
+    #openPositions{
+      margin-top:10px;
+      font-size: 13px;
+    }
 
     .container canvas {
       width: 100%;
@@ -309,6 +327,7 @@
       padding-bottom: 40px;
     }
 
+
     .alert-entry{
       margin: 10px;
     }
@@ -327,6 +346,46 @@
       border-radius: 0px 0px 4px 4px;
       margin-bottom: 50px;
       box-shadow: 0px 4px 17px 0px #0000005e
+    }
+
+    .position-entry{
+      display: grid;
+      grid-template-columns: 10px 100px 50px 80px 2fr 2fr 1fr 1fr 50px;
+      gap:10px;
+      margin-bottom: 5px;
+    }
+
+    .position-margin-percent{
+      color:  #2286ff;
+    }
+
+    .position-long{
+      background-color: green;
+    }
+
+    .position-short{
+      background-color: red;
+    }
+
+    .position-leverage{
+      border:1px solid #2286ff;
+      width: 25px;
+      text-align: center;
+      background: #2286ff;
+      border-radius: 3px;
+    }
+
+    .position-pnl-negative{
+      color:#ff4a4a
+    }
+
+    .position-pnl-positive{
+      color:#4ffb4f
+    }
+
+    .position-table-header{
+      margin-bottom: 15px;
+      color: #2286ff
     }
 
     .section_details > div > span:first-child{
@@ -359,6 +418,19 @@
 
     #dailyProfitPercentageChart {
       height:150px
+    }
+
+    @media only screen and (max-width: 1000px) {
+      .only-desktop{
+        display:none;
+      }
+
+      .position-entry{
+        display: grid;
+        grid-template-columns: 10px 100px 50px 80px 2fr 2fr;
+        gap:20px;
+        margin-bottom: 10px;
+      }
     }
   </style>
 </html>

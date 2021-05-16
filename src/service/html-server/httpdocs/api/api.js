@@ -28,6 +28,11 @@ export default {
     const responseRaw = await fetch(`http://${config.apiServiceIp}:${config.apiServicePort}/alerts/coinbase`)
     const response = await responseRaw.json()
     return response.data
-  }
+  },
  
+  getFuturesPositions: async function() {
+    const responseRaw = await fetch(`http://${config.apiServiceIp}:${config.apiServicePort}/futures/positions`)
+    const response = await responseRaw.json()
+    return response
+  }
 }

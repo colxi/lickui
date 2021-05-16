@@ -57,10 +57,11 @@ async function resetDb(){
 async function updateData(){
   let futuresBalanceHistory
   const errorMessageContainer = document.getElementById('serviceError')
-
+  let futuresPositions
   try{
     await getCoinbaseAlerts()
     futuresBalanceHistory = await api.getFuturesBalanceHistory()
+    futuresPositions = await api.getFuturesPositions()
     errorMessageContainer.setAttribute('hidden', 'true')
   } catch(e){
     errorMessageContainer.removeAttribute('hidden')
@@ -102,6 +103,8 @@ async function updateData(){
     }
   }
 
+  const currentBalance = futuresBalanceHistory[futuresBalanceHistory.length-1].totalBalance
+  updatePositions(futuresPositions, currentBalance)
   updateAccountStats(futuresBalanceHistory)
   updateOverviewChart(futuresBalanceHistory)
   updateDailyProfitChart(futuresBalanceHistory)
@@ -111,6 +114,53 @@ async function updateData(){
   updateUnrealizedLostsChart(data)
 }
 
+function updatePositions(futuresPositions, currentBalance){
+  const takeProfit = 0.5
+  const container = document.getElementById('openPositions')
+  document.getElementById('openPositionsCount').innerText =futuresPositions.length
+
+  let html = `
+    <div class="position-table-header position-entry">
+      <span></span>
+      <span>symbol</span>
+      <span>lev</span>
+      <span>size</span>
+      <span>amount</span>
+      <span>PnL (ROE %)</span>
+      <span class="only-desktop">Outcome</span>
+      <span class="only-desktop">Distance</span>
+      <span class="only-desktop">Idle</span>
+    </div>
+  `
+  for(const position of futuresPositions){
+    const margin = Number(position.markPrice) * Math.abs(Number(position.positionAmt)) / Number(position.leverage)
+    const PnL = Number(position.unRealizedProfit)
+    const ROE = (PnL * 100 * position.leverage) / (Math.abs(Number(position.positionAmt)) * Number(position.entryPrice) ) 
+    const updateTimeInMin =Math.ceil( ( Date.now() - new Date(position.updateTime).getTime() ) / 1000 / 60 )
+    const balancePercent = margin * 100 / currentBalance
+    const priceDistanceFromOpening = ROE / position.leverage
+    const priceDistanceFromLimitOrder = priceDistanceFromOpening > 0 
+      ? priceDistanceFromOpening - takeProfit 
+      : priceDistanceFromOpening + takeProfit
+    const profitExpectet = takeProfit * Math.abs(margin) / 100  * position.leverage
+
+    html += `
+      <div class="position-entry">
+        <span class="${position.positionAmt > 0 ? 'position-long': 'position-short'}"></span>
+        <span>${position.symbol.slice(0,-4)}</span>
+        <span class="position-leverage">${position.leverage}x</span>
+        <span>${Math.abs(Number(position.positionAmt))}</span>
+        <span>${margin.toFixed(2)}$ <span class="position-margin-percent">(${balancePercent.toFixed(2)}%) </span></span>
+        <span class="${PnL < 0 ? 'position-pnl-negative' : 'position-pnl-positive'}">${PnL.toFixed(2)}$ (${ROE.toFixed(2)}%)</span>
+        <span class="only-desktop">${profitExpectet.toFixed(2)}$</span>
+        <span class="only-desktop">${priceDistanceFromLimitOrder.toFixed(2)}%</span>
+        <span class="only-desktop">${updateTimeInMin} min</span>
+      </div>
+    `
+    console.log(position)
+  }
+  container.innerHTML= html
+}
 
 function filterByDate(start, end, futuresBalanceHistory){
   return futuresBalanceHistory.filter(a=> a.timestamp > start && a.timestamp < end ) 

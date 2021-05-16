@@ -8,6 +8,7 @@ import config from '@/core/config'
 // declare api routes
 const apiRoutes: RESTApiServiceRoute[] = [
   ['GET', '/futures/balance/history/:page', Controllers.futures.getFuturesBalanceHistory, false],
+  ['GET', '/futures/positions', Controllers.futures.getFuturesPositions, false],
   ['GET', '/futures/balance/reset', Controllers.futures.resetData, false],
   ['GET', '/alerts/coinbase', Controllers.futures.coinbaseAlerts, false],
 ]
