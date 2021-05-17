@@ -55,10 +55,7 @@ async function resetDb(){
   updateData()
 }
 
-let a=0
 async function updateData(){
-  if(a) return
-  a = 1
   let futuresBalanceHistory
   const errorMessageContainer = document.getElementById('serviceError')
   let futuresPositions
