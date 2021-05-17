@@ -50,7 +50,6 @@ export function updateAccountStats(futuresBalanceHistory){
   document.getElementById('endBalance').innerHTML = +accountStats.lastBalance.toFixed(2) +' USDT'
   document.getElementById('elapsedDays').innerHTML = accountStats.elapsedDays
   document.getElementById('totalProfit').innerHTML = accountStats.totalProfit.toFixed(2) +' USDT'
-  document.getElementById('dailyAverage').innerHTML = accountStats.dailyProfitAverage.toFixed(2)  + ' USDT ('+accountStats.dailyProfitAveragePercent.toFixed(2) +'%)'
   
   document.getElementById('dailyProfitAmount').innerHTML = accountStats.todayProfit.toFixed(2) +'$'
   document.getElementById('dailyProfitAmountPercent').innerHTML = accountStats.todayProfitPercentage.toFixed(2) +'%'

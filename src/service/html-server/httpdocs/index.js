@@ -31,6 +31,7 @@ const TimeRange = {
 
 let activetimeRange = TimeRange.LAST_DAY
 
+
 async function init() {
   document.getElementById('resetDbButton').addEventListener('click', resetDb)
   document.getElementById('timeRangeSelector').addEventListener('change', setTimeRange)
@@ -41,7 +42,7 @@ async function init() {
   initUnrealizedLostsChart()
   initDailyProfitChart()
   updateData()
-  setInterval(updateData, 10000)
+  setInterval(updateData, 30000)
 }
 
 async function setTimeRange(a){
@@ -54,7 +55,10 @@ async function resetDb(){
   updateData()
 }
 
+let a=0
 async function updateData(){
+  if(a) return
+  a = 1
   let futuresBalanceHistory
   const errorMessageContainer = document.getElementById('serviceError')
   let futuresPositions
@@ -116,6 +120,7 @@ async function updateData(){
 
 function updatePositions(futuresPositions, currentBalance){
   const takeProfit = 0.5
+
   const container = document.getElementById('openPositions')
   document.getElementById('openPositionsCount').innerText =futuresPositions.length
 
@@ -130,6 +135,7 @@ function updatePositions(futuresPositions, currentBalance){
       <span class="only-desktop">Outcome</span>
       <span class="only-desktop">Distance</span>
       <span class="only-desktop">Idle</span>
+      <span class="only-desktop">Risk</span>
     </div>
   `
   for(const position of futuresPositions){
@@ -139,10 +145,28 @@ function updatePositions(futuresPositions, currentBalance){
     const updateTimeInMin =Math.ceil( ( Date.now() - new Date(position.updateTime).getTime() ) / 1000 / 60 )
     const balancePercent = margin * 100 / currentBalance
     const priceDistanceFromOpening = ROE / position.leverage
-    const priceDistanceFromLimitOrder = priceDistanceFromOpening > 0 
-      ? priceDistanceFromOpening - takeProfit 
-      : priceDistanceFromOpening + takeProfit
+    const priceDistanceFromLimitOrder = Math.abs(priceDistanceFromOpening) + takeProfit
     const profitExpectet = takeProfit * Math.abs(margin) / 100  * position.leverage
+
+    // calculate risks
+    const riskBalanceUsageFactor = 2
+    const riskROEFactor = 10
+    const riskDistanceFactor = 2
+    const riskIdleFactor = 30 
+    const riskLeverageFactor = 4
+
+    const riskBalanceUsage = Math.round((balancePercent / riskBalanceUsageFactor) * 20)
+    const riskROE = Math.round(Math.abs(ROE / riskROEFactor) * 5)
+    const riskDistance = Math.round(Math.abs(priceDistanceFromLimitOrder / riskDistanceFactor) * 10 )
+    const riskIdle = Math.round((updateTimeInMin / riskIdleFactor) * 5)
+    const riskLeverage = Math.round((position.leverage / riskLeverageFactor) * 5)
+
+    const risk = Math.round( (riskBalanceUsage + riskROE + riskDistance + riskIdle +riskLeverage) ) 
+    const riskScaled = Math.round(risk / 2 / 10)
+    let riskDotsCount = riskScaled
+    if(riskScaled > 5) riskDotsCount = 5
+    else if(riskScaled < 0) riskDotsCount = 0
+    const riskDots = Array(riskDotsCount).fill('🔴').join('').padEnd(10,'⚪️')
 
     html += `
       <div class="position-entry">
@@ -155,6 +179,36 @@ function updatePositions(futuresPositions, currentBalance){
         <span class="only-desktop">${profitExpectet.toFixed(2)}$</span>
         <span class="only-desktop">${priceDistanceFromLimitOrder.toFixed(2)}%</span>
         <span class="only-desktop">${updateTimeInMin} min</span>
+        <span class="only-desktop position-risk">
+          ${riskDots}
+          <div class="position-risk-details">
+            <div class="position-risk-details-title">Risk Scores</div>
+            <div class="position-risk-details-row">
+              <span>Balance risk</span>
+              <span>${riskBalanceUsage}</span>
+            </div>
+            <div class="position-risk-details-row">
+              <span>ROE risk</span>
+              <span>${riskROE}</span>
+            </div>
+            <div class="position-risk-details-row">
+              <span>Distance risk</span>
+              <span>${riskDistance}</span>
+            </div>
+            <div class="position-risk-details-row">
+              <span>Idle risk</span>
+              <span>${riskIdle}</span>
+            </div>
+            <div class="position-risk-details-row">
+              <span>Leverage risk</span>
+              <span>${riskLeverage}</span>
+            </div>
+            <div class="position-risk-details-row position-risk-details-total">
+              <span>Total risk score</span>
+              <span>${risk}</span>
+            </div>
+          </div>
+          </span>
       </div>
     `
   }

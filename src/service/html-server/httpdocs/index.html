@@ -28,7 +28,6 @@
           <div>
             <div>Elapsed days : <span id="elapsedDays" class="info">--</span></div>
             <div>Total Profit : <span id="totalProfit" class="info">--</span></div>
-            <div>Daily avg : <span id="dailyAverage" class="info">--</span></div>
           </div>
           <div>
             <div>Current Date :  <span id="endDate" class="info">--</span></div>
@@ -284,12 +283,10 @@
       padding: 30px;
     }
 
-    #dailyProfitPercentageContainer{
+    #dailyProfitPercentageContainer {
       width: 750px;
       margin: auto;
-      margin-bottom: 50px;
-      border-bottom: 1px solid #2286ff;
-      padding-bottom: 40px;
+      padding-bottom: 10px;
     }
 
 
@@ -364,7 +361,7 @@
 
     .position-entry{
       display: grid;
-      grid-template-columns: 10px 100px 50px 80px 2fr 2fr 1fr 1fr 50px;
+      grid-template-columns: 10px 60px 40px 40px 2fr 2fr 1fr 1fr 50px 2fr;
       gap:10px;
       margin-bottom: 5px;
     }
@@ -400,6 +397,56 @@
     .position-table-header{
       margin-bottom: 15px;
       color: #2286ff
+    }
+
+    .position-risk{
+      position: relative;
+      cursor: pointer;
+    }
+
+    .position-risk > .position-risk-details{
+      right: -140px;
+      display: none;
+      background: #2286ff;
+      padding: 15px;
+      z-index: 999;
+      font-size: 12px;
+      width: 130px;
+      top: -65px;
+      border-radius: 5px;
+      box-shadow: 3px 2px 7px #18182561;
+    }
+
+    .position-risk > .position-risk-details:before{
+      content: "";
+      position: absolute;
+      top: 50%;
+      margin-top: -10px;
+      left: -20px;
+      border: solid 10px transparent;
+      border-right-color: #2286ff;
+      z-index: 1;
+    }
+
+    .position-risk-details-row {
+      display: grid;
+      grid-template-columns: 1fr 20px;
+    }
+
+    .position-risk > .position-risk-details > .position-risk-details-title{
+      font-family: arial;
+      margin-bottom: 5px;
+      border-bottom: 1px solid white;
+    }
+
+    .position-risk > .position-risk-details > .position-risk-details-total{
+      font-family: arial;
+      margin-top: 5px;
+    }
+    
+    .position-risk:hover > .position-risk-details{
+      display: block;
+      position:absolute
     }
 
     .section_details > div > span:first-child{
