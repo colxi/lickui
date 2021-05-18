@@ -53,13 +53,19 @@ function getCompoundingCalculations(distribution, currentBalance){
    // calculate month active days average
    const date = new Date()
    const today = date.getDate()
-   const elapsedDays = today - firsIndexWithData
+   const monthDaysCount = new Date(date.getYear(), date.getMonth(), 0).getDate();
+   // don't include today in the elapsed days count
+   const elapsedDays = today - firsIndexWithData - 1
+   // include today in the remaining days
+   const remaining = monthDaysCount - today + 1
    let profitPercentSum = 0
-   for(let i=firsIndexWithData; i <= today-1; i++){
+   // don0t dinclude today in the calculation
+   for(let i=firsIndexWithData; i <= today-2; i++){
      profitPercentSum += distribution[i].profitPercent
    }
    const profitPercentAverage = (profitPercentSum / elapsedDays) / 100
-   const remaining = 30 - today
+  
+
    // calculate compounding  for the rest of the month
    const monthlyProjectionWithCompounting =  currentBalance  * ( Math.pow(1 + profitPercentAverage, remaining) - 1) 
 
@@ -78,7 +84,7 @@ function getCompoundingCalculations(distribution, currentBalance){
 
 export function updateDailyProfitChart(data) {
   if(!dailyProfitChart) {
-      console.log('failed initialise first daily profti hart')
+      console.log('failed initialise first daily profit chart')
       return
   }
   const distribution = groupByDate(data)

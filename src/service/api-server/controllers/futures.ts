@@ -41,7 +41,13 @@ export const getFuturesPositions: RESTApiServiceController = async (
     payload: RESTApiServiceRequestPayload,
     token: string
 ): Promise<void> => {
-    const positions = await binanceApi.getOpenFuturesPositions()
+    let positions
+    try{
+     positions = await binanceApi.getOpenFuturesPositions()
+    } catch(e){
+        response(500, {error : e.message})
+        return
+    }
     response(200, positions)
 }
 
