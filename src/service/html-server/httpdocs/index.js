@@ -141,16 +141,16 @@ function updatePositions(futuresPositions, currentBalance){
     const ROE = (PnL * 100 * position.leverage) / (Math.abs(Number(position.positionAmt)) * Number(position.entryPrice) ) 
     const updateTimeInMin =Math.ceil( ( Date.now() - new Date(position.updateTime).getTime() ) / 1000 / 60 )
     const balancePercent = margin * 100 / currentBalance
-    const priceDistanceFromOpening = ROE / position.leverage
+    const priceDistanceFromOpening = Math.abs(ROE / position.leverage)
     const priceDistanceFromLimitOrder = Math.abs(priceDistanceFromOpening) + takeProfit
     const profitExpectet = takeProfit * Math.abs(margin) / 100  * position.leverage
 
     // calculate risks
     const riskBalanceUsageFactor = 2
     const riskROEFactor = 10
-    const riskDistanceFactor = 2
+    const riskDistanceFactor = 4
     const riskIdleFactor = 30 
-    const riskLeverageFactor = 4
+    const riskLeverageFactor = 5
 
     const riskBalanceUsage = Math.round((balancePercent / riskBalanceUsageFactor) * 20)
     const riskROE = Math.round(Math.abs(ROE / riskROEFactor) * 5)
@@ -181,7 +181,7 @@ function updatePositions(futuresPositions, currentBalance){
           <div class="position-risk-details">
             <div class="position-risk-details-title">Risk Scores</div>
             <div class="position-risk-details-row">
-              <span>Balance risk</span>
+              <span>Amount risk</span>
               <span>${riskBalanceUsage}</span>
             </div>
             <div class="position-risk-details-row">
