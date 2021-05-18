@@ -148,13 +148,13 @@ function updatePositions(futuresPositions, currentBalance){
     // calculate risks
     const riskBalanceUsageFactor = 2
     const riskROEFactor = 10
-    const riskDistanceFactor = 4
+    const riskDistanceFactor = 6
     const riskIdleFactor = 30 
     const riskLeverageFactor = 5
 
     const riskBalanceUsage = Math.round((balancePercent / riskBalanceUsageFactor) * 20)
     const riskROE = Math.round(Math.abs(ROE / riskROEFactor) * 5)
-    const riskDistance = Math.round(Math.abs(priceDistanceFromLimitOrder / riskDistanceFactor) * 10 )
+    const riskDistance = Math.round(Math.abs(priceDistanceFromLimitOrder / riskDistanceFactor) * 6 )
     const riskIdle = Math.round((updateTimeInMin / riskIdleFactor) * 5)
     const riskLeverage = Math.round((position.leverage / riskLeverageFactor) * 5)
 
