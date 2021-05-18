@@ -20,6 +20,7 @@ import {
 
 
 const TimeRange = {
+  TODAY : 'TODAY',
   ALL_TIME : 'ALL_TIME',
   LAST_HOUR : 'LAST_HOUR',
   LAST_12_HOURS : 'LAST_12_HOURS',
@@ -29,7 +30,7 @@ const TimeRange = {
   CUSTOM_RANGE : 'CUSTOM_RANGE',
 }
 
-let activetimeRange = TimeRange.LAST_DAY
+let activetimeRange = TimeRange.TODAY
 
 
 async function init() {
@@ -51,28 +52,40 @@ async function setTimeRange(a){
 }
 
 async function resetDb(){
-  await api.resetHistory()
-  updateData()
+  const reset = confirm('Reset database?')
+  if(reset){
+    await api.resetHistory()
+    updateData()
+  }
 }
 
 async function updateData(){
   let futuresBalanceHistory
   const errorMessageContainer = document.getElementById('serviceError')
+  const loader = document.getElementById('loader')
+
   let futuresPositions
   try{
+    loader.removeAttribute('hidden')
     await getCoinbaseAlerts()
     futuresBalanceHistory = await api.getFuturesBalanceHistory()
     futuresPositions = await api.getFuturesPositions()
     errorMessageContainer.setAttribute('hidden', 'true')
   } catch(e){
+    loader.setAttribute('hidden', 'true')
     errorMessageContainer.removeAttribute('hidden')
     return
   }
+  loader.setAttribute('hidden', 'true')
   let data = []
   
   switch(activetimeRange){
     case TimeRange.ALL_TIME:{
       data = futuresBalanceHistory
+      break
+    }
+    case TimeRange.TODAY:{
+      data = filterByDate( new Date().setHours(0,0,0,0), Date.now(), futuresBalanceHistory)
       break
     }
     case TimeRange.LAST_HOUR:{
@@ -152,7 +165,7 @@ function updatePositions(futuresPositions, currentBalance){
     const riskIdleFactor = 30 
     const riskLeverageFactor = 5
 
-    const riskBalanceUsage = Math.round((balancePercent / riskBalanceUsageFactor) * 20)
+    const riskBalanceUsage = Math.round((balancePercent / riskBalanceUsageFactor) * 10)
     const riskROE = Math.round(Math.abs(ROE / riskROEFactor) * 5)
     const riskDistance = Math.round(Math.abs(priceDistanceFromLimitOrder / riskDistanceFactor) * 6 )
     const riskIdle = Math.round((updateTimeInMin / riskIdleFactor) * 5)

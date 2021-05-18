@@ -11,7 +11,7 @@ export const getFuturesBalanceHistory: RESTApiServiceController = async (
 
     const query = payload.query as Record<string, any>
     const params = payload.params as Record<string, any>
-    const limit = 500
+    const limit = 1000
     const page = Number(params.page) || 0
     const entryOffset = limit * page
 

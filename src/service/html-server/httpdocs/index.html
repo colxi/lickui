@@ -5,6 +5,7 @@
     <script src="./index.js" type="module"></script>
   </head>
   <body>
+    <div id="loader"  hidden="true" ><div class="lds-dual-ring"></div></div>
     <div id="serviceError" hidden="true">&#9888; Error fetching data. Please check service status</div>
     <header>
       <h1 class="title">LICKUI <span class="version">v0.1.7</span></h1>
@@ -71,10 +72,11 @@
     <div id="layout">      
         <div id="actions">
           <select id="timeRangeSelector">
+            <option value="TODAY" selected>Today</option>
             <option value="ALL_TIME">All time</option>
             <option value="LAST_HOUR">Last hour</option>
             <option value="LAST_12_HOURS">Last 12 hours</option>
-            <option value="LAST_DAY" selected>Last day</option>
+            <option value="LAST_DAY" >Last day</option>
             <option value="LAST_7_DAYS">Last 7 days</option>
             <option value="LAST_30_DAYS">Last 30 days</option>
           </select>
@@ -171,6 +173,21 @@
       border-radius: 5px;
       text-align: center;
       opacity: 0.8;
+      z-index: 9999;
+      box-shadow: 0 0 11px 1px black;
+    }
+
+    #loader{
+      position: fixed;
+      width: 70px;
+      background: #286dad;
+      margin: auto;
+      margin-top: 20px;
+      right: 20;
+      padding: 20px;
+      border-radius: 5px;
+      text-align: center;
+      opacity: .95;
       z-index: 9999;
       box-shadow: 0 0 11px 1px black;
     }
@@ -479,6 +496,35 @@
 
     #dailyProfitPercentageChart {
       height:150px
+    }
+
+
+    /**
+     * LOADER (SPINNER)
+     **/
+    .lds-dual-ring {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+    }
+    .lds-dual-ring:after {
+      content: " ";
+      display: block;
+      width: 24px;
+      height: 24px;
+      margin: 8px;
+      border-radius: 50%;
+      border: 6px solid #fff;
+      border-color: #fff transparent #fff transparent;
+      animation: lds-dual-ring 1.2s linear infinite;
+    }
+    @keyframes lds-dual-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
     }
 
     @media only screen and (max-width: 1000px) {
