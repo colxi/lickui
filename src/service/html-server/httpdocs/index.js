@@ -22,7 +22,7 @@ const TimeRange = {
   ALL_TIME : 'ALL_TIME',
   LAST_HOUR : 'LAST_HOUR',
   LAST_12_HOURS : 'LAST_12_HOURS',
-  LAST_DAY : 'LAST_DAY',
+  LAST_24_HOURS : 'LAST_24_HOURS',
   LAST_7_DAYS : 'LAST_7_DAYS',
   LAST_30_DAYS : 'LAST_30_DAYS',
   CUSTOM_RANGE : 'CUSTOM_RANGE',
@@ -94,7 +94,7 @@ async function updateData(){
       data = filterByDate( Date.now() - (12 * 60 * 60 * 1000), Date.now(), futuresBalanceHistory)
       break
     }
-    case TimeRange.LAST_DAY:{
+    case TimeRange.LAST_24_HOURS:{
       data = filterByDate( Date.now() - (24 * 60 *  60 * 1000), Date.now(), futuresBalanceHistory)
       break
     }

@@ -24,7 +24,7 @@ export function updateUnrealizedLostsChart(data) {
 }
 
 
-export function initUnrealizedLostsChart(downsampled) {
+export function initUnrealizedLostsChart() {
   const ctx = document.getElementById('unrealizedLostsChart')
 
   totalBalanceChart = new Chart(ctx, {
