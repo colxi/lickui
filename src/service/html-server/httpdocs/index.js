@@ -1,6 +1,5 @@
 import './lib/chart.js'
 import api from './api/api.js'
-import { downsample } from './common/array/index.js'
 import { updateAccountStats } from './common/stats/index.js'
 import {
   initOverviewChart,
