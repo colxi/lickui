@@ -46,6 +46,6 @@
     "build:live": "nodemon --watch 'src/**/*.*' --exec \"ts-node -r tsconfig-paths/register\" src/index.ts",
     "start": "ts-node -r tsconfig-paths/register src/index.ts",
     "changelog": "auto-changelog --template changelog-template.hbs -p -u --commit-limit false",
-    "version-up": "yarn version --minor --no-commit-hooks"
+    "version-up": "yarn version --minor --no-git-tag-version"
   }
 }
