@@ -1,6 +1,6 @@
 {
   "name": "lickui",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "colxi",
@@ -46,7 +46,7 @@
     "build:live": "nodemon --watch 'src/**/*.*' --exec \"ts-node -r tsconfig-paths/register\" src/index.ts",
     "start": "ts-node -r tsconfig-paths/register src/index.ts",
     "changelog": "auto-changelog --template changelog-template.hbs -p -u --commit-limit false",
-    "version-up": "yarn version --minor --no-git-tag-version & git add -A",
+    "version-up": "yarn version --minor --no-git-tag-version & git add package.json",
     "commit": "git add -A & git commit"
   }
 }
