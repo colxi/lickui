@@ -42,6 +42,7 @@ export function getAccountStats(futuresBalanceHistory){
   }
 }
 
+
 export function updateAccountStats(futuresBalanceHistory){
   const accountStats = getAccountStats(futuresBalanceHistory)
   document.getElementById('startDate').innerHTML = accountStats.firstDateformatted
