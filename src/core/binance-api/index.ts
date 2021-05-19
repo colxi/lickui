@@ -66,7 +66,7 @@ export default class {
     const balance = await this.getFuturesBalance()
     const usedBalance = balance.totalBalance - balance.availableBalance
     const usedBalancePercent = usedBalance * 100 / balance.totalBalance
-    const unrealizedLostsPercent = balance.unrealizedLosts * 100 / balance.availableBalance
+    const unrealizedLostsPercent = balance.unrealizedLosts * 100 / balance.totalBalance
 
     const openOrders = await this.getOpenFuturesOrders()
 
