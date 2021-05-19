@@ -41,7 +41,6 @@
     "build": "yarn lint & tsc -p .",
     "build:live": "nodemon --watch 'src/**/*.*' --exec \"ts-node -r tsconfig-paths/register\" src/index.ts",
     "start": "ts-node -r tsconfig-paths/register src/index.ts",
-    "changelog": "auto-changelog --template changelog-template.hbs -p -u --commit-limit false",
-    "changelog-debug": "auto-changelog --template changelog-template.hbs -p --template json --output changelog-data.json"
+    "changelog": "auto-changelog --template changelog-template.hbs -p -u --commit-limit false"
   }
 }
