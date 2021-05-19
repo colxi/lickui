@@ -1,4 +1,4 @@
-# v0.10.0
+# v0.12.0
 [2021-05-19]
 
 ### Features
@@ -8,6 +8,7 @@
 
 ### Fixes
 
+* fix: unreali&lt;ed losts fix ([`e8b3907`](https://github.com/colxi/lickui/commit/e8b3907f259d737c430aa7173727151b2bf1efb6))
 * fix: commit script ([`747b111`](https://github.com/colxi/lickui/commit/747b111b489b38008c954af3110b3a5ec3857255))
 * fix: remove unnecessary import ([`d526c3a`](https://github.com/colxi/lickui/commit/d526c3a9487fc7df8ff0263b34bd3f5040cf254c))
 * fix: test ([`38608c6`](https://github.com/colxi/lickui/commit/38608c62e094ddc35f36060ba451dd88708a6c3e))
