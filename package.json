@@ -8,6 +8,7 @@
     "@types/lodash": "^4.14.155",
     "@types/node-fetch": "^2.5.7",
     "@types/sqlite3": "^3.1.7",
+    "auto-changelog": "^2.2.1",
     "chart.js": "^2.9.4",
     "express": "^4.17.1",
     "google-trends-api": "^4.9.0",
@@ -39,6 +40,8 @@
     "lint": "eslint 'src/**/*.ts'",
     "build": "yarn lint & tsc -p .",
     "build:live": "nodemon --watch 'src/**/*.*' --exec \"ts-node -r tsconfig-paths/register\" src/index.ts",
-    "start": "ts-node -r tsconfig-paths/register src/index.ts"
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
+    "changelog": "auto-changelog --template changelog-template.hbs -p -u --commit-limit false",
+    "changelog-debug": "auto-changelog --template changelog-template.hbs -p --template json --output changelog-data.json"
   }
 }

@@ -18,7 +18,6 @@ import {
 } from './common/chart/index.js'
  import {getElapsedDays} from './common/time/index.js'
 
-
 const TimeRange = {
   TODAY : 'TODAY',
   ALL_TIME : 'ALL_TIME',
