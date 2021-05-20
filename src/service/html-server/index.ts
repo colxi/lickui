@@ -22,7 +22,8 @@ export default async function initHTMLServerService() {
       const publicConfig = {
         apiServicePort: config.apiServicePort,
         apiServiceIp: config.apiServiceIp,
-        updateIntervalInMillis: config.updateIntervalInMillis
+        updateIntervalInMillis: config.updateIntervalInMillis,
+        takeProfit: config.takeProfit
       }
 
       response.writeHead(200, { 'Content-Type': 'text/javascript' })

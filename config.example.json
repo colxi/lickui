@@ -6,5 +6,6 @@
   "apiServiceIp": "127.0.0.1",
   "httpServiceIp": "127.0.0.1",
   "apiServicePort": 3300,
-  "httpServicePort": 80
+  "httpServicePort": 80,
+  "takeProfit": 0.55
 }

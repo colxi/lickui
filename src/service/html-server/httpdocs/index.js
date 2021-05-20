@@ -16,6 +16,8 @@ import {
   updateDailyProfitChart,
 } from './common/chart/index.js'
  import {getElapsedDays} from './common/time/index.js'
+ import config from '/SERVER_CONFIG'
+
 
 const TimeRange = {
   TODAY : 'TODAY',
@@ -127,8 +129,6 @@ async function updateData(){
 }
 
 function updatePositions(futuresPositions, currentBalance){
-  const takeProfit = 0.5
-
   const container = document.getElementById('openPositions')
   document.getElementById('openPositionsCount').innerText =futuresPositions.length
 
@@ -153,8 +153,8 @@ function updatePositions(futuresPositions, currentBalance){
     const updateTimeInMin =Math.ceil( ( Date.now() - new Date(position.updateTime).getTime() ) / 1000 / 60 )
     const balancePercent = margin * 100 / currentBalance
     const priceDistanceFromOpening = Math.abs(ROE / position.leverage)
-    const priceDistanceFromLimitOrder = Math.abs(priceDistanceFromOpening) + takeProfit
-    const profitExpectet = takeProfit * Math.abs(margin) / 100  * position.leverage
+    const priceDistanceFromLimitOrder = Math.abs(priceDistanceFromOpening) + config.takeProfit
+    const profitExpectet = config.takeProfit * Math.abs(margin) / 100  * position.leverage
 
     // calculate risks
     const riskBalanceUsageFactor = 2
