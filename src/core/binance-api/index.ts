@@ -33,7 +33,6 @@ export default class {
       console.log("Failed:", e)
     }
     const USDTSymbol = data.filter((i: any) => i.asset === 'USDT')[0]
-    console.log(USDTSymbol)
     return {
       totalBalance: Number(USDTSymbol.balance),
       availableBalance: Number(USDTSymbol.availableBalance),

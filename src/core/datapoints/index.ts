@@ -28,7 +28,6 @@ export default {
       )
     `
     try{
-      console.log('saving datapoints...', queryStr)
       await database.query(queryStr)
     }catch(e){
       console.log('ERROR SAVING IN DB\n', queryStr)
