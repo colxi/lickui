@@ -92,10 +92,10 @@ class Database {
     })
   }
 
-  public count(table: string): Promise<any> {
+  public count(table: string, where?:string): Promise<any> {
     return new Promise(resolve => {
       this.db.get(
-        `SELECT COUNT(*) FROM ${table}`,
+        `SELECT COUNT(*) FROM ${table} ${where ? `WHERE ${where}` : ``}`,
         (err, result: any) => {
           if (err) throw err
           else resolve(result['COUNT(*)'])

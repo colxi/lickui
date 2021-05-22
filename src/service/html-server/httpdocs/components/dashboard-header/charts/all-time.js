@@ -1,8 +1,7 @@
-import theme from './charts-theme.js'
 
 let overviewChart = null
 
-export function updateOverviewChart(data) {
+export function updateDashboardHeaderAllTimeChart(data) {
   if(!overviewChart) {
       console.log('initialise first overviewChart')
       return
@@ -15,16 +14,16 @@ export function updateOverviewChart(data) {
   overviewChart.update()
 }
 
-export function initOverviewChart() {
-  const ctx = document.getElementById('timeRange')
+export function initDashboardHeaderAllTimeChart() {
+  const ctx = document.getElementById('dashboardHeaderAllTimeGraph')
   //ctx.height = '75'
   overviewChart = new Chart(ctx, {
     type: 'scatter',
     data: {
       datasets: [
         {
-          backgroundColor: theme.background,
-          borderColor: theme.background,
+          backgroundColor: '#2286ff',
+          borderColor: '#2286ff',
           fill: true,
           borderWidth: 0,
           pointRadius: 0,

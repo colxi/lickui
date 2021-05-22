@@ -1,8 +1,25 @@
-<div id="timeRangeContainer">
-  <div id="timeRangePicker">
-    <div id="timeRangeArea"></div>
+<div class="dashboard-header-container">
+  <div class="dashboard-header-graph">
+    <div class="dashboard-header-graph-selectors">
+      <div 
+        id="dashboardHeaderGraphSelectorMonth"
+        class="dashboard-header-graph-selectors-option button"
+      >
+        MONTH
+      </div>
+      <div 
+        id="dashboardHeaderGraphSelectorAll"
+        class="dashboard-header-graph-selectors-option button"
+      > 
+        ALL TIME
+      </div>
+    </div>
+    <div>
+      <canvas id="dashboardHeaderDailyBreakdownGraph" height="55"></canvas>
+      <canvas id="dashboardHeaderAllTimeGraph" height="55"></canvas>
+    </div>
   </div>
-  <canvas id="timeRange" height="75"></canvas>
+
   <div class="dailyProfitContainer">
     <div>
       <span>Today's Profit</span>
@@ -10,6 +27,7 @@
     </div>
     <div id="dailyProfitAmount">--</div>
   </div>
+
   <div id="timeline-details">
     <div>
       <div>Start date : <span id="startDate" class="info">--</span></div>
@@ -24,43 +42,51 @@
       <div>Current Balance : <span id="endBalance" class="info">--</span></div>
     </div>
   </div>
+
+   <div class="section_details">
+    <div>
+      <span>Daily avg :</span>
+      <span id="month_daily_average">--</span>
+    </div>
+    <div>
+      <span>Expected profit :</span>
+      <span id="month_expected_profit">--</span>
+    </div>
+    <div>
+      <span>Expected pending :</span>
+      <span id="mont_expected_pending_profit">--</span>
+    </div>
+  </div>
 </div>
 
 <style>
-  #timeRangeContainer {
+  .dashboard-header-container {
     margin: auto;
     position: relative;
-    padding: 40px 0px;
     margin-bottom: 30px;
     margin-top: 40px;
-    padding-top: 30px;
     padding-bottom: 0px;
-  }
-
-  #timeRangePicker {
-    position: absolute;
-    height: 100%;
-    left: 0px;
-    top: 0px;
-    width: 100%;
-  }
-
-  #timeRangeArea {
+    box-shadow: 0px 5px 4px 0px #0000003d;
     border: 1px solid #2286ff6b;
-    position: absolute;
-    height: 100%;
-    left: 0px;
-    right: 0px;
-    margin-bottom: 0px;
-    box-shadow: 0px 5px 4px 0px #0000003d;
   }
 
-  #timeRange {
-    box-shadow: 0px 5px 4px 0px #0000003d;
-    width: 100%;
-    height: 75px;
-    display: block;
-    padding-bottom: 40px;
+  .dashboard-header-graph{
+    padding: 30px 60px;
+    position: relative;
+  }
+
+  .dashboard-header-graph-selectors{
+    position: absolute;
+    left: 20px;
+    top: 20px;
+  }
+
+  .dashboard-header-graph-selectors-option.button{
+    background:#286dad;
+    display:inline-block;
+    min-width: 60px;
+    border-radius:0px
+
   }
 
   .dailyProfitContainer {
@@ -96,4 +122,7 @@
     color: #2286ff;
     font-weight: 800;
   }
+
+
+ 
 </style>

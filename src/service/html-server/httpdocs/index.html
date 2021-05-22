@@ -10,7 +10,6 @@
   <div id="viewport">
     <section>
       <include src="/components/dashboard-header"></include>
-      <include src="/components/daily-average"></include>
       <include src="/components/open-positions"></include>
       <include src="/components/coinbase-alerts"></include>
     </section>
@@ -29,7 +28,7 @@
   @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
 
   [hidden] {
-    display: none;
+    display: none !important;
   }
 
   body {
@@ -56,12 +55,12 @@
     font-size: 12px;
     font-weight: 800;
     cursor: pointer;
+    text-align:center;
   }
 
   .button:hover {
     background: white;
     color: #2286ff;
-
   }
 
   .container canvas {

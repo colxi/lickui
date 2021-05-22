@@ -127,7 +127,7 @@ export default class BinanceFeedService {
         ${position.creationTime},
         ${duration},
         "${position.symbol.slice(0,-4)}",
-        ${Math.abs(Number(position.positionAmt) * Number(position.markPrice))},
+        ${Math.abs(Number(position.positionAmt) * Number(position.markPrice) / Number(position.leverage))},
         ${Number(position.positionAmt)},
         ${config.takeProfit},
         ${Number(position.leverage)}
