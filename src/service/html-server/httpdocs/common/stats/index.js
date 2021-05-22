@@ -1,4 +1,4 @@
-import { getElapsedDays } from '../time/index.js'
+import { getElapsedDays } from '../../lib/time/index.js'
 
 export function getAccountStats(futuresBalanceHistory){
   const firstDateformatted =futuresBalanceHistory[0].date

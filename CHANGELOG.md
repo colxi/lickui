@@ -1,8 +1,9 @@
-# v0.15.0
-[2021-05-20]
+# v0.16.0
+[2021-05-22]
 
 ### Features
 
+* feature: Position close detection + position duration ([`2be717a`](https://github.com/colxi/lickui/commit/2be717a9dadec0f5f8231e1851cc9f223bb994b3))
 * feature: test ([`2410f27`](https://github.com/colxi/lickui/commit/2410f27aedcf01c115550b869c4857ff7980fbe3))
 * feature: test ([`c0e5d62`](https://github.com/colxi/lickui/commit/c0e5d6281689fd0a5d5874927b0c17e5806e6a28))
 
