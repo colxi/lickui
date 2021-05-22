@@ -1,6 +1,48 @@
 import config from '@/core/config'
 import sqlite3 from 'sqlite3'
 
+const createDatapointsQuery = `
+  CREATE TABLE IF NOT EXISTS "datapoints"(
+    "id" INTEGER PRIMARY KEY,
+    "totalBalance" REAL,
+    "unrealizedLosts" REAL,
+    "unrealizedLostsPercent" REAL,
+    "usedBalance" REAL,
+    "usedBalancePercent" REAL,
+    "openOrders" INTEGER,
+    "timestamp" INTEGER,
+    "date" TEXT(10) NOT NULL
+  );
+`
+const createDatapointsDateIndexQuery = `
+  CREATE INDEX IF NOT EXISTS "date" ON "datapoints" (
+    "date"	ASC
+  );
+`
+const createDatapointdTimestampIndexQuery = `
+  CREATE INDEX IF NOT EXISTS "timestamp" ON "datapoints" (
+    "timestamp"	ASC
+  );
+`
+
+const createPositionTableQuery = `
+  CREATE TABLE IF NOT EXISTS "positions" (
+    "id" INTEGER PRIMARY KEY,
+    "timestamp"	INTEGER NOT NULL,
+    "duration" INTEGER NOT NULL,
+    "symbol" TEXT(10) NOT NULL,
+    "amount" REAL NOT NULL,
+    "size" REAL NOT NULL,
+    "takeProfit" REAL NOT NULL,
+    "leverage" INTEGER NOT NULL
+  );
+`
+const createPositiondTimestampIndexQuery = `
+  CREATE INDEX IF NOT EXISTS "timestamp" ON "positions" (
+    "timestamp"	ASC
+  );
+`
+
 class Database {
   constructor() {
     this.db = new sqlite3.Database(`./db/${config.databaseName}`)
@@ -9,37 +51,24 @@ class Database {
   public db: sqlite3.Database
 
   public init(): Promise<void> {
-    const createTableQuery = `
-      CREATE TABLE IF NOT EXISTS "datapoints"(
-      id INTEGER PRIMARY KEY,
-      totalBalance REAL,
-      unrealizedLosts REAL,
-      unrealizedLostsPercent REAL,
-      usedBalance REAL,
-      usedBalancePercent REAL,
-      openOrders INTEGER,
-      timestamp INTEGER,
-      date TEXT(10) NOT NULL
-      );
-    `
-    const createDateIndexQuery = `
-      CREATE INDEX IF NOT EXISTS "date" ON "datapoints" (
-          "date"	ASC
-      );
-    `
-    const createTimestampIndexQuery = `
-      CREATE INDEX IF NOT EXISTS "timestamp" ON "datapoints" (
-          "timestamp"	ASC
-      );
-    `
+
     return new Promise(resolve => {
-      this.db.run(createTableQuery, err => {
+      this.db.run(createDatapointsQuery, err => {
         if (err) throw err
-        this.db.run(createTimestampIndexQuery, err => {
+        this.db.run(createDatapointdTimestampIndexQuery, err => {
           if (err) throw err
-          this.db.run(createDateIndexQuery, err => {
+          this.db.run(createDatapointsDateIndexQuery, err => {
             if (err) throw err
-            resolve()
+            this.db.run(createDatapointsDateIndexQuery, err => {
+              if (err) throw err
+              this.db.run(createPositionTableQuery, err => {
+                if (err) throw err
+                this.db.run(createPositiondTimestampIndexQuery, err => {
+                  if (err) throw err
+                  resolve()
+                })
+              })
+            })
           })
         })
       })

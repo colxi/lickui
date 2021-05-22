@@ -1,6 +1,5 @@
 // @ts-ignore TS6133
 import { BalanceHistoryEntry } from '../types'
-import creteTimeRangeSelector from './time-range-selector.ts'
 
 interface StoreState {
   balanceHistory: BalanceHistoryEntry[]

@@ -1,544 +1,105 @@
 <html>
-  <head>
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/ts-browser"></script>
-    <script src="./index.js" type="module"></script>
-  </head>
+<head>
+  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+  <script src="./index.js" type="module"></script>
+</head>
 
-  <body>
-    <div id="loader"  hidden="true" ><div class="lds-dual-ring"></div></div>
-    <div id="serviceError" hidden="true">&#9888; Error fetching data. Please check service status</div>
-    <header>
-      <h1 class="title">LICKUI <span class="version">v0.1.7</span></h1>
-      <div id="timeRangeContainer">
-        <div id="timeRangePicker">
-          <div id="timeRangeArea"></div>
-        </div>
-        <canvas id="timeRange" height="75"></canvas>
-        <div class="dailyProfitContainer">
-          <div>
-            <span>Today's Profit</span>
-            <span id="dailyProfitAmountPercent">--</span>
-          </div>
-          <div id="dailyProfitAmount">--</div>
-        </div>
-        <div id="timeline-details">
-          <div>
-            <div>Start date : <span id="startDate" class="info">--</span></div>
-            <div>Start Balance : <span id="startBalance" class="info">--</span></div>
-          </div>
-          <div>
-            <div>Elapsed days : <span id="elapsedDays" class="info">--</span></div>
-            <div>Total Profit : <span id="totalProfit" class="info">--</span></div>
-          </div>
-          <div>
-            <div>Current Date :  <span id="endDate" class="info">--</span></div>
-            <div>Current Balance : <span id="endBalance" class="info">--</span></div>
-          </div>
-        </div>
-      </div>
-      <div id="dailyProfitPercentageContainer">
-        <div class="container">
-          <div id="dailyProfitPercentage">
-            <canvas id="dailyProfitPercentageChart" height="150"></canvas>
-          </div>
-        </div>
-        <div class="section_details">
-          <div>
-            <span>Daily avg :</span>
-            <span id="month_daily_average">--</span>
-          </div>
-          <div>
-            <span>Expected profit :</span>
-            <span id="month_expected_profit">--</span>
-          </div>
-          <div>
-            <span>Expected pending :</span>
-            <span id="mont_expected_pending_profit">--</span>
-          </div>
-        </div>
-      </div>
-      
-      <div id="openPositionsContainer">
-        <h3>Open Positions (<span id="openPositionsCount">0</span></span>)</h3>
-        <div id="openPositions"></div>
-      </div>
+<body>
+  <include src="/components/loader"></include>
+  <include src="/components/error-notification"></include>
+  <include src="/components/header-bar"></include>
+  <div id="viewport">
+    <section>
+      <include src="/components/dashboard-header"></include>
+      <include src="/components/daily-average"></include>
+      <include src="/components/open-positions"></include>
+      <include src="/components/coinbase-alerts"></include>
+    </section>
 
-      <div id="coinbaseAlertsContainer">
-        <h3>Coinbase Alerts</h3>
-        <div id="coinbaseAlerts"></div>
-      </div>
-    </header>
- 
-    <div id="layout">      
-        <div id="actions">
-          <select id="timeRangeSelector">
-            <option value="ALL_TIME">All time</option>
-            <option value="TODAY" selected>Today</option>
-            <option value="LAST_HOUR">Last hour</option>
-            <option value="LAST_12_HOURS">Last 12 hours</option>
-            <option value="LAST_24_HOURS">Last 24 hours</option>
-            <option value="LAST_7_DAYS">Last 7 days</option>
-            <option value="LAST_30_DAYS">Last 30 days</option>
-          </select>
-          <div> </div>
-          <div class="button" id="resetDbButton">RESET DB</div> 
-        </div>
+    <section>
+      <include src="/components/dashboard-filters"></include>
+      <include src="/components/closed-positions"></include>
+      <include src="/components/total-balance"></include>
+      <include src="/components/used-balance"></include>
+      <include src="/components/open-positions-timeline"></include>
+      <include src="/components/unrealized-losts-timeline"></include>
+    </section>
+  </div>
+</body>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
 
-        <div class="container">
-          Wallet Balance Explorer 
-          <div id="advanced_balance">
-            <div id="test"></div>
-            <canvas id="totalBalanceChart"></canvas>
-          </div>
-        </div>
+  [hidden] {
+    display: none;
+  }
 
-        <div class="container">
-          <div> Used balance percentage </div>
-          <div id="usedBalance">
-            <canvas id="balancePercentChart"></canvas>
-          </div>
-          <div class="section_details">
-            <div>
-              <span>Avg :</span>
-              <span id="used_balance_time_range">--</span>
-            </div>
-            <div>
-              <span>Min :</span>
-              <span id="min_balance_time_range">--</span>
-            </div>
-            <div>
-              <span>Max :</span>
-              <span id="max_balance_time_range">--</span>
-            </div>
-            <div>
-              <span>Current :</span>
-              <span id="current_balance_time_range">--</span>
-            </div>
-          </div>
-        </div>
+  body {
+    margin: 0px;
+    background: linear-gradient(186deg, #3b3b98, 20px, #2b2b41);
+    color: #2286ff;
+    color: white;
+    font-family: 'Open Sans', sans-serif;
+    font-size:15px
+  }
 
-        <div class="container">
-          Open Orders
-          <div id="openOrders">
-            <canvas id="openOrdersChart"></canvas>
-          </div>
-        </div>
+  #viewport {
+    padding: 20px;
+    width: 800px;
+    margin: auto;
+  }
 
-        <div class="container">
-          Unrealized Losts percentage
-          <div id="unrealizedLosts">
-            <canvas id="unrealizedLostsChart"></canvas>
-          </div>
-          <div class="section_details">
-            <div>
-              <span>Avg :</span>
-              <span id="avg_unrealized_losts">--</span>
-            </div>
-            <div>
-              <span>Max :</span>
-              <span id="max_unrealized_losts">--</span>
-            </div>
-            <div>
-              <span>Current :</span>
-              <span id="current_unrealized_losts">--</span>
-            </div>
-          </div>
-        </div>
+  .button {
+    background: #2286ff;
+    color: white;
+    place-self: center;
+    padding: 7px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+  }
 
-      </div>
-  </body>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
+  .button:hover {
+    background: white;
+    color: #2286ff;
 
-    [hidden]{
-      display:none;
-    }
+  }
 
-    body {
-      margin:0px;
-      background: #2b2b43;
-      color :#2286ff;
-	    color:white;
-      font-family: 'Open Sans', sans-serif;
-    }
-
-    #serviceError{
-      position: fixed;
-      width: 200px;
-      background: red;
-      margin: auto;
-      margin-top: 20px;
-      right: 20;
-      padding: 20px;
-      border-radius: 5px;
-      text-align: center;
-      opacity: 0.8;
-      z-index: 9999;
-      box-shadow: 0 0 11px 1px black;
-    }
-
-    #loader{
-      position: fixed;
-      width: 70px;
-      background: #286dad;
-      margin: auto;
-      margin-top: 20px;
-      right: 20;
-      padding: 20px;
-      border-radius: 5px;
-      text-align: center;
-      opacity: .95;
-      z-index: 9999;
-      box-shadow: 0 0 11px 1px black;
-    }
-
-    #layout{
-      padding: 20px;
-      width:750px;
-      margin:auto;
-    }
-
-    .title{
-      background:#3a74af;
-      margin:0px;
-      font-size: 16px;
-      padding: 10px;
-    }
-
-    .version{
-      font-size: 10px;
-    }
-
-    .button{
-      background: #2286ff;
-      color: white;
-      place-self: center;
-      padding: 7px;
-      border-radius: 7px;
-      font-size: 12px;
-      font-weight: 800;
-      cursor:pointer;
-    }
-    .button:hover{
-      background: white;
-      color: #2286ff;
-     
-    }
-
-    .info{
-      color: #2286ff;
-      font-weight: 800;
-    }
-
-    #timeline-details{
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      padding: 35px;
-      font-size: 12px;
-      color: #c3c3e0;
-      text-align: center;
-    }
-
-    #advanced_balance{
-      border: 1px solid #2286ff;
-      padding: 30px;
-      margin-top:5px;
-      margin-bottom: 30px;
-    }
-
-    #timeRangeContainer {
-      width:750px;
-      margin:auto;
-      position: relative;
-      padding: 40px 0px;
-      margin-bottom: 30px;
-      margin-top:40px;
-      padding-top:30px;
-      padding-bottom:0px;
-    }
-  
-    #timeRange {
-      box-shadow: 0px 5px 4px 0px #0000003d;
-      width: 100%;
-      height: 75px;
-      display: block;
-      padding-bottom: 40px;
-    }
-   
-    #timeRangeArea {
-      border: 1px solid #2286ff;
-      /* border-radius: 10px 10px 0px  0px; */
-      position: absolute;
-      height: 100%;
-      /*background: #ff000024; */
-      /* border: 1px solid #2286ff; */
-      left: 0px;
-      right: 0px;
-      margin-bottom: 0px;
-      box-shadow: 0px 5px 4px 0px #0000003d;
-    }
-
-    #timeRangePicker {
-      position: absolute;
-      height: 100%;
-      left: 0px;
-      top: 0px;
-      width: 100%;
-    }
-
-    #usedBalance{
-      border: 1px solid #2286ff;
-      padding: 20px;
-      margin-top:5px;
-      padding: 30px;
-    }
-
-    #dailyProfitPercentage{
-      border: 1px solid #2286ff;
-      padding: 20px;
-      margin-top:5px;
-      padding: 30px;
-    }
-
-    #dailyProfitPercentageContainer {
-      width: 750px;
-      margin: auto;
-      padding-bottom: 10px;
-    }
+  .container canvas {
+    width: 100%;
+    height: 400px;
+  }
 
 
-    #openOrders{
-      border: 1px solid #2286ff;
-      padding: 20px;
-      margin-bottom: 50px;
-      margin-top:5px;
-      padding: 30px;
-      background: #2286ff;
-    }
-  
-    #unrealizedLosts{
-      border: 1px solid #2286ff;
-      padding: 20px;
-      margin-top:5px;
-      padding: 30px;
-    }
-
-    #openPositionsContainer{
-      width: 750px;
-      margin: auto;
-      margin-bottom: 50px;
-      border-bottom: 1px solid #2286ff;
-      padding-bottom: 40px;
-    }
-
-    #openPositions{
-      margin-top:10px;
-      font-size: 13px;
-    }
-
-    .container canvas {
-      width: 100%;
-      height: 400px;
-    }
-
-    #actions{
-      display:grid;
-      grid-template-columns: 200px 1fr 80px;
-      margin-bottom: 30px;
-    }
-
-    #coinbaseAlertsContainer{
-      width: 750px;
-      margin: auto;
-      margin-bottom: 50px;
-      border-bottom: 1px solid #2286ff;
-      padding-bottom: 40px;
-    }
+  .section_details {
+    display: grid;
+    grid-auto-flow: column;
+    text-align: center;
+    background: #2286ff;
+    padding: 15px;
+    border-radius: 0px 0px 4px 4px;
+    margin-bottom: 50px;
+    box-shadow: 0px 4px 17px 0px #0000005e
+  }
 
 
-    .alert-entry{
-      margin: 10px;
-    }
-
-    .alert-date{
-      color:#2286ff;
+  @media only screen and (max-width: 1000px) {
+    body{
       font-size:12px
     }
 
-    .section_details{
-      display: grid;
-      grid-auto-flow: column;
-      text-align: center;
-      background: #2286ff;
-      padding: 15px;
-      border-radius: 0px 0px 4px 4px;
-      margin-bottom: 50px;
-      box-shadow: 0px 4px 17px 0px #0000005e
-    }
-
-    .position-entry{
-      display: grid;
-      grid-template-columns: 10px 60px 40px 40px 2fr 2fr 1fr 1fr 50px 2fr;
-      gap:10px;
-      margin-bottom: 5px;
-    }
-
-    .position-margin-percent{
-      color:  #2286ff;
-    }
-
-    .position-long{
-      background-color: green;
-    }
-
-    .position-short{
-      background-color: red;
-    }
-
-    .position-leverage{
-      border:1px solid #2286ff;
-      width: 25px;
-      text-align: center;
-      background: #2286ff;
-      border-radius: 3px;
-    }
-
-    .position-pnl-negative{
-      color:#ff4a4a
-    }
-
-    .position-pnl-positive{
-      color:#4ffb4f
-    }
-
-    .position-table-header{
-      margin-bottom: 15px;
-      color: #2286ff
-    }
-
-    .position-risk{
-      position: relative;
-      cursor: pointer;
-    }
-
-    .position-risk > .position-risk-details{
-      right: -140px;
+    .only-desktop {
       display: none;
-      background: #2286ff;
-      padding: 15px;
-      z-index: 999;
-      font-size: 12px;
-      width: 130px;
-      top: -65px;
-      border-radius: 5px;
-      box-shadow: 3px 2px 7px #18182561;
     }
 
-    .position-risk > .position-risk-details:before{
-      content: "";
-      position: absolute;
-      top: 50%;
-      margin-top: -10px;
-      left: -20px;
-      border: solid 10px transparent;
-      border-right-color: #2286ff;
-      z-index: 1;
+    .section_details{
+      font-size:9px;
     }
 
-    .position-risk-details-row {
-      display: grid;
-      grid-template-columns: 1fr 20px;
+    #viewport {
+      width: 90%;
     }
+  }
+</style>
 
-    .position-risk > .position-risk-details > .position-risk-details-title{
-      font-family: arial;
-      margin-bottom: 5px;
-      border-bottom: 1px solid white;
-    }
-
-    .position-risk > .position-risk-details > .position-risk-details-total{
-      font-family: arial;
-      margin-top: 5px;
-    }
-    
-    .position-risk:hover > .position-risk-details{
-      display: block;
-      position:absolute
-    }
-
-    .section_details > div > span:first-child{
-      font-weight:800;
-    }
-
-    .dailyProfitContainer{
-      text-align: center;
-      background: #286cad;
-      padding: 20px;
-    }
-
-    #dailyProfitAmount{
-      font-size: 40px;
-    }
-
-    #dailyProfitAmountPercent {
-      font-size: 11px;
-      background: white;
-      padding: 5px;
-      border-radius: 10px;
-      margin-left: 10px;
-      color: #286dad;
-      font-weight: 800;
-    }
-
-    #resetDbButton {
-      background:#ff2253
-    }
-
-    #dailyProfitPercentageChart {
-      height:150px
-    }
-
-
-    /**
-     * LOADER (SPINNER)
-     **/
-    .lds-dual-ring {
-      display: inline-block;
-      width: 50px;
-      height: 50px;
-    }
-    .lds-dual-ring:after {
-      content: " ";
-      display: block;
-      width: 24px;
-      height: 24px;
-      margin: 8px;
-      border-radius: 50%;
-      border: 6px solid #fff;
-      border-color: #fff transparent #fff transparent;
-      animation: lds-dual-ring 1.2s linear infinite;
-    }
-    @keyframes lds-dual-ring {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    @media only screen and (max-width: 1000px) {
-      .only-desktop{
-        display:none;
-      }
-
-      .position-entry{
-        display: grid;
-        grid-template-columns: 10px 100px 50px 80px 2fr 2fr;
-        gap:20px;
-        margin-bottom: 10px;
-      }
-    }
-  </style>
 </html>

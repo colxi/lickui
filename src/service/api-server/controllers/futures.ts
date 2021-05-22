@@ -49,6 +49,20 @@ export const getFuturesPositions: RESTApiServiceController = async (
   response(200, Object.values(BinanceFeedService.cachePositions))
 }
 
+export const getFuturesPositionsHistory: RESTApiServiceController = async (
+  response: RESTApiServiceRequestResponder,
+  payload: RESTApiServiceRequestPayload,
+  token: string
+): Promise<void> => {
+  const dateStart = (payload.query as any).dateStart
+  if(!dateStart) {
+    response(500, {error:'Missing or invalid "dateStart" urlParameter'})
+    return
+  }
+  const data = await database.all(`SELECT * FROM positions WHERE timestamp > ${dateStart}`)
+  response(200, data)
+}
+
 export const coinbaseAlerts: RESTApiServiceController = async (
   response: RESTApiServiceRequestResponder,
   payload: RESTApiServiceRequestPayload,

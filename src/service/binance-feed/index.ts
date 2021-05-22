@@ -2,7 +2,6 @@
 import binanceApi from '@/core/binance-api'
 import config from '@/core/config'
 import database from '@/core/database'
-import datapoints from '@/core/datapoints'
 
 
 export default class BinanceFeedService {
@@ -25,23 +24,33 @@ export default class BinanceFeedService {
     // fetch binance account Data
     try {
       const datapoint = await binanceApi.getBinanceData()
-      await datapoints.save(datapoint)
+      await this.saveDatapoint(datapoint)
     } catch (e) {
-      console.log('failed to fetch binance data. API ERR', e.message)
+      console.log('failed to fetch binance data. Binance API ERR', e.message)
     }
-    await this.updateOpenPositions()
     // fetch positions
+    try {
+      await this.updateOpenPositions()
+    } catch (e) {
+      console.log('Failed to fetch open positions. Binance API ERR')
+    }
   }
 
-  public static async updateOpenPositions(): Promise<void> {
-    let positions: any
-    try {
-      positions = await binanceApi.getOpenFuturesPositions()
-    } catch (e) {
-      console.log('Failed fetchin open positions')
-      return
-    }
+  public static async getPositionsHistory(dateStart:number){
+    //
+  }
 
+  public static async getOpenPositions(){
+    //
+  }
+
+  public static async getDatapointsHistory(){
+    //
+  }
+
+  private static async updateOpenPositions(): Promise<void> {
+    const positions: any = await binanceApi.getOpenFuturesPositions()
+    
     // iterate cachedPositions and try to match it with fetched positions
     for (const cachedPosition of Object.values(this.cachePositions) as any[]) {
       const symbol: string = cachedPosition.symbol
@@ -49,19 +58,19 @@ export default class BinanceFeedService {
       // cached position with same symbol already exists
       if (fetchPosition) {
         if (this.isNewPosition(fetchPosition)) {
-          this.closePosition(cachedPosition)
-          this.createPosition(fetchPosition)
+          await this.closePosition(cachedPosition)
+          await this.createPosition(fetchPosition)
         } else {
-          this.updatePosition(fetchPosition)
+          await this.updatePosition(fetchPosition)
         }
       }
       // cached position does not exist in fetched positions
-      else this.closePosition(cachedPosition)
+      else await this.closePosition(cachedPosition)
     }
 
     // iterate fetched positions and insert any missing (new) position
     for (const fetchPosition of positions) {
-      if (!this.cachePositions[fetchPosition.symbol]) this.createPosition(fetchPosition)
+      if (!this.cachePositions[fetchPosition.symbol]) await this.createPosition(fetchPosition)
     }
   }
 
@@ -75,12 +84,12 @@ export default class BinanceFeedService {
     return isNewPosition
   }
 
-  private static createPosition(position: any) {
+  private static async createPosition(position: any) {
     this.cachePositions[position.symbol] = {
       ...position,
       creationTime: position.updateTime
     }
-    console.log('CREATED', this.cachePositions[position.symbol])
+    console.log('CREATED', this.cachePositions[position.symbol].symbol)
 
   }
 
@@ -90,15 +99,80 @@ export default class BinanceFeedService {
       ...position,
       creationTime: this.cachePositions[position.symbol].creationTime
     }
-    console.log('UPDATED', this.cachePositions[position.symbol])
+    console.log('UPDATED', this.cachePositions[position.symbol].symbol)
   }
 
-  private static closePosition(position: any) {
+  private static async closePosition(position: any) {
+    const cachedPosition = this.cachePositions[position.symbol]
     // extract closed position from cache
-    const ellapsedTime = Date.now() - position.creationTime
+    const duration = Date.now() - cachedPosition.creationTime
     delete this.cachePositions[position.symbol]
-    console.log('CLOSED', this.cachePositions[position.symbol])
+    console.log('CLOSED', cachedPosition.symbol)
+    await this.savePosition(cachedPosition, duration)
+  }
+
+  private static async savePosition(position:any, duration:number){
+   // return true;
+    const queryStr = `
+      INSERT INTO positions (
+        timestamp,
+        duration,
+        symbol,
+        amount,
+        size,
+        takeProfit,
+        leverage
+      )
+      VALUES(
+        ${position.creationTime},
+        ${duration},
+        "${position.symbol.slice(0,-4)}",
+        ${Math.abs(Number(position.positionAmt) * Number(position.markPrice))},
+        ${Number(position.positionAmt)},
+        ${config.takeProfit},
+        ${Number(position.leverage)}
+      )
+    `
+
+    console.log('SAVING closed', queryStr)
+    try{
+      await database.query(queryStr)
+    }catch(e){
+      console.log('ERROR SAVING POSITION DB\n', queryStr)
+      throw e
+    }
+  }
+
+  public static async saveDatapoint(datapoint: any) {
+    const queryStr = `INSERT INTO datapoints (
+        totalBalance,
+        unrealizedLosts,
+        unrealizedLostsPercent,
+        usedBalance,
+        usedBalancePercent, 
+        openOrders, 
+        timestamp, 
+        date 
+      )
+      VALUES(
+        ${datapoint.totalBalance},
+        ${datapoint.unrealizedLosts},
+        ${datapoint.unrealizedLostsPercent},
+        ${datapoint.usedBalance},
+        ${datapoint.usedBalancePercent},
+        ${datapoint.openOrders},
+        ${datapoint.timestamp}, 
+        "${datapoint.date}"
+      )
+    `
+    try{
+      await database.query(queryStr)
+    }catch(e){
+      console.log('ERROR SAVING IN DB\n', queryStr)
+      throw e
+    }
   }
 }
+
 
 

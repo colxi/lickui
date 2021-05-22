@@ -35,5 +35,12 @@ export default {
     const response = await responseRaw.json()
     if(responseRaw.status !== 200) throw new Error(response?.error || '500 Response')
     return response
+  },
+
+  getFuturesPositionsHistory: async function(dateStart){
+    const responseRaw = await fetch(`http://${config.apiServiceIp}:${config.apiServicePort}/futures/positions/history/?dateStart=${dateStart}`)
+    const response = await responseRaw.json()
+    if(responseRaw.status !== 200) throw new Error(response?.error || '500 Response')
+    return response
   }
 }

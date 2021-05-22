@@ -1,0 +1,99 @@
+<div id="timeRangeContainer">
+  <div id="timeRangePicker">
+    <div id="timeRangeArea"></div>
+  </div>
+  <canvas id="timeRange" height="75"></canvas>
+  <div class="dailyProfitContainer">
+    <div>
+      <span>Today's Profit</span>
+      <span id="dailyProfitAmountPercent">--</span>
+    </div>
+    <div id="dailyProfitAmount">--</div>
+  </div>
+  <div id="timeline-details">
+    <div>
+      <div>Start date : <span id="startDate" class="info">--</span></div>
+      <div>Start Balance : <span id="startBalance" class="info">--</span></div>
+    </div>
+    <div>
+      <div>Elapsed days : <span id="elapsedDays" class="info">--</span></div>
+      <div>Total Profit : <span id="totalProfit" class="info">--</span></div>
+    </div>
+    <div>
+      <div>Current Date : <span id="endDate" class="info">--</span></div>
+      <div>Current Balance : <span id="endBalance" class="info">--</span></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #timeRangeContainer {
+    margin: auto;
+    position: relative;
+    padding: 40px 0px;
+    margin-bottom: 30px;
+    margin-top: 40px;
+    padding-top: 30px;
+    padding-bottom: 0px;
+  }
+
+  #timeRangePicker {
+    position: absolute;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+  }
+
+  #timeRangeArea {
+    border: 1px solid #2286ff6b;
+    position: absolute;
+    height: 100%;
+    left: 0px;
+    right: 0px;
+    margin-bottom: 0px;
+    box-shadow: 0px 5px 4px 0px #0000003d;
+  }
+
+  #timeRange {
+    box-shadow: 0px 5px 4px 0px #0000003d;
+    width: 100%;
+    height: 75px;
+    display: block;
+    padding-bottom: 40px;
+  }
+
+  .dailyProfitContainer {
+    text-align: center;
+    background: #286cad;
+    padding: 20px;
+  }
+
+  #dailyProfitAmountPercent {
+    font-size: 11px;
+    background: white;
+    padding: 5px;
+    border-radius: 10px;
+    margin-left: 10px;
+    color: #286dad;
+    font-weight: 800;
+  }
+
+  #dailyProfitAmount {
+    font-size: 40px;
+  }
+
+  #timeline-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 35px;
+    font-size: 12px;
+    color: #c3c3e0;
+    text-align: center;
+  }
+
+  .info {
+    color: #2286ff;
+    font-weight: 800;
+  }
+</style>

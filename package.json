@@ -1,10 +1,12 @@
 {
   "name": "lickui",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "colxi",
   "dependencies": {
+    "@sentry/node": "^6.4.1",
+    "@sentry/tracing": "^6.4.1",
     "@types/lodash": "^4.14.155",
     "@types/node-fetch": "^2.5.7",
     "@types/sqlite3": "^3.1.7",

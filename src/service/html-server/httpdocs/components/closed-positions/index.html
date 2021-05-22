@@ -1,0 +1,41 @@
+<div id="closedPositionsDetailsContainer">
+  <div>Closed Positions (today)</div>
+  <div id="closedPositionsDetails">
+    <div>
+      <div>Total count</div>
+      <div id="closed_total_count">---</div>
+    </div>
+    <div>
+      <div>Average time</div>
+      <div id="closed_average_time">---</div>
+    </div>
+    <div>
+      <div>Average amount</div>
+      <div id="closed_average_amount">---</div>
+    </div>
+    <div>
+      <div>Average profit</div>
+      <div id="closed_average_profit">---</div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #closedPositionsDetails {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    height: 100px;
+    text-align: center;
+    place-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+    margin-top: 10px;
+  }
+
+  #closedPositionsDetails>div {
+    background-color: #2286ff;
+    width: 100%;
+    padding: 25px 0px;
+    border-radius: 2px;
+  }
+</style>
