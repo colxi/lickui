@@ -14,21 +14,19 @@ export function initDashboardHeader() {
   graphSelectorMonthButton.addEventListener('click', ()=>selectDashboardHeaderChart('month'))
 }
 
-export function updateDashboardHeader(dataDownsampled, montcurrentMonthData) {
+export function updateDashboardHeader(dataDownsampled, currentMonthData) {
   // update charts
-  updateDashboardHeaderDailyBreakdownChart(montcurrentMonthData)
+  updateDashboardHeaderDailyBreakdownChart(currentMonthData)
   updateDashboardHeaderAllTimeChart(dataDownsampled)
   // update header data fields
   // ...
 
-  const distribution = groupByDate(montcurrentMonthData)
-  const currentBalance = montcurrentMonthData[montcurrentMonthData.length-1].totalBalance
+  const distribution = groupByDate(currentMonthData)
+  const currentBalance = currentMonthData[currentMonthData.length-1].totalBalance
   const projection = getCompoundingCalculations(distribution, currentBalance)
   document.getElementById('month_daily_average').innerText = `${projection.monthAverageDailyProfitPercent.toFixed(2)}%`
   document.getElementById('month_expected_profit').innerText = `${projection.monthTotalProfit.toFixed(2)}$ (${projection.monthTotalProfitPercent.toFixed(2)}%)`
   document.getElementById('mont_expected_pending_profit').innerText = `${projection.profitUntillEndOfMonth.toFixed(2)}$`
- 
-
 }
 
 function selectDashboardHeaderChart(chart) {

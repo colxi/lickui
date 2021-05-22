@@ -1,19 +1,13 @@
 <div class="dashboard-header-container">
-  <div class="dashboard-header-graph">
-    <div class="dashboard-header-graph-selectors">
-      <div 
-        id="dashboardHeaderGraphSelectorMonth"
-        class="dashboard-header-graph-selectors-option button"
-      >
-        MONTH
-      </div>
-      <div 
-        id="dashboardHeaderGraphSelectorAll"
-        class="dashboard-header-graph-selectors-option button"
-      > 
-        ALL TIME
-      </div>
+  <div class="dashboard-header-graph-selectors">
+    <div id="dashboardHeaderGraphSelectorMonth" class="dashboard-header-graph-selectors-option button">
+      MONTH
     </div>
+    <div id="dashboardHeaderGraphSelectorAll" class="dashboard-header-graph-selectors-option button">
+      ALL TIME
+    </div>
+  </div>
+  <div class="dashboard-header-graph">
     <div>
       <canvas id="dashboardHeaderDailyBreakdownGraph" height="55"></canvas>
       <canvas id="dashboardHeaderAllTimeGraph" height="55"></canvas>
@@ -43,7 +37,7 @@
     </div>
   </div>
 
-   <div class="section_details">
+  <div class="section_details">
     <div>
       <span>Daily avg :</span>
       <span id="month_daily_average">--</span>
@@ -61,40 +55,48 @@
 
 <style>
   .dashboard-header-container {
-    margin: auto;
+    overflow: hidden;
     position: relative;
     margin-bottom: 30px;
-    margin-top: 40px;
+    margin-top: 50px;
     padding-bottom: 0px;
     box-shadow: 0px 5px 4px 0px #0000003d;
     border: 1px solid #2286ff6b;
+    background: linear-gradient( 186deg, #3b3b9836, 200px, #2b2b4100);
   }
-
-  .dashboard-header-graph{
+  
+  .dashboard-header-graph {
     padding: 30px 60px;
     position: relative;
   }
-
-  .dashboard-header-graph-selectors{
+  
+  .dashboard-header-graph-selectors {
     position: absolute;
     left: 20px;
     top: 20px;
+    z-index: 1;
   }
-
-  .dashboard-header-graph-selectors-option.button{
-    background:#286dad;
-    display:inline-block;
+  
+  .dashboard-header-graph-selectors-option.button {
+    border: 1px solid #286dad;
+    border-radius: 10px;
+    background: transparent;
+    color: #286dad;
+    display: inline-block;
     min-width: 60px;
-    border-radius:0px
-
+    margin-right: 10px;
   }
-
+  /**/
+  
   .dailyProfitContainer {
+    opacity: 0.6;
     text-align: center;
     background: #286cad;
     padding: 20px;
+    text-align: center;
+    box-shadow: -1px -6px 20px 0px #07070726;
   }
-
+  
   #dailyProfitAmountPercent {
     font-size: 11px;
     background: white;
@@ -104,11 +106,11 @@
     color: #286dad;
     font-weight: 800;
   }
-
+  
   #dailyProfitAmount {
     font-size: 40px;
   }
-
+  
   #timeline-details {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -117,12 +119,37 @@
     color: #c3c3e0;
     text-align: center;
   }
-
+  
   .info {
     color: #2286ff;
     font-weight: 800;
   }
-
-
- 
+  
+  @media only screen and (max-width: 1000px) {
+    .dashboard-header-container {
+      margin-top: 20px;
+    }
+    .dashboard-header-graph-selectors {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      left: unset;
+      top: inherit;
+      padding: 10px;
+      gap: 10px;
+    }
+    .dashboard-header-graph-selectors-option.button {
+      margin-right: 0px;
+      border-radius: 5px;
+    }
+    .dashboard-header-graph {
+      padding: 20px 30px;
+      padding-bottom: 30px;
+      padding-top: 0px;
+    }
+    canvas#dashboardHeaderAllTimeGraph {
+      top: 10px;
+      position: relative;
+    }
+  }
 </style>

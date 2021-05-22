@@ -1,3 +1,4 @@
+import config  from "/SERVER_CONFIG"
 
 export async function updatePosittionsHistory(positionsHistory) {
     const totalCountDOM = document.getElementById('closed_total_count')
@@ -5,10 +6,15 @@ export async function updatePosittionsHistory(positionsHistory) {
     const averageAmountDOM = document.getElementById('closed_average_amount')
     const averageProfitDOM = document.getElementById('closed_average_profit')
   
+    
+    const averageTimeInMin= getAverageByProperty(positionsHistory, 'duration') / 1000 / 60
+    const averageAmountInDolars = getAverageByProperty(positionsHistory, 'amount')
+    const averageProfitInDolars =  (config.takeProfit * averageAmountInDolars / 100)  * 4
     totalCountDOM.innerHTML = positionsHistory.length
-    averageTimeDOM.innerHTML = (getAverageByProperty(positionsHistory, 'duration') / 1000 / 60).toFixed(2) + 'min'
-    averageAmountDOM.innerHTML = getAverageByProperty(positionsHistory, 'amount').toFixed(2) + '$'
-    //averageProfitDOM.innerHTML = getAverageByProperty(amount)
+    averageTimeDOM.innerHTML = `${averageTimeInMin.toFixed(2)}min`
+    averageAmountDOM.innerHTML = `${averageAmountInDolars.toFixed(2)}$`
+    averageProfitDOM.innerHTML = `${averageProfitInDolars.toFixed(2)}$`
+
     console.log(createDictionaryFromProperty(positionsHistory, 'symbol'))
   }
   

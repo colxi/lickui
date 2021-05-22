@@ -37,7 +37,7 @@ async function init() {
   initUnrealizedLostsChart()
 
   // set interval for polling service
-  setInterval(refreshData, 30000)
+  // setInterval(refreshData, 30000)
   refreshData()
 }
 
@@ -57,24 +57,37 @@ async function refreshData() {
   hideLoader()
 }
 
+async function fetchData() {
+  const startTime = getTimeRangeStartDate(activetimeRange)
 
+  const [
+    futuresBalanceFullHistoryDownsampled,
+    futuresBalanceHistory,
+    futuresBalanceHistoryCurrentMonth,
+    futuresPositions,
+    futuresPositionsHistory,
+    coinbaseAlerts
+  ] = await Promise.all([
+    api.getFuturesBalanceHistoryDownsampled(),
+    api.getFuturesBalanceHistory(startTime),
+    api.getFuturesBalanceHistory(getTimeRangeStartDate(TimeRange.CURRENT_MONTH)),
+    api.getFuturesPositions(),
+    api.getFuturesPositionsHistory(startTime),
+    api.getCoinbaseAlerts()
+  ])
 
+  console.log(futuresBalanceFullHistoryDownsampled,
+    futuresBalanceHistory,
+    futuresBalanceHistoryCurrentMonth,
+    futuresPositions,
+    futuresPositionsHistory,
+    coinbaseAlerts)
 
-async function fetchData(){
-
- let futuresBalanceFullHistoryDownsampled =  await api.getFuturesBalanceHistoryDownsampled()
-  let futuresBalanceHistory =  await api.getFuturesBalanceHistory(getTimeRangeStartDate(activetimeRange))
-  let futuresBalanceHistoryCurrentMonth = activetimeRange === TimeRange.CURRENT_MONTH 
-  ? futuresBalanceHistory
-  : await api.getFuturesBalanceHistory(getTimeRangeStartDate(TimeRange.CURRENT_MONTH))
-  let futuresPositions = await api.getFuturesPositions()
-  let futuresPositionsHistory = await api.getFuturesPositionsHistory(getTimeRangeStartDate(TimeRange.TODAY))
-  let coinbaseAlerts =  await api.getCoinbaseAlerts()
   const currentBalance = futuresBalanceHistory[futuresBalanceHistory.length - 1].totalBalance
   return {
     futuresBalanceHistoryCurrentMonth,
     futuresBalanceFullHistoryDownsampled,
-    futuresBalanceHistory, 
+    futuresBalanceHistory,
     futuresPositions,
     futuresPositionsHistory,
     coinbaseAlerts,
@@ -82,7 +95,7 @@ async function fetchData(){
   }
 }
 
-function updateView(data){
+function updateView(data) {
   updateDashboardHeader(data.futuresBalanceFullHistoryDownsampled, data.futuresBalanceHistoryCurrentMonth)
 
   updateCoinbaseAlerts(data.coinbaseAlerts)
@@ -108,4 +121,3 @@ async function resetDb() {
     updateData()
   }
 }
-
