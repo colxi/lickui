@@ -1,4 +1,3 @@
-import './lib/chart.js'
 import api from './api/api.js'
 import { updateAccountStats } from './common/stats/index.js'
 import { TimeRange, filterByTimeRange, getTimeRangeStartDate } from './lib/time/index.js'
@@ -19,6 +18,7 @@ import {
   updateUnrealizedLostsChart,
 } from './common/chart/index.js'
 import { initDashboardHeader, updateDashboardHeader } from './components/dashboard-header/index.js'
+import { initializeChartJS } from './lib/chart-js/index.js'
 
 
 let activetimeRange = TimeRange.TODAY
@@ -26,6 +26,7 @@ let activetimeRange = TimeRange.TODAY
 init().catch(e => { throw e })
 
 async function init() {
+  initializeChartJS()
   await includeComponents()
   document.getElementById('resetDbButton').addEventListener('click', resetDb)
   document.getElementById('timeRangeSelector').addEventListener('change', setTimeRange)
@@ -37,7 +38,7 @@ async function init() {
   initUnrealizedLostsChart()
 
   // set interval for polling service
-  // setInterval(refreshData, 30000)
+  setInterval(refreshData, 30000)
   refreshData()
 }
 
@@ -75,13 +76,6 @@ async function fetchData() {
     api.getFuturesPositionsHistory(startTime),
     api.getCoinbaseAlerts()
   ])
-
-  console.log(futuresBalanceFullHistoryDownsampled,
-    futuresBalanceHistory,
-    futuresBalanceHistoryCurrentMonth,
-    futuresPositions,
-    futuresPositionsHistory,
-    coinbaseAlerts)
 
   const currentBalance = futuresBalanceHistory[futuresBalanceHistory.length - 1].totalBalance
   return {

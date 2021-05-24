@@ -1,10 +1,10 @@
-
+import { timestampToDDMMYYYY } from '../../../lib/time/index.js'
 let overviewChart = null
 
 export function updateDashboardHeaderAllTimeChart(data) {
-  if(!overviewChart) {
-      console.log('initialise first overviewChart')
-      return
+  if (!overviewChart) {
+    console.log('initialise first overviewChart')
+    return
   }
   const coordinatesData = data.map(i => ({
     x: i.timestamp,
@@ -15,64 +15,81 @@ export function updateDashboardHeaderAllTimeChart(data) {
 }
 
 export function initDashboardHeaderAllTimeChart() {
-  const ctx = document.getElementById('dashboardHeaderAllTimeGraph')
-  //ctx.height = '75'
+  const ctx = document.getElementById('dashboardHeaderAllTimeGraph').getContext("2d")
+  var gradientFill = ctx.createLinearGradient(0, 0, 0, 110);
+  gradientFill.addColorStop(0, "rgba(128, 182, 244, 0.4)");
+  gradientFill.addColorStop(1, "rgba(34, 134, 255, 0.0)");
+
   overviewChart = new Chart(ctx, {
     type: 'scatter',
     data: {
-      datasets: [
-        {
-          backgroundColor: '#2286ff',
-          borderColor: '#2286ff',
-          fill: true,
-          borderWidth: 0,
-          pointRadius: 0,
-          tension: 0,
-          showLine: true
-        }
-      ]
+      datasets: [{
+        backgroundColor: gradientFill,
+        borderColor: '#2286ff',
+        fill: true,
+        borderWidth: 0,
+        pointRadius: 0,
+        hitRadius: 10,
+        tension: 0,
+        showLine: true,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#3a74af'
+      }]
     },
     options: {
-      aspectRatio: 1 ,
+      maintainAspectRatio: true,
+      aspectRatio: 1,
       animation: false,
       responsive: true,
       legend: false,
-      tooltips: false,
+      tooltips: true,
+      layout: {
+        padding: {
+          left: -10
+        }
+      },
+      interaction: {
+        mode: 'point'
+      },
       scales: {
-        yAxes: [
-          {
-            display:false,
-            position: 'right',
-            ticks: {
-              fontColor: '#d4d4d5',
-              // min: 0,
-              // beginAtZero: true,
-              userCallback: function(label, index, labels) {
-                // when the floored value is the same as the value we have a whole number
-                if (Math.floor(label) === label)   return label;
-              },
-
-            },
-            gridLines:{  display:false },
+        yAxes: [{
+          display: false,
+          gridLines: { display: false },
+        }],
+        xAxes: [{
+          time: {
+            unit: 'Areas',
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            display: false,
           }
-        ],
-        xAxes: [
-          {
-            time: {
-              unit: 'Areas',
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            ticks: {
-              maxTicksLimit: 7,
-              display: false, //this removed the labels on the x-axis
-            }
+        }]
+      },
+      tooltips: {
+        mode: 'index',
+        displayColors: false,
+        padding: 18,
+        caretPadding: 20,
+        caretSize: 10,
+        intersect: false,
+        cornerRadius: 2,
+        backgroundColor: '#eae6e6',
+        titleFontColor: '#2f2f58',
+        bodyFontColor: '#2286ff',
+        callbacks: {
+          label: function(item, data) {
+            return `Balance: ${item.yLabel.toFixed(2)}$`
+          },
+          title: function(t, e) {
+            const formattedDate = timestampToDDMMYYYY(t[0].xLabel)
+            return formattedDate
           }
-        ]
-      }
+        }
+      },
     }
   })
 }
-

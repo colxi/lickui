@@ -1,43 +1,41 @@
+import { timestampToDDMMYYYY } from "../../../lib/time/index.js"
 import { getCompoundingCalculations, groupByDate } from "../helpers/index.js"
 
 let dashboardHeaderDailyBreakdownChart = null
 
 export function updateDashboardHeaderDailyBreakdownChart(data) {
   if (!dashboardHeaderDailyBreakdownChart) {
-    console.log('failed initialise first daily profit chart')
+    console.log('failed to initialise daily breakdown graph')
     return
   }
   const distribution = groupByDate(data)
   const currentBalance = data[data.length - 1].totalBalance
   const projection = getCompoundingCalculations(distribution, currentBalance)
 
-  // map data
+  // prepare data to feed the graph
   const coordinatesData = distribution.map(i => ({
     x: i.timestamp,
     y: i.profitPercent,
-    meta: {
-      profit: i.profit
-    },
+    meta: { profit: i.profit },
   }))
-  // fill with average daily rremaining days
-  for (const day of coordinatesData) {
-    const today = Date.now()
-    if (day.x > today) day.y = projection.monthAverageDailyProfitPercent
-  }
-  // set special color to sundays
+
+  // create a map of colors, containing the color
+  // for each day of the month, coloring sundats darker, ti 
+  // help identifying week cicles
   const colors = []
   for (const day of coordinatesData) {
-    const today = Date.now()
-    if (day.x > today) {
-      colors.push('#286cad11')
-    }
-    else {
-      const weekDay = new Date(day.x).getDay()
-      if (weekDay === 0) colors.push('#286cad')
-      else colors.push('#2286ff')
-    }
+    const weekDay = new Date(day.x).getDay()
+    colors.push(weekDay === 0 ? '#286cad' : '#2286ff')
   }
-  // apply data
+
+  // set aaverage line
+  dashboardHeaderDailyBreakdownChart.options.drawHorizontalLine.text = `AVG=${projection.monthAverageDailyProfitPercent.toFixed(2)}`
+
+  dashboardHeaderDailyBreakdownChart.options.drawHorizontalLine.lineY = [
+      projection.monthAverageDailyProfitPercent,
+      projection.monthAverageDailyProfitPercent
+    ]
+    // apply data
   dashboardHeaderDailyBreakdownChart.data.datasets[0].data = coordinatesData
   dashboardHeaderDailyBreakdownChart.data.datasets[0].backgroundColor = colors
   dashboardHeaderDailyBreakdownChart.data.datasets[0].borderColor = '#00000000'
@@ -49,79 +47,73 @@ export function initDashboardHeaderDailyBreakdownChart() {
   dashboardHeaderDailyBreakdownChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      datasets: [
-        {
-          backgroundColor: '#2286ff',
-          borderColor: '#2286ff',
-          data: [],
-          fill: true,
-          borderWidth: 1,
-          pointRadius: 0,
-          tension: 0,
-          showLine: true
-        }
-      ]
+      datasets: [{
+        data: [],
+        fill: true,
+        borderWidth: 1,
+      }]
     },
     options: {
+      maintainAspectRatio: true,
       aspectRatio: 1,
       animation: false,
       responsive: true,
       legend: false,
       tooltips: true,
       scales: {
-        yAxes: [
-          {
+        yAxes: [{
+          display: false,
+          gridLines: {
             display: false,
-            position: 'right',
-            ticks: {
-              fontColor: '#d4d4d5',
-              min: 0,
-              beginAtZero: true,
-              userCallback: function (label, index, labels) {
-                // when the floored value is the same as the value we have a whole number
-                if (Math.floor(label) === label) return label;
-              },
-            },
-            gridLines: {
-              display: false,
-            },
-          }
-        ],
-        xAxes: [
-          {
+          },
+        }],
+        xAxes: [{
+          display: false,
+          type: 'time',
+          time: {
+            unit: 'day',
+            tooltipFormat: 'lll',
+            isoWeekday: true, // first day fpof the week monaday
+          },
+          gridLines: {
             display: false,
-            type: 'time',
-            time: {
-              unit: 'day',
-              tooltipFormat: 'lll',
-              isoWeekday: true, // first day fpof the week monaday
-            },
-            gridLines: {
-              display: false,
-              color: '#ff0000',
-            }
+            color: '#ff0000',
           }
-        ]
+        }]
       },
       tooltips: {
         mode: 'index',
+        displayColors: false,
+        padding: 18,
+        caretPadding: 20,
+        caretSize: 10,
         intersect: false,
+        cornerRadius: 2,
+        backgroundColor: '#eae6e6',
+        titleFontColor: '#2f2f58',
+        bodyFontColor: '#2286ff',
         callbacks: {
-          //returns a empty string if the label is "No Data"
-          label: function (items, data) {
+          label: function(items, data) {
             let dataset = data.datasets[items.datasetIndex];
-            if (dataset.label !== "No Data") {
-              return `Profit: ${items.yLabel.toFixed(2)}% (${dataset.data[items.index].meta.profit.toFixed(2)}$)`
-            } else {
-              return ""
-            }
+            const profitPercent = items.yLabel.toFixed(2)
+            const profitUsd = dataset.data[items.index].meta.profit.toFixed(2)
+            return `Profit: ${profitPercent}% (${profitUsd}$)`
           },
-          //only returns something when at least one dataset yLabel is a valid number.
-          title: function (t, e) {
-            return ''
+          title: function(t, e) {
+            const date = new Date(t[0].xLabel)
+            const formattedDate = timestampToDDMMYYYY(date.getTime())
+            return formattedDate
           }
         }
       },
+      drawHorizontalLine: {
+        lineY: [0, 0], // set dinamycaly on data update
+        lineColor: 'rgba(238, 238, 0, 0.8)',
+        text: 'AVG=', // set dinamycally on dat update
+        textPosition: 0,
+        textFont: '10px verdana',
+        textColor: 'rgba(238, 238, 0, 0.8)'
+      }
     },
   })
 }

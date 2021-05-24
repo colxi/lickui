@@ -1,9 +1,10 @@
-# v0.18.0
+# v0.19.0
 [2021-05-22]
 
 ### Features
 
 * feature: modularization ([`a3a7cde`](https://github.com/colxi/lickui/commit/a3a7cde729cc309e1f801d2a17033d45af6f18e8))
+* feature: optimized requests (allow ranges) ([`a23c01f`](https://github.com/colxi/lickui/commit/a23c01fb700462e48d73d7b455dfa64a4b0c3737))
 * feature: code modulariation ([`3e8803c`](https://github.com/colxi/lickui/commit/3e8803c34125bd88f3a4512538b184f626567453))
 * feature: Position close detection + position duration ([`2be717a`](https://github.com/colxi/lickui/commit/2be717a9dadec0f5f8231e1851cc9f223bb994b3))
 * feature: test ([`2410f27`](https://github.com/colxi/lickui/commit/2410f27aedcf01c115550b869c4857ff7980fbe3))
