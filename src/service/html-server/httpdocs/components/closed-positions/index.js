@@ -40,7 +40,7 @@ export async function updatePosittionsHistory(positionsHistory = _positionsHisto
   const dictionary = createDictionaryFromProperty(positionsHistory, 'symbol')
 
   // calculate averages and map to new object
-  let operationsByAsset = Object.values(dictionary).map(i => ({
+  const operationsByAsset = Object.values(dictionary).map(i => ({
     symbol: i[0].symbol,
     totalOperations: i.length,
     averageDurationInMin: getAverageByProperty(i, 'duration') / 1000 / 60,
@@ -51,9 +51,11 @@ export async function updatePosittionsHistory(positionsHistory = _positionsHisto
   let sortKey
   if (sortBy === ClosedOperationsSortBy.SYMBOL) sortKey = 'symbol'
   else if (sortBy === ClosedOperationsSortBy.TOTAL_OPERATIONS) sortKey = 'totalOperations'
-  else if (sortBy === ClosedOperationsSortBy.AVERAGE_AMOUNT) sortKey = 'averageDurationInMin'
-  else if (sortBy === ClosedOperationsSortBy.SYMBOL) sortKey = 'averageAmount'
-  operationsByAsset = operationsByAsset.sort((a, b) => a[sortKey] < b[sortKey] ? 1 : -1)
+  else if (sortBy === ClosedOperationsSortBy.AVERAGE_AMOUNT) sortKey = 'averageAmount'
+  else if (sortBy === ClosedOperationsSortBy.AVERAGE_DURATION_IN_MIN) sortKey = 'averageDurationInMin'
+  operationsByAsset.sort((a, b) => a[sortKey] < b[sortKey] ? 1 : -1)
+  if (sortBy === ClosedOperationsSortBy.SYMBOL) operationsByAsset.reverse()
+
 
   document.getElementById('closedPositionsHistoryCount').innerHTML = operationsByAsset.length
 

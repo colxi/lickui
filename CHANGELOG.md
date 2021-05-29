@@ -1,5 +1,5 @@
-# v0.20.0
-[2021-05-24]
+# v0.21.0
+[2021-05-29]
 
 ### Features
 
@@ -12,6 +12,7 @@
 
 ### Fixes
 
+* fix: re-enable polling service ([`63fa792`](https://github.com/colxi/lickui/commit/63fa792e370f95a89ad207c92fc33ecd121724b9))
 * fix: unreali&lt;ed losts fix ([`e8b3907`](https://github.com/colxi/lickui/commit/e8b3907f259d737c430aa7173727151b2bf1efb6))
 * fix: commit script ([`747b111`](https://github.com/colxi/lickui/commit/747b111b489b38008c954af3110b3a5ec3857255))
 * fix: remove unnecessary import ([`d526c3a`](https://github.com/colxi/lickui/commit/d526c3a9487fc7df8ff0263b34bd3f5040cf254c))
