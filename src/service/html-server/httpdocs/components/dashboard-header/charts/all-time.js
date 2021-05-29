@@ -3,7 +3,7 @@ let overviewChart = null
 
 export function updateDashboardHeaderAllTimeChart(data) {
   if (!overviewChart) {
-    console.log('initialise first overviewChart')
+    console.log('failed to initialise header all time chart')
     return
   }
   const coordinatesData = data.map(i => ({

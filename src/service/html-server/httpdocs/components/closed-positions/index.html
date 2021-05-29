@@ -18,6 +18,16 @@
       <div id="closed_average_profit">---</div>
     </div>
   </div>
+  <div>
+    <h3>Closed position breakdown (<span id="closedPositionsHistoryCount">--</span>)</h3>
+    Sort by <select id="closedPositionsBreakdownSortBy">
+      <option value="TOTAL_OPERATIONS" selected>Operations count</option>
+      <option value="AVERAGE_DURATION_IN_MIN">Average Duration</option>
+      <option value="AVERAGE_AMOUNT">Average position</option>
+      <option value="SYMBOL">Alphabetically</option>
+    </select>
+    <div id="closedPositionsHistory"></div>
+  </div>
 </div>
 
 <style>
@@ -46,6 +56,26 @@
   
   #closedPositionsDetails>div>div:nth-child(2) {
     font-size: 25px
+  }
+  
+  #closedPositionsHistory {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 5px 60px;
+    margin-bottom: 30px;
+    margin-top: 30px;
+  }
+  
+  .closed-positions-history-entry {
+    display: grid;
+    gap: 5px;
+    grid-template-columns: 1fr 20px 1fr 1fr;
+  }
+  
+  .closed-positions-history-entry-symbol {
+    background-color: #2286ff;
+    text-align: center;
+    border-radius: 5px;
   }
   
   @media only screen and (max-width: 1000px) {

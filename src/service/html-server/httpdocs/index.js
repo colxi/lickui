@@ -1,9 +1,9 @@
 import api from './api/api.js'
 import { updateAccountStats } from './common/stats/index.js'
-import { TimeRange, filterByTimeRange, getTimeRangeStartDate } from './lib/time/index.js'
+import { TimeRange, getTimeRangeStartDate } from './lib/time/index.js'
 import { updatePositions } from './components/open-positions/index.js'
 import { updateCoinbaseAlerts } from './components/coinbase-alerts/index.js'
-import { updatePosittionsHistory } from './components/closed-positions/index.js'
+import { initPosittionsHistory, updatePosittionsHistory } from './components/closed-positions/index.js'
 import { includeComponents } from './lib/include/index.js'
 import { hideLoader, showLoader } from './components/loader/index.js'
 import { showErrorMessage, hideErrorMessage } from './components/error-notification/index.js'
@@ -36,6 +36,7 @@ async function init() {
   initUsedBalanceChart()
   initOpenOrdersChart()
   initUnrealizedLostsChart()
+  initPosittionsHistory()
 
   // set interval for polling service
   setInterval(refreshData, 30000)
