@@ -52,20 +52,20 @@ class Database {
 
   public init(): Promise<void> {
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.db.run(createDatapointsQuery, err => {
-        if (err) throw err
-        this.db.run(createDatapointdTimestampIndexQuery, err => {
-          if (err) throw err
-          this.db.run(createDatapointsDateIndexQuery, err => {
-            if (err) throw err
-            this.db.run(createDatapointsDateIndexQuery, err => {
-              if (err) throw err
-              this.db.run(createPositionTableQuery, err => {
-                if (err) throw err
-                this.db.run(createPositiondTimestampIndexQuery, err => {
-                  if (err) throw err
-                  resolve()
+        if (err) reject(err)
+        else this.db.run(createDatapointdTimestampIndexQuery, err => {
+          if (err) reject(err)
+          else this.db.run(createDatapointsDateIndexQuery, err => {
+            if (err) reject(err)
+            else this.db.run(createDatapointsDateIndexQuery, err => {
+              if (err) reject(err)
+              else this.db.run(createPositionTableQuery, err => {
+                if (err) reject(err)
+                else this.db.run(createPositiondTimestampIndexQuery, err => {
+                  if (err) reject(err)
+                  else resolve()
                 })
               })
             })
@@ -75,29 +75,36 @@ class Database {
     })
   }
 
-  public query(sqlQuery: string): any {
-    const result = this.db.run(sqlQuery)
-    return result
+  public query(sqlQuery: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.db.run(
+        sqlQuery,
+        (err: any) => {
+          if (err) reject(err)
+          else resolve(this)
+        }
+      )
+    })
   }
 
   public all(query: string): Promise<any> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.db.all(
         query,
         (err, result: any) => {
-          if (err) throw err
+          if (err) reject(err)
           else resolve(result)
         }
       )
     })
   }
 
-  public count(table: string, where?:string): Promise<any> {
-    return new Promise(resolve => {
+  public count(table: string, where?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
       this.db.get(
         `SELECT COUNT(*) FROM ${table} ${where ? `WHERE ${where}` : ``}`,
         (err, result: any) => {
-          if (err) throw err
+          if (err) reject(err)
           else resolve(result['COUNT(*)'])
         }
       )
@@ -105,11 +112,11 @@ class Database {
   }
 
   public resetData(table: string): Promise<any> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.db.run(
         `DELETE FROM ${table};`,
         (err: any) => {
-          if (err) throw err
+          if (err) reject(err)
           else resolve({})
         }
       )

@@ -44,7 +44,7 @@ export function getCompoundingCalculations(distribution, currentBalance){
      if(entry.profit > 0 && entry.timestamp < distribution[firsIndexWithData].timestamp ) firsIndexWithData = i
     }
     // extract month initial balance
-    const monthInitiaBalance = distribution[firsIndexWithData].data[0].totalBalance
+    const monthInitiaBalance = distribution[firsIndexWithData].data[0]?.totalBalance
     
    // calculate month active days average
    const date = new Date()
