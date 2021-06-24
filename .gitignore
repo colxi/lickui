@@ -105,3 +105,6 @@ dist
 backend/config.keys.json
 backend/.DS_Store
 backend/config.keys.ts
+backend/src/.DS_Store
+.DS_Store
+.DS_Store
