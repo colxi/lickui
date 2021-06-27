@@ -1,4 +1,18 @@
 export default {
+  binance: {
+    production: {
+      spotAPI: '"https://api.binance.com/api',
+      futuresAPI: 'https://fapi.binance.com/fapi/',
+      spotWS: 'wss://stream.binance.com:9443/ws',
+      futuresWS: 'wss://fstream.binance.com/ws'
+    },
+    testnet: {
+      spotAPI: '',
+      futuresAPI: '',
+      spotWS: '',
+      futuresWS: ''
+    },
+  },
   updateIntervalInMillis: 20000,
   databaseName: 'lickHunterDb',
   apiServicePort: 3300,

@@ -1,4 +1,4 @@
-export function dateAsDDMMYYYY(dateOrTimestamp: Date | number = new Date()): string {
+export function getDateAsDDMMYYYY(dateOrTimestamp: Date | number = new Date()): string {
   const date = (typeof dateOrTimestamp === 'number')
     ? new Date(dateOrTimestamp)
     : dateOrTimestamp

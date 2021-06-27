@@ -1,4 +1,6 @@
+import webSocket from 'ws'
 import WebsocketConnection from "./index"
+
 
 export type WebsocketOnMessageCallbackMessage = Record<string, any> | any[]
 
@@ -16,14 +18,14 @@ export interface WebsocketConnectionConfig {
   reconnectOnDisconnection: boolean
   reconnectOnDisconnectionDelay: number
   onMessageCallback: WebsocketOnMessageCallback
-  onConnectCallback: WebsocketOnConnectCallback
+  onConnectCallback?: WebsocketOnConnectCallback | null
   logger?: (...args: unknown[]) => void
 }
 
 
 export enum WebSocketStatus {
-  OPEN = WebSocket.OPEN,
-  CONNECTING = WebSocket.CONNECTING,
-  CLOSING = WebSocket.CLOSING,
-  CLOSED = WebSocket.CLOSED,
+  OPEN = webSocket.OPEN,
+  CONNECTING = webSocket.CONNECTING,
+  CLOSING = webSocket.CLOSING,
+  CLOSED = webSocket.CLOSED,
 }

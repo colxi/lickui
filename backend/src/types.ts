@@ -232,11 +232,18 @@ export interface AccountUpdateEventPositionData {
   ps: BinancePositionSide
 }
 
+export enum AccountUpdateEventType {
+  // BALANCE_FETCH is actually not a Binance Event, bit a lickui internal event
+  BALANCE_FETCH = 'BALANCE_FETCH',
+  ORDER = 'ORDER',
+  ADMIN_DEPOSIT = 'ADMIN_DEPOSIT'
+}
+
 export interface AccountUpdateEvent extends BinanceSocketEvent {
   /** Update Data */
   a: {
     /** Event reason type */
-    m: "ORDER" | "ADMIN_DEPOSIT"
+    m: AccountUpdateEventType
     /** Balances */
     B: Array<AccountUpdateEventWalletData>,
     /** Positions */

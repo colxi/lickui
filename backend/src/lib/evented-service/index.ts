@@ -1,4 +1,5 @@
 import { Immutable } from '@/types'
+import Logger from '@/lib/logger'
 
 type EventsDictionary = Record<string, (a: any) => void>
 
@@ -30,6 +31,7 @@ export default class EventedService<E_DICTIONARY extends EventsDictionary = Even
     eventName: E_NAME,
     eventData: Parameters<E_DICTIONARY[E_NAME]>[0]
   ): void {
+    Logger.event(`${eventName}`)
     for (const eventHandler of this.#subscribers[eventName]) {
       eventHandler(eventData)
     }

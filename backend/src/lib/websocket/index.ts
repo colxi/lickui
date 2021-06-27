@@ -11,7 +11,7 @@ export default class WebsocketConnection {
   constructor(config: WebsocketConnectionConfig) {
     this.#log = config.logger || this.#log
     this.host = config.host
-    this.#onConnectCallback = config.onConnectCallback
+    this.#onConnectCallback = config.onConnectCallback || null
     this.#onMessageCallback = config.onMessageCallback
     this.reconnectOnDisconnection = config.reconnectOnDisconnection
     this.reconnectOnDisconnectionDelay = config.reconnectOnDisconnectionDelay
@@ -31,7 +31,7 @@ export default class WebsocketConnection {
   #isRequestedDisconnection: boolean
   #pingServiceTimer: NodeJS.Timeout | null = null
   #pingServiceLastPong: number = 0
-  #onConnectCallback: WebsocketOnConnectCallback
+  #onConnectCallback: WebsocketOnConnectCallback | null
   #onMessageCallback: WebsocketOnMessageCallback
 
 
@@ -51,6 +51,13 @@ export default class WebsocketConnection {
     return this.#socket?.readyState === WebSocketStatus.CLOSED
   }
 
+  set onConnectCallback(callback: WebsocketOnConnectCallback | null) {
+    this.#onConnectCallback = callback
+  }
+
+  get onConnectCallback(): WebsocketOnConnectCallback | null {
+    return this.#onConnectCallback
+  }
 
   /*----------------------------------------------------------------------------
    *
@@ -66,7 +73,7 @@ export default class WebsocketConnection {
 
   public connect = (urlParams: string = ''): void => {
     if (this.isConnected || this.isConnecting) return
-    this.#log(`[WS] : Connecting...[${this.host}]`)
+    this.#log(`Connecting to ${this.host} ...`)
     this.#isRequestedDisconnection = false
     this.#socket = new WebSocket(`${this.host}${urlParams ? '/' + urlParams : ''}`)
     this.#socket.on('ping', this.#onPing)
@@ -79,7 +86,7 @@ export default class WebsocketConnection {
 
   public disconnect = (): void => {
     if (this.isDisconnecting || this.isDisconnected) return
-    this.#log('[WS] : Disconnecting...')
+    this.#log('Disconnecting...')
     this.#isRequestedDisconnection = true
     if (this.#socket) {
       this.#socket.close()
@@ -93,6 +100,7 @@ export default class WebsocketConnection {
    *
    ---------------------------------------------------------------------------*/
   #log = (...args: any[]): void => {
+    void (args)
     // do nothing by default
   }
 
@@ -119,9 +127,9 @@ export default class WebsocketConnection {
     const deltaTime = Date.now() - this.#pingServiceLastPong
     const hasTimeout = deltaTime > this.pingServiceTimeout
     if (hasTimeout) {
-      this.#log('[WS] : Connection Timeout')
+      this.#log('Connection Timeout')
       this.disconnect()
-      this.#log(`[WS] : Reconnecting in ${this.reconnectOnDisconnectionDelay}ms`)
+      this.#log(`Reconnecting in ${this.reconnectOnDisconnectionDelay}ms`)
       setTimeout(this.connect, this.reconnectOnDisconnectionDelay)
     } else {
       if (this.isConnected) this.#socket?.ping()
@@ -149,17 +157,17 @@ export default class WebsocketConnection {
   }
 
   #onSocketError = (e: any): void => {
-    this.#log(`[WS] : Socket Error (${e?.code})`, e?.message)
+    this.#log(`Socket Error (${e?.code})`, e?.message)
   }
 
   #onSocketConnect = (): void => {
-    this.#log('[WS] : Connected')
+    this.#log('Connected')
     this.#pingServiceStart()
-    this.#onConnectCallback(this)
+    if (this.#onConnectCallback) this.#onConnectCallback(this)
   }
 
   #onSocketDisconnect = (): void => {
-    this.#log('[WS] : Disconnected')
+    this.#log('Disconnected')
     this.#pingServiceStop()
     this.#socket = null
     if (

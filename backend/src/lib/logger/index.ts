@@ -1,62 +1,117 @@
+import {
+  LoggerFontBackground,
+  LoggerFontColor,
+  LoggerFontStyle,
+  LoggerFormattedTextOptions
+} from './types'
+
+
+function isChainable(i: any): boolean {
+  return typeof i === 'string' || typeof i === 'number' || typeof i === 'boolean'
+}
+
 class Logger {
-  constructor() { /**/ }
+  public formatText(options: LoggerFormattedTextOptions): string {
+    let result = ''
+    if (options.style) result += LoggerFontStyle[options.style]
+    if (options.background) result += LoggerFontBackground[options.background]
+    if (options.color) result += LoggerFontColor[options.color]
+    if (options.padding) options.text = options.text.padStart(options.text.length + options.padding).padEnd(options.text.length + (options.padding * 2))
+    result += options.text
+    if (options.reset !== false) result += LoggerFontStyle.reset
+    return result
+  }
 
   public log(...args: unknown[]): void {
-    console.log(...args, this.style.special.reset)
+    const items: any[] = []
+    for (const i of args) {
+      const last: any = items[items.length - 1]
+      if (isChainable(last)) items[items.length - 1] = [last, i].join('')
+      else items.push(i)
+    }
+    console.log(...items, LoggerFontStyle.reset)
   }
 
   public info(...args: unknown[]): void {
-    this.log(this.style.background.blue, ...args)
-  }
-
-  public warning(...args: unknown[]): void {
-    this.log(this.style.background.magenta, ...args)
-  }
-
-  public error(...args: unknown[]): void {
-    this.log(this.style.background.red, ...args)
-  }
-
-  public event(title: string, ...args: unknown[]): void {
     this.log(
-      `${this.style.background.yellow}${this.style.color.black}`,
-      'EVENT',
-      `${this.style.background.white}${this.style.color.black}`,
-      title,
-      `${this.style.special.reset}`,
+      this.formatText({
+        background: 'blue',
+        color: 'white',
+        style: 'bold',
+        padding: 1,
+        text: 'INFO'
+      }),
+      ' ',
       ...args
     )
   }
 
-  public readonly style = {
-    special: {
-      reset: "\x1b[0m",
-      bright: "\x1b[1m",
-      dim: "\x1b[2m",
-      underscore: "\x1b[4m",
-      blink: "\x1b[5m",
-    },
-    color: {
-      black: "\x1b[30m",
-      red: "\x1b[31m",
-      green: "\x1b[32m",
-      yellow: "\x1b[33m",
-      blue: "\x1b[34m",
-      magenta: "\x1b[35m",
-      cyan: "\x1b[36m",
-      white: "\x1b[37m",
-    },
-    background: {
-      black: "\x1b[40m",
-      red: "\x1b[41m",
-      green: "\x1b[42m",
-      yellow: "\x1b[43m",
-      blue: "\x1b[44m",
-      magenta: "\x1b[45m",
-      cyan: "\x1b[46m",
-      white: "\x1b[47m",
-    }
+  public warning(...args: unknown[]): void {
+    this.log(
+      this.formatText({
+        background: 'yellow',
+        color: 'white',
+        style: 'bold',
+        padding: 1,
+        text: 'WARNING'
+      }),
+      ' ',
+      ...args
+    )
   }
+
+  public error(...args: unknown[]): void {
+    this.log(
+      this.formatText({
+        background: 'red',
+        color: 'white',
+        style: 'bold',
+        padding: 1,
+        text: 'ERROR'
+      }),
+      ' ',
+      ...args
+    )
+  }
+
+  public event(title: string, ...args: unknown[]): void {
+    this.log(
+      this.formatText({
+        background: 'black',
+        color: 'yellow',
+        style: 'bold',
+        padding: 1,
+        text: 'EVENT'
+      }),
+      this.formatText({
+        background: 'white',
+        color: 'black',
+        padding: 1,
+        text: title
+      }),
+    )
+    if (args.length) this.log(...args)
+  }
+
+  public notification(type: string, title: string, ...args: unknown[]): void {
+    this.log(
+      this.formatText({
+        background: 'green',
+        color: 'white',
+        style: 'bold',
+        padding: 1,
+        text: type
+      }),
+      this.formatText({
+        background: 'white',
+        color: 'black',
+        padding: 1,
+        text: title
+      }),
+    )
+    if (args.length) this.log(...args)
+  }
+
 }
 
 export default new Logger()
