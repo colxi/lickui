@@ -1,24 +1,21 @@
 import WebsocketConnection from '@/lib/websocket'
 import Logger from '@/lib/logger'
+import binanceApi from '@/api/binance'
+import EventedService from '@/lib/evented-service'
+import { ServiceEventsDescriptor, ServiceName } from './types'
+import config from '@/config'
 import {
   isAccountUpdateEvent,
   isOrderTradeUpdateEvent,
   isBinanceSocketEvent,
   socketLogger,
-  isLiquidationsUpdateEvent
 } from './helpers'
 import {
   AccountUpdateEventWalletData,
   AccountUpdateEventPositionData,
   OrderUpdateEventOrderData,
   AccountUpdateEventType,
-  LiquidationsEventLiquidationsData,
 } from '@/types'
-import binanceApi from '@/api/binance'
-import EventedService from '@/lib/evented-service'
-import { ServiceEventsDescriptor, ServiceName } from './types'
-import config from '@/config'
-
 
 export default class FuturesSocketService extends EventedService<typeof ServiceEventsDescriptor>{
   constructor() {
@@ -57,10 +54,6 @@ export default class FuturesSocketService extends EventedService<typeof ServiceE
       const orderData: OrderUpdateEventOrderData = message.o
       this.onOrderUpdate(orderData)
     }
-    else if (isLiquidationsUpdateEvent(message)) {
-      const liquidationsData: LiquidationsEventLiquidationsData = message.o
-      this.onLiquidationsUpdate(liquidationsData)
-    }
     else {
       this.logger.warning('Unhandled FuturesSocket event', message.e)
     }
@@ -72,7 +65,6 @@ export default class FuturesSocketService extends EventedService<typeof ServiceE
     return new Promise(resolve => {
       this.logger.notification('Starting socket...')
       this.#futuresSocket.onConnectCallback = (): void => {
-        this.subscribeToLiquidationsStream()
         resolve()
       }
       this.#futuresSocket.connect(futuresWsKey)
@@ -88,22 +80,6 @@ export default class FuturesSocketService extends EventedService<typeof ServiceE
     this.logger.notification('Fetching UserDataKey...')
     const futuresWsKey = await binanceApi.getFuturesUserDataKey()
     return futuresWsKey
-  }
-
-  private subscribeToLiquidationsStream(): void {
-    const enabledCoins = Object.values(config.coins).filter(i => i.enabled)
-    this.logger.notification(`Subscribing to liquidations stream for ${enabledCoins.length} coins...`)
-    // Binance will push snapshot data at a maximum frequency of 1 push per second
-    this.#futuresSocket.send({
-      "method": "SUBSCRIBE",
-      "id": this.#futuresSocket.sentMessagesCount + 1,
-      "params": [
-        // All Market Liquidation Orders !forceOrder@arr 
-        //'!forceOrder@arr'
-        // Individual Liquidation Orders <symbol>@forceOrder
-        ...enabledCoins.map(i => `${i.asset.toLowerCase()}usdt@forceOrder`)
-      ]
-    })
   }
 
   private onWalletUpdate(
@@ -145,19 +121,6 @@ export default class FuturesSocketService extends EventedService<typeof ServiceE
         type: orderData.o,
         id: orderData.i,
         status: orderData.X
-      }
-    )
-  }
-
-  private onLiquidationsUpdate(liquidationsData: LiquidationsEventLiquidationsData): void {
-    this.dispatchEvent(
-      this.Event.LIQUIDATIONS_UPDATE,
-      {
-        assetPair: liquidationsData.s,
-        total: Number(liquidationsData.ap) * Number(liquidationsData.q),
-        price: Number(liquidationsData.ap),
-        quantity: Number(liquidationsData.q),
-        side: liquidationsData.S,
       }
     )
   }

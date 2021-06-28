@@ -3,6 +3,7 @@ import {
   AccountUpdateEvent,
   BinanceSocketEvent,
   BinanceWebsocketEventType,
+  LiquidationsEvent,
   OrderUpdateEvent
 } from '@/types'
 import { ServiceName } from './types'
@@ -27,6 +28,12 @@ export function isOrderTradeUpdateEvent(
   return eventData.e === BinanceWebsocketEventType.ORDER_TRADE_UPDATE
 }
 
+export function isLiquidationsUpdateEvent(
+  eventData: BinanceSocketEvent
+): eventData is LiquidationsEvent {
+  return eventData.e === BinanceWebsocketEventType.LIQUIDATIONS_UPDATE
+}
+
 export function socketLogger(...args: any[]): void {
   const subtitle = Logger.formatText({
     reset: false,
@@ -35,7 +42,7 @@ export function socketLogger(...args: any[]): void {
     text: '  WS ',
   })
   Logger.notification(
-    `♦︎ ${ServiceName} ${subtitle}`,
+    `✖︎ ${ServiceName} ${subtitle}`,
     `${args[0]}`
   )
 }

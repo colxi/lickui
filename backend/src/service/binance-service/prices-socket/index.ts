@@ -31,7 +31,7 @@ export default class PricesSocketService extends EventedService<typeof ServiceEv
 
   readonly #onSocketMessage = async (ws: WebsocketConnection, message: unknown): Promise<void> => {
     if (!isBinanceSocketEvent(message)) {
-      this.logger.warning('Invalid FuturesSocket message', message)
+      this.logger.warning('Invalid PricesSocket message', message)
       return
     }
     if (isAssetPriceUpdateEvent(message)) {
@@ -44,7 +44,7 @@ export default class PricesSocketService extends EventedService<typeof ServiceEv
       )
     }
     else {
-      this.logger.warning('Unhandled FuturesSocket event', message.e)
+      this.logger.warning('Unhandled PricesSocket event', message.e)
     }
   }
 

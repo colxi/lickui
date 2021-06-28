@@ -25,13 +25,6 @@ interface OrderUpdateEventData {
   status: OrderStatus
 }
 
-interface LiquidationsUpdateEventData {
-  assetPair: AssetPair
-  price: CurrencyAmount
-  total: CurrencyAmount
-  quantity: number
-  side: OrderSide
-}
 
 export const ServiceName = 'FuturesSocketService'
 
@@ -39,5 +32,4 @@ export const ServiceEventsDescriptor = {
   WALLET_UPDATE: (eventData: WalletUpdateEventData): void => { void (eventData) },
   ORDER_UPDATE: (eventData: OrderUpdateEventData): void => { void (eventData) },
   POSITION_UPDATE: (eventData: PositionUpdateEventData): void => { void (eventData) },
-  LIQUIDATIONS_UPDATE: (eventData: LiquidationsUpdateEventData): void => { void (eventData) }
 }
