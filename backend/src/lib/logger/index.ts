@@ -24,10 +24,10 @@ class Logger {
 
   public log(...args: unknown[]): void {
     const items: any[] = []
-    for (const i of args) {
+    for (const arg of args) {
       const last: any = items[items.length - 1]
-      if (isChainable(last)) items[items.length - 1] = [last, i].join('')
-      else items.push(i)
+      if (isChainable(last) && isChainable(arg)) items[items.length - 1] = [last, arg].join('')
+      else items.push(arg)
     }
     console.log(...items, LoggerFontStyle.reset)
   }
@@ -74,14 +74,27 @@ class Logger {
     )
   }
 
-  public event(title: string, ...args: unknown[]): void {
+  public event(emitter: string, title: string, ...args: unknown[]): void {
     this.log(
       this.formatText({
         background: 'black',
         color: 'yellow',
         style: 'bold',
         padding: 1,
-        text: 'EVENT'
+        text: '⚡︎ EVENT'
+      }),
+      this.formatText({
+        background: 'black',
+        color: 'white',
+        style: 'dim',
+        padding: 0,
+        text: `from `
+      }),
+      this.formatText({
+        background: 'black',
+        color: 'white',
+        padding: 0,
+        text: `${emitter} `
       }),
       this.formatText({
         background: 'white',

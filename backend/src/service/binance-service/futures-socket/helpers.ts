@@ -3,23 +3,35 @@ import {
   AccountUpdateEvent,
   BinanceSocketEvent,
   BinanceWebsocketEventType,
+  LiquidationsEvent,
   OrderUpdateEvent
 } from '@/types'
+import { ServiceName } from './types'
 
-export function isBinanceSocketEvent(event: unknown): event is BinanceSocketEvent {
+export function isBinanceSocketEvent(eventData: unknown): eventData is BinanceSocketEvent {
   return true
-    && typeof event === 'object'
-    && event !== null
-    && 'e' in event
-    && 'E' in event
-    && 'T' in event
+    && typeof eventData === 'object'
+    && eventData !== null
+    && 'e' in eventData
+    && 'E' in eventData
 }
 
-export function isAccountUpdateEvent(event: BinanceSocketEvent): event is AccountUpdateEvent {
-  return event.e === BinanceWebsocketEventType.ACCOUNT_UPDATE
+export function isAccountUpdateEvent(
+  eventData: BinanceSocketEvent
+): eventData is AccountUpdateEvent {
+  return eventData.e === BinanceWebsocketEventType.ACCOUNT_UPDATE
 }
-export function isOrderTradeUpdateEvent(event: BinanceSocketEvent): event is OrderUpdateEvent {
-  return event.e === BinanceWebsocketEventType.ORDER_TRADE_UPDATE
+
+export function isOrderTradeUpdateEvent(
+  eventData: BinanceSocketEvent
+): eventData is OrderUpdateEvent {
+  return eventData.e === BinanceWebsocketEventType.ORDER_TRADE_UPDATE
+}
+
+export function isLiquidationsUpdateEvent(
+  eventData: BinanceSocketEvent
+): eventData is LiquidationsEvent {
+  return eventData.e === BinanceWebsocketEventType.LIQUIDATIONS_UPDATE
 }
 
 export function socketLogger(...args: any[]): void {
@@ -30,7 +42,7 @@ export function socketLogger(...args: any[]): void {
     text: '  WS ',
   })
   Logger.notification(
-    `♦︎ FUTURES SOCKET SERVICE ${subtitle}`,
+    `♦︎ ${ServiceName} ${subtitle}`,
     `${args[0]}`
   )
 }

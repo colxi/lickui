@@ -57,6 +57,7 @@ export type Leverage = string
 export type OrderId = number
 export type OrderIdString = string
 export type Timestamp = number
+export type QuantityString = string
 
 export enum ContractStatus {
   PENDING_TRADING = 'PENDING_TRADING',
@@ -172,7 +173,9 @@ export interface BinanceFuturesWallet {
 
 export enum BinanceWebsocketEventType {
   ACCOUNT_UPDATE = 'ACCOUNT_UPDATE',
-  ORDER_TRADE_UPDATE = 'ORDER_TRADE_UPDATE'
+  ORDER_TRADE_UPDATE = 'ORDER_TRADE_UPDATE',
+  LIQUIDATIONS_UPDATE = 'forceOrder',
+  ASSET_PRICE_UPDATE = 'markPriceUpdate'
 }
 
 
@@ -181,8 +184,6 @@ export interface BinanceSocketEvent {
   e: BinanceWebsocketEventType
   /** Event Time */
   E: number
-  /** Transaction time */
-  T: number
 }
 
 
@@ -240,6 +241,10 @@ export enum AccountUpdateEventType {
 }
 
 export interface AccountUpdateEvent extends BinanceSocketEvent {
+  /**  Event type */
+  e: BinanceWebsocketEventType.ACCOUNT_UPDATE
+  /** Transaction time */
+  T: number
   /** Update Data */
   a: {
     /** Event reason type */
@@ -260,53 +265,57 @@ export interface AccountUpdateEvent extends BinanceSocketEvent {
 
 export interface OrderUpdateEventOrderData {
   /**  Symbol */
-  "s": AssetPair,
+  s: AssetPair,
   /** Client Order Id */
-  "c": string, // special client order id: starts with "autoclose-": liquidation order "adl_autoclose": ADL auto close order
+  c: string, // special client order id: starts with "autoclose-": liquidation order "adl_autoclose": ADL auto close order
   /** Side */
-  "S": OrderSide,
+  S: OrderSide,
   /** Order Type */
-  "o": OrderType,
+  o: OrderType,
   /** Time in Force */
-  "f": TimeInForce,
+  f: TimeInForce,
   /** Original Quantity */
-  "q": "0.001",
+  q: "0.001",
   /** Original Price */
-  "p": "0",
+  p: "0",
   /** Average Price */
-  "ap": "0",
+  ap: "0",
   /** Stop Price. Please ignore with TRAILING_STOP_MARKET order */
-  "sp": "7103.04",
+  sp: "7103.04",
   /** Execution Type */
-  "x": "NEW",
+  x: "NEW",
   /** Order Status */
-  "X": OrderStatus,
+  X: OrderStatus,
   /** Order Id */
-  "i": OrderId,
+  i: OrderId,
   /** Order Last Filled Quantity */
-  "l": "0",
-  "z": "0",                    // Order Filled Accumulated Quantity
-  "L": "0",                    // Last Filled Price
-  "N": "USDT",             // Commission Asset, will not push if no commission
-  "n": "0",                // Commission, will not push if no commission
-  "T": 1568879465651,          // Order Trade Time
-  "t": 0,                      // Trade Id
-  "b": "0",                    // Bids Notional
-  "a": "9.91",                 // Ask Notional
-  "m": false,                  // Is this trade the maker side?
-  "R": false,                  // Is this reduce only
+  l: "0",
+  z: "0",                    // Order Filled Accumulated Quantity
+  L: "0",                    // Last Filled Price
+  N: "USDT",             // Commission Asset, will not push if no commission
+  n: "0",                // Commission, will not push if no commission
+  T: 1568879465651,          // Order Trade Time
+  t: 0,                      // Trade Id
+  b: "0",                    // Bids Notional
+  a: "9.91",                 // Ask Notional
+  m: false,                  // Is this trade the maker side?
+  R: false,                  // Is this reduce only
   /**Stop Price Working Type */
-  "wt": OrderWorkingType,
-  "ot": "TRAILING_STOP_MARKET",    // Original Order Type
-  "ps": BinancePositionSide,                        // Position Side
-  "cp": false,                     // If Close-All, pushed with conditional order
-  "AP": "7476.89",             // Activation Price, only puhed with TRAILING_STOP_MARKET order
-  "cr": "5.0",                 // Callback Rate, only puhed with TRAILING_STOP_MARKET order
-  "rp": "0"                            // Realized Profit of the trade
+  wt: OrderWorkingType,
+  ot: "TRAILING_STOP_MARKET",    // Original Order Type
+  ps: BinancePositionSide,                        // Position Side
+  cp: false,                     // If Close-All, pushed with conditional order
+  AP: "7476.89",             // Activation Price, only puhed with TRAILING_STOP_MARKET order
+  cr: "5.0",                 // Callback Rate, only puhed with TRAILING_STOP_MARKET order
+  rp: "0"                            // Realized Profit of the trade
 }
 
 export interface OrderUpdateEvent extends BinanceSocketEvent {
-  "o": OrderUpdateEventOrderData
+  /**  Event type */
+  e: BinanceWebsocketEventType.ORDER_TRADE_UPDATE
+  /** Transaction time */
+  T: number
+  o: OrderUpdateEventOrderData
 }
 
 
@@ -320,4 +329,71 @@ export interface OrderUpdateEvent extends BinanceSocketEvent {
 export interface BinanceBalanceData {
   totalBalance: number,
   availableBalance: number
+}
+
+
+/******************************************************************************
+ *
+ * Liquidations
+ *
+ ******************************************************************************/
+
+export interface LiquidationsEventLiquidationsData {
+  /** Symbol */
+  s: AssetPair
+  /** Side */
+  S: OrderSide
+  /** Order Type */
+  o: OrderType.LIMIT
+  // Time in Force
+  f: TimeInForce
+  // Original Quantity
+  q: QuantityString
+  // Price
+  p: CurrencyAmountString
+  // Average Price
+  ap: CurrencyAmountString
+  // Order Status
+  X: OrderStatus.FILLED
+  // Order Last Filled Quantity
+  l: QuantityString
+  // Order Filled Accumulated Quantity
+  z: QuantityString
+  // Order Trade Time
+  T: Timestamp
+}
+
+export interface LiquidationsEvent extends BinanceSocketEvent {
+  /**  Event type */
+  e: BinanceWebsocketEventType.LIQUIDATIONS_UPDATE
+  /** Transaction time */
+  T: number
+  o: LiquidationsEventLiquidationsData
+}
+
+
+/******************************************************************************
+ *
+ * Market Price
+ *
+ ******************************************************************************/
+
+
+export interface AssetPriceUpdateEvent extends BinanceSocketEvent {
+  // Event type
+  e: BinanceWebsocketEventType.ASSET_PRICE_UPDATE
+  // Event time
+  E: Timestamp
+  // Symbol
+  s: AssetPair
+  // Mark price
+  p: CurrencyAmountString
+  // Index price
+  i: CurrencyAmountString
+  // Estimated Settle Price, only useful in the last hour before the settlement starts
+  P: CurrencyAmountString
+  // Funding rate
+  r: string // '0.0024324325'
+  // Next funding time
+  T: Timestamp
 }

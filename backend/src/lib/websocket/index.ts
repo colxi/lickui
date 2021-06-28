@@ -19,6 +19,7 @@ export default class WebsocketConnection {
     this.pingServiceTimeout = 1000 * 8
     this.#socket = null
     this.#isRequestedDisconnection = false
+    this.#sentMessagesCount = 0
   }
 
   public readonly host: string
@@ -27,6 +28,7 @@ export default class WebsocketConnection {
   public readonly pingServiceInterval: number
   public readonly pingServiceTimeout: number
 
+  #sentMessagesCount: number
   #socket: WebSocket | null
   #isRequestedDisconnection: boolean
   #pingServiceTimer: NodeJS.Timeout | null = null
@@ -34,6 +36,10 @@ export default class WebsocketConnection {
   #onConnectCallback: WebsocketOnConnectCallback | null
   #onMessageCallback: WebsocketOnMessageCallback
 
+
+  public get sentMessagesCount(): number {
+    return this.#sentMessagesCount
+  }
 
   public get isConnected(): boolean {
     return this.#socket?.readyState === WebSocketStatus.OPEN
@@ -69,13 +75,16 @@ export default class WebsocketConnection {
     if (!this.isConnected) return
     const msg = JSON.stringify(payload)
     this.#socket!.send(msg)
+    this.#sentMessagesCount++
   }
 
   public connect = (urlParams: string = ''): void => {
     if (this.isConnected || this.isConnecting) return
-    this.#log(`Connecting to ${this.host} ...`)
+    this.#log(`Connecting to ${this.host}`)
     this.#isRequestedDisconnection = false
-    this.#socket = new WebSocket(`${this.host}${urlParams ? '/' + urlParams : ''}`)
+    this.#socket = urlParams
+      ? new WebSocket(`${this.host}/${urlParams}`)
+      : new WebSocket(this.host)
     this.#socket.on('ping', this.#onPing)
     this.#socket.on('pong', this.#onPong)
     this.#socket.on('error', this.#onSocketError)

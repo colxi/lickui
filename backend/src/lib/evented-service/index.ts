@@ -3,20 +3,33 @@ import Logger from '@/lib/logger'
 
 type EventsDictionary = Record<string, (a: any) => void>
 
-export default class EventedService<E_DICTIONARY extends EventsDictionary = EventsDictionary> {
+interface EventedServiceOptions {
+  events: EventsDictionary
+  serviceName: string
+  verbose?: boolean
+}
+
+export default class EventedService<E_DICTIONARY extends EventsDictionary> {
   constructor(
-    eventsDictionary: E_DICTIONARY
+    options: EventedServiceOptions
   ) {
-    this.#subscribers = Object.keys(eventsDictionary).reduce((acc, eventName) => {
+    this.serviceName = options.serviceName
+    this.verbose = options.verbose || false
+
+    this.#subscribers = Object.keys(options.events).reduce((acc, eventName) => {
       acc[eventName] = new Set()
       return acc
     }, {} as any)
 
-    this.Event = Object.keys(eventsDictionary).reduce((acc, eventName) => {
+    this.Event = Object.keys(options.events).reduce((acc, eventName) => {
       acc[eventName] = eventName
       return acc
     }, {} as any)
   }
+
+  readonly serviceName: string
+
+  readonly verbose: boolean
 
   readonly #subscribers: Record<
     keyof E_DICTIONARY,
@@ -31,7 +44,7 @@ export default class EventedService<E_DICTIONARY extends EventsDictionary = Even
     eventName: E_NAME,
     eventData: Parameters<E_DICTIONARY[E_NAME]>[0]
   ): void {
-    Logger.event(`${eventName}`)
+    if (this.verbose) Logger.event(this.serviceName, `${eventName}`)
     for (const eventHandler of this.#subscribers[eventName]) {
       eventHandler(eventData)
     }
