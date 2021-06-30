@@ -29,7 +29,6 @@ interface OrderUpdateEventData {
 export const ServiceName = 'FuturesSocketService'
 
 export const ServiceEventsDescriptor = {
-  WALLET_UPDATE: (eventData: WalletUpdateEventData): void => { void (eventData) },
   ORDER_UPDATE: (eventData: OrderUpdateEventData): void => { void (eventData) },
   POSITION_UPDATE: (eventData: PositionUpdateEventData): void => { void (eventData) },
 }

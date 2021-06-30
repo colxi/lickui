@@ -100,6 +100,7 @@ export default class WebsocketConnection {
     if (this.#socket) {
       this.#socket.close()
       this.#socket = null
+      this.#sentMessagesCount = 0
     }
   }
 

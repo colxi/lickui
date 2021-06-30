@@ -1,84 +1,86 @@
-import binanceApi from '@/api/binance'
+import binanceApi from '@/service/binance-service/api'
 import Logger from '@/lib/logger'
-import { AccountUpdateEventType, BinanceBalanceData, CurrencyAmount, Timestamp } from '@/types'
-import FuturesSocketService from '@/service/binance-service/sockets/futures-socket'
+import FuturesWalletSocketManager from './socket-manager'
+import { FuturesWalletServiceEvents, WalletUpdateEventData } from './types'
+import {
+  AccountUpdateEventType,
+  BinanceBalanceData,
+  CurrencyAmount,
+  ServiceStatus
+} from '@/types'
+import EventedService from '@/lib/evented-service'
 
+export default class FuturesWalletService extends EventedService<typeof FuturesWalletServiceEvents> {
+  constructor() {
+    super({
+      events: FuturesWalletServiceEvents,
+      serviceName: 'FuturesWalletService',
+      verbose: true
+    })
 
-interface WalletHistoryEntry {
-  time: Timestamp
-  type: AccountUpdateEventType,
-  totalBalance: CurrencyAmount,
-  availableBalance: CurrencyAmount
-}
-
-export default class FuturesWalletService {
-  constructor(futuresSocketService: FuturesSocketService) {
-    this.#futuresSocketService = futuresSocketService
-    this.updateWallet = this.updateWallet.bind(this)
+    this.#updateWallet = this.#updateWallet.bind(this)
+    this.#serviceStatus = ServiceStatus.STOPPED
+    this.#totalBalance = 0
+    this.#availableBalance = 0
+    this.#walletSocketManager = new FuturesWalletSocketManager({
+      onWalletUpdate: this.#updateWallet
+    })
   }
 
-  #futuresSocketService: FuturesSocketService
-  #totalBalance: CurrencyAmount = 0
-  #availableBalance: CurrencyAmount = 0
-  #history: WalletHistoryEntry[] = []
+  #serviceStatus: ServiceStatus
+  #totalBalance: CurrencyAmount
+  #availableBalance: CurrencyAmount
+  #walletSocketManager: FuturesWalletSocketManager
 
+  public get serviceStatus(): ServiceStatus { return this.#serviceStatus }
   public get totalBalance(): CurrencyAmount { return this.#totalBalance }
   public get availableBalance(): CurrencyAmount { return this.#availableBalance }
-  public get history(): WalletHistoryEntry[] { return this.#history }
-
 
   public async start(): Promise<void> {
-    this.logger.notification('Starting service...')
-    await this.fetchBalances()
-    this.#futuresSocketService.subscribe(
-      this.#futuresSocketService.Event.WALLET_UPDATE,
-      this.updateWallet
-    )
+    this.#logger('Starting service...')
+    if (this.#serviceStatus === ServiceStatus.RUNNING) return
+    await this.#fetchBalances()
+    await this.#walletSocketManager.start()
+    this.#serviceStatus = ServiceStatus.RUNNING
   }
 
   public async stop(): Promise<void> {
-    this.#futuresSocketService.subscribe(
-      this.#futuresSocketService.Event.WALLET_UPDATE,
-      this.updateWallet
-    )
+    this.#logger('Stopping service...')
+    if (this.#serviceStatus === ServiceStatus.STOPPED) return
+    await this.#walletSocketManager.stop()
+    this.#totalBalance = 0
+    this.#availableBalance = 0
+    this.#serviceStatus = ServiceStatus.STOPPED
   }
 
-  public async fetchBalances(): Promise<void> {
-    this.logger.notification('Fetching futures wallet...')
+  #fetchBalances = async (): Promise<void> => {
+    this.#logger('Fetching futures wallet...')
     const futuresWallet: BinanceBalanceData = await binanceApi.getFuturesBalance()
-    this.updateWallet({
+    this.#updateWallet({
+      timestamp: Date.now(),
       totalBalance: futuresWallet.totalBalance,
       availableBalance: futuresWallet.availableBalance,
       type: AccountUpdateEventType.BALANCE_FETCH
     })
   }
 
-  private updateWallet(e: Omit<WalletHistoryEntry, 'time'>): void {
-    const eventMessage = e.type === AccountUpdateEventType.BALANCE_FETCH
-      ? ` - Current balance: ${e.totalBalance.toFixed(2)}$\n`
-      : ` - Balance Change: ${Math.sign(e.totalBalance - this.#totalBalance)}${(Math.abs(e.totalBalance - this.#totalBalance)).toFixed(2)}$\n`
-    this.logger.notification(
+  #updateWallet = (eventData: WalletUpdateEventData): void => {
+    this.#logger(
       'Updating wallet data',
-      eventMessage,
-      ` - Data : ${JSON.stringify(e)}`
+      eventData.type === AccountUpdateEventType.BALANCE_FETCH
+        ? ` - Current balance: ${eventData.totalBalance.toFixed(2)}$\n`
+        : ` - Balance Change: ${Math.sign(eventData.totalBalance - this.#totalBalance)}${(Math.abs(eventData.totalBalance - this.#totalBalance)).toFixed(2)}$\n`,
+      ` - Data : ${JSON.stringify(eventData)}`
     )
-
-    this.#totalBalance = e.totalBalance
-    this.#availableBalance = e.availableBalance
-    this.#history.push({
-      time: Date.now(),
-      type: '' as any,
-      totalBalance: this.#totalBalance,
-      availableBalance: this.#availableBalance
-    })
+    this.#totalBalance = eventData.totalBalance
+    this.#availableBalance = eventData.availableBalance
+    this.dispatchEvent(
+      this.Event.WALLET_UPDATE,
+      eventData
+    )
   }
 
-  private logger = {
-    notification(title: string, ...data: unknown[]): void {
-      Logger.notification('♥︎ BINANCE WALLET SERVICE', title, ...data)
-    },
-    warning(...data: unknown[]): void {
-      Logger.warning('♦♥︎ BINANCE WALLET SERVICE', ...data)
-    }
+  #logger = (title: string, ...data: unknown[]): void => {
+    Logger.notification(this.serviceName, title, ...data)
   }
 }

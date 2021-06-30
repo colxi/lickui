@@ -9,7 +9,7 @@ class BinanceService {
     this.futuresSocket = new FuturesSocketService()
     this.pricesSocket = new PricesSocketService()
     this.liquidationsSocket = new LiquidationsSocketService()
-    this.wallet = new FuturesWalletService(this.futuresSocket)
+    this.wallet = new FuturesWalletService()
     this.market = new MarketInfoService(this.pricesSocket)
 
   }

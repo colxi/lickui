@@ -1,6 +1,6 @@
 import WebsocketConnection from '@/lib/websocket'
 import Logger from '@/lib/logger'
-import binanceApi from '@/api/binance'
+import binanceApi from '@/service/binance-service/api'
 import EventedService from '@/lib/evented-service'
 import { ServiceEventsDescriptor, ServiceName } from './types'
 import config from '@/config'
@@ -44,11 +44,8 @@ export default class FuturesSocketService extends EventedService<typeof ServiceE
     }
     else if (isAccountUpdateEvent(message)) {
       const eventData = message.a
-      const eventType = eventData.m
       const positions = eventData.P
-      const walletData = eventData.B.find((i: AccountUpdateEventWalletData) => i.a === 'USDT')
       for (const positionData of positions) this.onPositionUpdate(positionData)
-      if (walletData) this.onWalletUpdate(walletData, eventType)
     }
     else if (isOrderTradeUpdateEvent(message)) {
       const orderData: OrderUpdateEventOrderData = message.o
@@ -80,18 +77,6 @@ export default class FuturesSocketService extends EventedService<typeof ServiceE
     this.logger.notification('Fetching UserDataKey...')
     const futuresWsKey = await binanceApi.getFuturesUserDataKey()
     return futuresWsKey
-  }
-
-  private onWalletUpdate(
-    walletData: AccountUpdateEventWalletData,
-    type: AccountUpdateEventType
-  ): void {
-    const totalBalance = Number(walletData.wb)
-    const availableBalance = Number(walletData.cw)
-    this.dispatchEvent(
-      this.Event.WALLET_UPDATE,
-      { totalBalance, availableBalance, type }
-    )
   }
 
   private onPositionUpdate(

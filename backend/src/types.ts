@@ -1,4 +1,8 @@
 
+export enum ServiceStatus {
+  RUNNING = 'RUNNING',
+  STOPPED = 'STOPPED'
+}
 
 export interface FuturesOrderDescriptor {
   time: Timestamp,

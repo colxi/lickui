@@ -1,4 +1,4 @@
-import binanceApi from '@/api/binance'
+import binanceApi from '@/service/binance-service/api'
 import Logger from '@/lib/logger'
 import { AccountUpdateEventType, Asset, AssetPair, BinanceAPIAssetPrice, BinanceBalanceData, CurrencyAmount, Immutable, Timestamp } from '@/types'
 import FuturesSocketService from '@/service/binance-service/sockets/futures-socket'
