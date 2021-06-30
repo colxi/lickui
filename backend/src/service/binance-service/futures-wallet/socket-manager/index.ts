@@ -9,7 +9,7 @@ import { AccountUpdateEventWalletData } from '@/types'
 
 export default class FuturesWalletSocketManager {
   constructor(options: FuturesWalletSocketManagerOptions) {
-    this.#contextName = 'WalletSocketManager'
+    this.#contextName = 'FuturesWalletSocketManager'
     this.#onWalletUpdateCallback = options.onWalletUpdate
     this.#socket = new WebsocketConnection({
       host: config.binance.production.futuresWS,

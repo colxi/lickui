@@ -1,11 +1,16 @@
 import binanceApi from '@/service/binance-service/api'
 import Logger from '@/lib/logger'
-import { AccountUpdateEventType, Asset, AssetPair, BinanceAPIAssetPrice, BinanceBalanceData, CurrencyAmount, Immutable, Timestamp } from '@/types'
-import FuturesSocketService from '@/service/binance-service/sockets/futures-socket'
 import PricesSocketService from '../sockets/prices-socket'
 import { config } from '@/config'
 import { AssetPriceUpdateEventData } from '../sockets/prices-socket/types'
-
+import {
+  Asset,
+  AssetPair,
+  BinanceAPIAssetPrice,
+  CurrencyAmount,
+  Immutable,
+  Timestamp
+} from '@/types'
 
 interface AssetStatusDescriptor {
   asset: Asset

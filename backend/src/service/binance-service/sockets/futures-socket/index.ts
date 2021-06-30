@@ -11,10 +11,8 @@ import {
   socketLogger,
 } from './helpers'
 import {
-  AccountUpdateEventWalletData,
   AccountUpdateEventPositionData,
   OrderUpdateEventOrderData,
-  AccountUpdateEventType,
 } from '@/types'
 
 export default class FuturesSocketService extends EventedService<typeof ServiceEventsDescriptor>{
