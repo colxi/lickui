@@ -1,4 +1,9 @@
+import Logger from '@/lib/logger'
 import { AccountUpdateEventType, CurrencyAmount, Timestamp } from '@/types'
+
+export interface FuturesWalletServiceOptions {
+  logger: Logger
+}
 
 export interface WalletUpdateEventData {
   timestamp: Timestamp

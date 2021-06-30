@@ -7,13 +7,14 @@ interface EventedServiceOptions {
   events: EventsDictionary
   serviceName: string
   verbose?: boolean
+  logger?: Logger
 }
 
 export default class EventedService<E_DICTIONARY extends EventsDictionary> {
   constructor(
     options: EventedServiceOptions
   ) {
-    this.serviceName = options.serviceName
+    this.#logger = options.logger || new Logger({ context: { text: 'Event' } })
     this.verbose = options.verbose || false
 
     this.#subscribers = Object.keys(options.events).reduce((acc, eventName) => {
@@ -27,8 +28,7 @@ export default class EventedService<E_DICTIONARY extends EventsDictionary> {
     }, {} as any)
   }
 
-  readonly serviceName: string
-
+  #logger: Logger
   readonly verbose: boolean
 
   readonly #subscribers: Record<
@@ -44,7 +44,7 @@ export default class EventedService<E_DICTIONARY extends EventsDictionary> {
     eventName: E_NAME,
     eventData: Parameters<E_DICTIONARY[E_NAME]>[0]
   ): void {
-    if (this.verbose) Logger.event(this.serviceName, `${eventName}`)
+    if (this.verbose) this.#logger.log(`${eventName}`)
     for (const eventHandler of this.#subscribers[eventName]) {
       eventHandler(eventData)
     }

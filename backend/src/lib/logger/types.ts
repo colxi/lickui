@@ -1,10 +1,14 @@
+import { LoggerColorRGB } from './helpers'
+
 export enum LoggerFontStyle {
   reset = "\x1b[0m",
   bold = "\x1b[1m",
   dim = "\x1b[2m",
+  italic = "\x1B[3m",
   underscore = "\x1b[4m",
   blink = "\x1b[5m",
   reverse = "\x1b[7m",
+  strike = "\x1B[9m"
 }
 
 export enum LoggerFontColor {
@@ -32,9 +36,20 @@ export enum LoggerFontBackground {
 
 export interface LoggerFormattedTextOptions {
   style?: keyof typeof LoggerFontStyle
-  color?: keyof typeof LoggerFontColor
-  background?: keyof typeof LoggerFontBackground
+  color?: keyof typeof LoggerFontColor | LoggerColorRGB
+  background?: keyof typeof LoggerFontBackground | LoggerColorRGB
   padding?: number
   reset?: boolean
   text: string
+}
+
+export interface LoggerOptions {
+  renderTime?: boolean
+  context: LoggerFormattedTextOptions | LoggerFormattedTextOptions[]
+}
+
+export interface ColorDescriptor {
+  r: number
+  g: number
+  b: number
 }

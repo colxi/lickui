@@ -3,18 +3,27 @@ import PricesSocketService from './sockets/prices-socket'
 import LiquidationsSocketService from './sockets/liquidations-socket'
 import FuturesWalletService from './futures-wallet'
 import MarketInfoService from './asset-price'
+import Logger from '@/lib/logger'
+import { LoggerConfigs } from './helpers'
+
 
 class BinanceService {
   constructor() {
+    this.#logger = new Logger(LoggerConfigs.binanceClient)
+
+    this.wallet = new FuturesWalletService({
+      logger: this.#logger.createChild(LoggerConfigs.futuresWalletService)
+    })
+
     this.futuresSocket = new FuturesSocketService()
     this.pricesSocket = new PricesSocketService()
     this.liquidationsSocket = new LiquidationsSocketService()
-    this.wallet = new FuturesWalletService()
     this.market = new MarketInfoService(this.pricesSocket)
 
   }
 
   async start(): Promise<void> {
+    this.#logger.log('Starting Binance client...')
     await this.futuresSocket.start()
     await this.pricesSocket.start()
     await this.liquidationsSocket.start()
@@ -28,6 +37,7 @@ class BinanceService {
   public readonly wallet: FuturesWalletService
   public readonly market: MarketInfoService
 
+  #logger: Logger
 }
 
 export default new BinanceService()

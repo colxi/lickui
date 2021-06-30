@@ -37,7 +37,7 @@ export default class FuturesSocketService extends EventedService<typeof ServiceE
 
   readonly #onSocketMessage = async (ws: WebsocketConnection, message: unknown): Promise<void> => {
     if (!isBinanceSocketEvent(message)) {
-      this.logger.warning('Invalid FuturesSocket message', message)
+      // this.logger.warning('Invalid FuturesSocket message', message)
       return
     }
     else if (isAccountUpdateEvent(message)) {
@@ -50,15 +50,15 @@ export default class FuturesSocketService extends EventedService<typeof ServiceE
       this.onOrderUpdate(orderData)
     }
     else {
-      this.logger.warning('Unhandled FuturesSocket event', message.e)
+      // this.logger.warning('Unhandled FuturesSocket event', message.e)
     }
   }
 
   public async start(): Promise<void> {
-    this.logger.notification('Starting service...')
+    // this.logger.notification('Starting service...')
     const futuresWsKey = await this.getBinanceWebsocketDataKey()
     return new Promise(resolve => {
-      this.logger.notification('Starting socket...')
+      // this.logger.notification('Starting socket...')
       this.#futuresSocket.onConnectCallback = (): void => {
         resolve()
       }
@@ -67,12 +67,12 @@ export default class FuturesSocketService extends EventedService<typeof ServiceE
   }
 
   public stop(): void {
-    this.logger.notification('Stopping service...')
+    // this.logger.notification('Stopping service...')
     this.#futuresSocket.disconnect()
   }
 
   private async getBinanceWebsocketDataKey(): Promise<string> {
-    this.logger.notification('Fetching UserDataKey...')
+    // this.logger.notification('Fetching UserDataKey...')
     const futuresWsKey = await binanceApi.getFuturesUserDataKey()
     return futuresWsKey
   }
@@ -110,10 +110,10 @@ export default class FuturesSocketService extends EventedService<typeof ServiceE
 
   private logger = {
     notification(title: string, ...data: unknown[]): void {
-      Logger.notification(`♦︎ ${ServiceName}`, title, ...data)
+      // Logger.notification(`♦︎ ${ServiceName}`, title, ...data)
     },
     warning(...data: unknown[]): void {
-      Logger.warning(`♦︎ ${ServiceName}`, ...data)
+      // Logger.warning(`♦︎ ${ServiceName}`, ...data)
     }
   }
 }

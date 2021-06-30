@@ -35,7 +35,7 @@ export default class AssetPriceService {
   }
 
   private async fetchAllAssetPrices(): Promise<Record<Asset, AssetStatusDescriptor>> {
-    this.logger.notification('Fetching all assets prices...')
+    // this.logger.notification('Fetching all assets prices...')
     const assetsPrices: Record<Asset, AssetStatusDescriptor> = {}
     const binanceAssetsPrices: BinanceAPIAssetPrice[] = await binanceApi.getAssetsPrice()
     const enabledAssets = config.getEnabledAssetsList()
@@ -53,7 +53,7 @@ export default class AssetPriceService {
   }
 
   public async start(): Promise<void> {
-    this.logger.notification('Starting service...')
+    // this.logger.notification('Starting service...')
     this.#assets = await this.fetchAllAssetPrices()
     this.#pricesSocketService.subscribe(
       this.#pricesSocketService.Event.ASSET_PRICE_UPDATE,
@@ -76,10 +76,10 @@ export default class AssetPriceService {
 
   private logger = {
     notification(title: string, ...data: unknown[]): void {
-      Logger.notification('✦ AssetPriceService', title, ...data)
+      // Logger.notification('✦ AssetPriceService', title, ...data)
     },
     warning(...data: unknown[]): void {
-      Logger.warning('✦ AssetPriceService', ...data)
+      // Logger.warning('✦ AssetPriceService', ...data)
     }
   }
 }

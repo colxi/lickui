@@ -31,7 +31,7 @@ export default class PricesSocketService extends EventedService<typeof ServiceEv
 
   readonly #onSocketMessage = async (ws: WebsocketConnection, message: unknown): Promise<void> => {
     if (!isBinanceSocketEvent(message)) {
-      this.logger.warning('Invalid PricesSocket message', message)
+      // this.logger.warning('Invalid PricesSocket message', message)
       return
     }
     if (isAssetPriceUpdateEvent(message)) {
@@ -45,14 +45,14 @@ export default class PricesSocketService extends EventedService<typeof ServiceEv
       )
     }
     else {
-      this.logger.warning('Unhandled PricesSocket event', message.e)
+      // this.logger.warning('Unhandled PricesSocket event', message.e)
     }
   }
 
   public async start(): Promise<void> {
-    this.logger.notification('Starting service...')
+    // this.logger.notification('Starting service...')
     return new Promise(resolve => {
-      this.logger.notification('Starting socket...')
+      // this.logger.notification('Starting socket...')
       this.#pricesStreamSocket.onConnectCallback = (): void => {
         this.subscribeToPricesStream()
         resolve()
@@ -62,13 +62,13 @@ export default class PricesSocketService extends EventedService<typeof ServiceEv
   }
 
   public async stop(): Promise<void> {
-    this.logger.notification('Stopping service...')
+    // this.logger.notification('Stopping service...')
     this.#pricesStreamSocket.disconnect()
   }
 
   private subscribeToPricesStream(): void {
     const enabledCoins = Object.values(config.assets).filter(i => i.enabled)
-    this.logger.notification(`Subscribing to prices stream for ${enabledCoins.length} coins...`)
+    // this.logger.notification(`Subscribing to prices stream for ${enabledCoins.length} coins...`)
     const request = {
       "method": "SUBSCRIBE",
       "id": this.#pricesStreamSocket.sentMessagesCount + 1,
@@ -79,10 +79,10 @@ export default class PricesSocketService extends EventedService<typeof ServiceEv
 
   private logger = {
     notification(title: string, ...data: unknown[]): void {
-      Logger.notification(`$ ${ServiceName}`, title, ...data)
+      // Logger.notification(`$ ${ServiceName}`, title, ...data)
     },
     warning(...data: unknown[]): void {
-      Logger.warning(`$ ${ServiceName} `, ...data)
+      // Logger.warning(`$ ${ServiceName} `, ...data)
     }
   }
 }

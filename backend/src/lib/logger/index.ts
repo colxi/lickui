@@ -1,130 +1,88 @@
+import { isChainable, LoggerColorRGB } from './helpers'
 import {
   LoggerFontBackground,
   LoggerFontColor,
   LoggerFontStyle,
-  LoggerFormattedTextOptions
+  LoggerFormattedTextOptions,
+  LoggerOptions
 } from './types'
 
 
-function isChainable(i: any): boolean {
-  return typeof i === 'string' || typeof i === 'number' || typeof i === 'boolean'
-}
+export default class Logger {
+  constructor(options: LoggerOptions) {
+    this.#renderTime = options.renderTime || false
+    this.#contextTree = Array.isArray(options.context) ? options.context : [options.context]
+  }
 
-class Logger {
+  #contextTree: LoggerFormattedTextOptions[]
+  #renderTime: boolean
+
+  public createChild(options: LoggerOptions): Logger {
+    const context = Array.isArray(options.context) ? options.context : [options.context]
+    return new Logger({
+      renderTime: 'renderTime' in options ? options.renderTime : this.#renderTime,
+      context: [...this.#contextTree, ...context]
+    })
+  }
+
+  static hexColor(hexColor: string): LoggerColorRGB {
+    return new LoggerColorRGB(hexColor)
+  }
+
+  public hexColor(hexColor: string): LoggerColorRGB {
+    return new LoggerColorRGB(hexColor)
+  }
+
   public formatText(options: LoggerFormattedTextOptions): string {
+    let text = options.text
     let result = ''
     if (options.style) result += LoggerFontStyle[options.style]
-    if (options.background) result += LoggerFontBackground[options.background]
-    if (options.color) result += LoggerFontColor[options.color]
-    if (options.padding) options.text = options.text.padStart(options.text.length + options.padding).padEnd(options.text.length + (options.padding * 2))
-    result += options.text
+    if (options.background) {
+      result += options.background instanceof LoggerColorRGB
+        ? options.background.backgroundToANSI()
+        : LoggerFontBackground[options.background]
+    }
+    if (options.color) {
+      result += options.color instanceof LoggerColorRGB
+        ? options.color.colorToANSI()
+        : LoggerFontColor[options.color]
+    }
+    if (options.padding) text = text.padStart(text.length + options.padding).padEnd(text.length + (options.padding * 2))
+    result += text
     if (options.reset !== false) result += LoggerFontStyle.reset
     return result
   }
 
-  public log(...args: unknown[]): void {
+  public log(message: string, ...args: unknown[]): void {
     const items: any[] = []
+    // render the contexts
+    for (const context of this.#contextTree) {
+      const formatted = this.formatText(context)
+      if (!items.length) items.push(formatted)
+      else items[items.length - 1] = [items[0], formatted].join('')
+    }
+
+    // add an arrow at th end of te context
+    if (this.#contextTree[this.#contextTree.length - 1].background) {
+      const ending = this.formatText({
+        color: this.#contextTree[this.#contextTree.length - 1].background,
+        text: ''
+      })
+      items[items.length - 1] = [items[0], ending].join('')
+    }
+
+    // add message
+    items.push(message)
+    if (args.length) items.push('\n')
+
+    // metadata
     for (const arg of args) {
       const last: any = items[items.length - 1]
       if (isChainable(last) && isChainable(arg)) items[items.length - 1] = [last, arg].join('')
       else items.push(arg)
     }
+
+    // render message data
     console.log(...items, LoggerFontStyle.reset)
   }
-
-  public info(...args: unknown[]): void {
-    this.log(
-      this.formatText({
-        background: 'blue',
-        color: 'white',
-        style: 'bold',
-        padding: 1,
-        text: 'INFO'
-      }),
-      ' ',
-      ...args
-    )
-  }
-
-  public warning(...args: unknown[]): void {
-    this.log(
-      this.formatText({
-        background: 'yellow',
-        color: 'white',
-        style: 'bold',
-        padding: 1,
-        text: 'WARNING'
-      }),
-      ' ',
-      ...args
-    )
-  }
-
-  public error(...args: unknown[]): void {
-    this.log(
-      this.formatText({
-        background: 'red',
-        color: 'white',
-        style: 'bold',
-        padding: 1,
-        text: 'ERROR'
-      }),
-      ' ',
-      ...args
-    )
-  }
-
-  public event(emitter: string, title: string, ...args: unknown[]): void {
-    this.log(
-      this.formatText({
-        background: 'black',
-        color: 'yellow',
-        style: 'bold',
-        padding: 1,
-        text: '⚡︎ EVENT'
-      }),
-      this.formatText({
-        background: 'black',
-        color: 'white',
-        style: 'dim',
-        padding: 0,
-        text: `from `
-      }),
-      this.formatText({
-        background: 'black',
-        color: 'white',
-        padding: 0,
-        text: `${emitter} `
-      }),
-      this.formatText({
-        background: 'white',
-        color: 'black',
-        padding: 1,
-        text: title
-      }),
-    )
-    if (args.length) this.log(...args)
-  }
-
-  public notification(type: string, title: string, ...args: unknown[]): void {
-    this.log(
-      this.formatText({
-        background: 'green',
-        color: 'white',
-        style: 'bold',
-        padding: 1,
-        text: type
-      }),
-      this.formatText({
-        background: 'white',
-        color: 'black',
-        padding: 1,
-        text: title
-      }),
-    )
-    if (args.length) this.log(...args)
-  }
-
 }
-
-export default new Logger()

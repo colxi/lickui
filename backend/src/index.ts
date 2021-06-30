@@ -7,6 +7,7 @@ import config from './config'
 // import futuresWalletService from './service/futures-wallet'
 // import indicatorsFeed from './service/indicators-feed'
 
+
 console.clear()
 
 function validate() {

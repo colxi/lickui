@@ -28,14 +28,14 @@ export function isOrderTradeUpdateEvent(
 }
 
 export function socketLogger(...args: any[]): void {
-  const subtitle = Logger.formatText({
-    reset: false,
-    color: 'green',
-    background: 'black',
-    text: '  WS ',
-  })
-  Logger.notification(
-    `♦︎ ${ServiceName} ${subtitle}`,
-    `${args[0]}`
-  )
+  // const subtitle = Logger.formatText({
+  //   reset: false,
+  //   color: 'green',
+  //   background: 'black',
+  //   text: '  WS ',
+  // })
+  // Logger.notification(
+  //   `♦︎ ${ServiceName} ${subtitle}`,
+  //   `${args[0]}`
+  // )
 }

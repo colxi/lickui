@@ -34,7 +34,7 @@ export default class LiquidationsSocketService extends EventedService<typeof Ser
 
   readonly #onSocketMessage = async (ws: WebsocketConnection, message: unknown): Promise<void> => {
     if (!isBinanceSocketEvent(message)) {
-      this.logger.warning('Invalid LiquidationsSocket message', message)
+      // this.logger.warning('Invalid LiquidationsSocket message', message)
       return
     }
     else if (isLiquidationsUpdateEvent(message)) {
@@ -42,14 +42,14 @@ export default class LiquidationsSocketService extends EventedService<typeof Ser
       this.onLiquidationsUpdate(liquidationsData)
     }
     else {
-      this.logger.warning('Unhandled LiquidationsSocket event', message.e)
+      // this.logger.warning('Unhandled LiquidationsSocket event', message.e)
     }
   }
 
   public async start(): Promise<void> {
-    this.logger.notification('Starting service...')
+    // this.logger.notification('Starting service...')
     return new Promise(resolve => {
-      this.logger.notification('Starting socket...')
+      // this.logger.notification('Starting socket...')
       this.#futuresSocket.onConnectCallback = (): void => {
         this.subscribeToLiquidationsStream()
         resolve()
@@ -59,13 +59,13 @@ export default class LiquidationsSocketService extends EventedService<typeof Ser
   }
 
   public stop(): void {
-    this.logger.notification('Stopping service...')
+    // this.logger.notification('Stopping service...')
     this.#futuresSocket.disconnect()
   }
 
   private subscribeToLiquidationsStream(): void {
     const enabledCoins = Object.values(config.assets).filter(i => i.enabled)
-    this.logger.notification(`Subscribing to liquidations stream for ${enabledCoins.length} coins...`)
+    // this.logger.notification(`Subscribing to liquidations stream for ${enabledCoins.length} coins...`)
     // Binance will push snapshot data at a maximum frequency of 1 push per second
     this.#futuresSocket.send({
       "method": "SUBSCRIBE",
@@ -89,10 +89,10 @@ export default class LiquidationsSocketService extends EventedService<typeof Ser
 
   private logger = {
     notification(title: string, ...data: unknown[]): void {
-      Logger.notification(`✖︎ ${ServiceName}`, title, ...data)
+      // Logger.notification(`✖︎ ${ServiceName}`, title, ...data)
     },
     warning(...data: unknown[]): void {
-      Logger.warning(`✖︎ ${ServiceName}`, ...data)
+      // Logger.warning(`✖︎ ${ServiceName}`, ...data)
     }
   }
 }
