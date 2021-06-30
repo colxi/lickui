@@ -1,6 +1,6 @@
 import ErrorHandlingService from './service/error-handling'
 import BinanceService from './service/binance-service'
-import config from '../config'
+import config from './config'
 
 // import binanceClient from './service/futures-account'
 // import initRESTApiService from './service/api-server'
@@ -10,7 +10,7 @@ import config from '../config'
 console.clear()
 
 function validate() {
-  const activeCoinsCount = Object.values(config.coins).filter(i => i.enabled).length
+  const activeCoinsCount = Object.values(config.assets).filter(i => i.enabled).length
   console.log('ENABLED COINS :', activeCoinsCount)
   if (activeCoinsCount > 199) throw new Error('a maximum of 199 coins are allowed simultanously')
 }

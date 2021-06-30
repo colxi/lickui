@@ -1,4 +1,3 @@
-// UTILS
 
 
 export interface FuturesOrderDescriptor {
@@ -104,6 +103,12 @@ export enum TimeInForce {
   IOC = 'IOC', // Immediate or Cancel
   FOK = 'FOK', // Fill or Kill
   GTX = 'GTX' // Good Till Crossing(Post Only)
+}
+
+export interface BinanceAPIAssetPrice {
+  symbol: AssetPair
+  price: CurrencyAmountString
+  time: Timestamp
 }
 
 export interface BinanceFuturesAPIOrder {

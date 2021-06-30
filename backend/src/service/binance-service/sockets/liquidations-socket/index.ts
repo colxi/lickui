@@ -64,7 +64,7 @@ export default class LiquidationsSocketService extends EventedService<typeof Ser
   }
 
   private subscribeToLiquidationsStream(): void {
-    const enabledCoins = Object.values(config.coins).filter(i => i.enabled)
+    const enabledCoins = Object.values(config.assets).filter(i => i.enabled)
     this.logger.notification(`Subscribing to liquidations stream for ${enabledCoins.length} coins...`)
     // Binance will push snapshot data at a maximum frequency of 1 push per second
     this.#futuresSocket.send({

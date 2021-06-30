@@ -4,6 +4,7 @@ import { getDateAsDDMMYYYY } from '@/lib/date'
 import config from '@/config'
 import {
   AssetPair,
+  BinanceAPIAssetPrice,
   BinanceBalanceData,
   BinanceFuturesAPIOrder,
   BinanceFuturesAPIPosition
@@ -57,6 +58,11 @@ export default class {
 
   static async getFuturesExchangeInfo(): Promise<any> {
     const data: any = await this.binanceFetch('https://fapi.binance.com/fapi/v1/exchangeInfo', 'GET', false)
+    return data
+  }
+
+  static async getAssetsPrice(): Promise<BinanceAPIAssetPrice[]> {
+    const data: any = await this.binanceFetch('https://fapi.binance.com/fapi/v1/ticker/price', 'GET', false)
     return data
   }
 

@@ -38,6 +38,7 @@ export default class PricesSocketService extends EventedService<typeof ServiceEv
       this.dispatchEvent(
         this.Event.ASSET_PRICE_UPDATE,
         {
+          timestamp: message.E,
           assetPair: message.s,
           price: Number(message.p)
         }
@@ -66,7 +67,7 @@ export default class PricesSocketService extends EventedService<typeof ServiceEv
   }
 
   private subscribeToPricesStream(): void {
-    const enabledCoins = Object.values(config.coins).filter(i => i.enabled)
+    const enabledCoins = Object.values(config.assets).filter(i => i.enabled)
     this.logger.notification(`Subscribing to prices stream for ${enabledCoins.length} coins...`)
     const request = {
       "method": "SUBSCRIBE",
@@ -81,7 +82,7 @@ export default class PricesSocketService extends EventedService<typeof ServiceEv
       Logger.notification(`$ ${ServiceName}`, title, ...data)
     },
     warning(...data: unknown[]): void {
-      Logger.warning('$ ${ServiceName}', ...data)
+      Logger.warning(`$ ${ServiceName} `, ...data)
     }
   }
 }

@@ -1,7 +1,7 @@
 import binanceApi from '@/api/binance'
 import Logger from '@/lib/logger'
 import { AccountUpdateEventType, BinanceBalanceData, CurrencyAmount, Timestamp } from '@/types'
-import FuturesSocketService from '@/service/binance-service/futures-socket'
+import FuturesSocketService from '@/service/binance-service/sockets/futures-socket'
 
 
 interface WalletHistoryEntry {

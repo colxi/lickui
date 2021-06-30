@@ -1,6 +1,7 @@
-import { AssetPair, CurrencyAmount } from '@/types'
+import { AssetPair, CurrencyAmount, Timestamp } from '@/types'
 
-interface AssetPriceUpdateEventData {
+export interface AssetPriceUpdateEventData {
+  timestamp: Timestamp
   assetPair: AssetPair
   price: CurrencyAmount
 }
