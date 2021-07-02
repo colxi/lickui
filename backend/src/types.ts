@@ -1,8 +1,5 @@
 
-export enum ServiceStatus {
-  RUNNING = 'RUNNING',
-  STOPPED = 'STOPPED'
-}
+export type PlainObject = Record<PropertyKey, unknown>
 
 export interface FuturesOrderDescriptor {
   time: Timestamp,

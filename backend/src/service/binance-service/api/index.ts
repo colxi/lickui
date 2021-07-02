@@ -136,10 +136,6 @@ export default class {
     return await binanceFetch(`https://fapi.binance.com/fapi/v1/allOrders?limit=1000&symbol=${symbol}`, 'GET')
   }
 
-  static async getFuturesUserDataKey(): Promise<string> {
-    const data: any = await binanceFetch('https://fapi.binance.com/fapi/v1/listenKey', 'POST', false)
-    return data['listenKey']
-  }
 
   static async getUserCommissionRates(): Promise<any> {
     const data: any = await binanceFetch('https://fapi.binance.com/fapi/v1/commissionRate', 'GET')

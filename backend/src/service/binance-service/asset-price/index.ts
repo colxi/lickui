@@ -1,8 +1,8 @@
 import binanceApi from '@/service/binance-service/api'
 import Logger from '@/lib/logger'
-import PricesSocketService from '../sockets/prices-socket'
+import PricesSocketService from './socket-manager'
 import { config } from '@/config'
-import { AssetPriceUpdateEventData } from '../sockets/prices-socket/types'
+import { AssetPriceUpdateEventData } from './socket-manager/types'
 import {
   Asset,
   AssetPair,
@@ -21,12 +21,12 @@ interface AssetStatusDescriptor {
 
 export default class AssetPriceService {
   constructor(pricesSocketService: PricesSocketService) {
-    this.#pricesSocketService = pricesSocketService
+    this.#assetPriceSocketManager = pricesSocketService
     this.#assets = {}
     this.onAssetPriceUpdate = this.onAssetPriceUpdate.bind(this)
   }
 
-  #pricesSocketService: PricesSocketService
+  #assetPriceSocketManager: PricesSocketService
   #assets: Record<Asset, AssetStatusDescriptor> = {}
 
   public getAssetInfo(asset: Asset): Immutable<AssetStatusDescriptor> | null {
@@ -34,7 +34,7 @@ export default class AssetPriceService {
     return this.#assets[asset]
   }
 
-  private async fetchAllAssetPrices(): Promise<Record<Asset, AssetStatusDescriptor>> {
+  private async fetchAssetsPrices(): Promise<Record<Asset, AssetStatusDescriptor>> {
     // this.logger.notification('Fetching all assets prices...')
     const assetsPrices: Record<Asset, AssetStatusDescriptor> = {}
     const binanceAssetsPrices: BinanceAPIAssetPrice[] = await binanceApi.getAssetsPrice()
@@ -54,16 +54,16 @@ export default class AssetPriceService {
 
   public async start(): Promise<void> {
     // this.logger.notification('Starting service...')
-    this.#assets = await this.fetchAllAssetPrices()
-    this.#pricesSocketService.subscribe(
-      this.#pricesSocketService.Event.ASSET_PRICE_UPDATE,
+    this.#assets = await this.fetchAssetsPrices()
+    this.#assetPriceSocketManager.subscribe(
+      this.#assetPriceSocketManager.Event.ASSET_PRICE_UPDATE,
       this.onAssetPriceUpdate
     )
   }
 
   public async stop(): Promise<void> {
-    this.#pricesSocketService.unsubscribe(
-      this.#pricesSocketService.Event.ASSET_PRICE_UPDATE,
+    this.#assetPriceSocketManager.unsubscribe(
+      this.#assetPriceSocketManager.Event.ASSET_PRICE_UPDATE,
       this.onAssetPriceUpdate
     )
   }
@@ -79,7 +79,7 @@ export default class AssetPriceService {
       // Logger.notification('✦ AssetPriceService', title, ...data)
     },
     warning(...data: unknown[]): void {
-      // Logger.warning('✦ AssetPriceService', ...data)
+      // Loggser.warning('✦ AssetPriceService', ...data)
     }
   }
 }

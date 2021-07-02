@@ -28,7 +28,6 @@ export class LoggerColorRGB {
     this.r = colorRgb.r
     this.g = colorRgb.g
     this.b = colorRgb.b
-    console.log(this.r, this.g, this.b)
   }
 
   public readonly r: number

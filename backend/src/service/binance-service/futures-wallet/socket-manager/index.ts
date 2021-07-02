@@ -1,5 +1,5 @@
 import WebsocketConnection from '@/lib/websocket'
-import binanceApi from '@/service/binance-service/api'
+import { getFuturesUserDataKey } from './api'
 import { OnWalletUpdateCallback, FuturesWalletSocketManagerOptions } from './types'
 import config from '@/config'
 import { isAccountUpdateEvent } from './helpers'
@@ -28,7 +28,7 @@ export default class FuturesWalletSocketManager {
 
   public get isConnected(): boolean { return this.#socket.isConnected }
 
-  public async start(): Promise<void> {
+  public async connect(): Promise<void> {
     this.#logger.log('Starting manager...')
     const futuresWsKey = await this.#getBinanceWebsocketDataKey()
     return new Promise(resolve => {
@@ -38,14 +38,14 @@ export default class FuturesWalletSocketManager {
     })
   }
 
-  public async stop(): Promise<void> {
+  public async disconnect(): Promise<void> {
     this.#logger.log('Stopping manager...')
     this.#socket.disconnect()
   }
 
   #getBinanceWebsocketDataKey = async (): Promise<string> => {
     this.#logger.log('Fetching UserDataKey...')
-    const futuresWsKey = await binanceApi.getFuturesUserDataKey()
+    const futuresWsKey = await getFuturesUserDataKey()
     return futuresWsKey
   }
 

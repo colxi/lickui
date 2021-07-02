@@ -1,6 +1,6 @@
 import ErrorHandlingService from './service/error-handling'
 import BinanceService from './service/binance-service'
-import config from './config'
+import { config } from './config'
 
 // import binanceClient from './service/futures-account'
 // import initRESTApiService from './service/api-server'
@@ -20,7 +20,9 @@ async function init(): Promise<void> {
   // TODO:  Get all available symbols, set leverage to X5 to all symbols, set all  symbols to isolated.
   await ErrorHandlingService.start()
   validate()
-  await BinanceService.start()
+  await BinanceService.start({
+    assetPairs: config.getEnabledAssetsList()
+  })
 }
 
 init().catch(e => { throw e })

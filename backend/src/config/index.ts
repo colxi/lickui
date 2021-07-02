@@ -5,7 +5,7 @@ import _configKeys from '../../config.keys.json'
 import { Asset, Immutable } from '@/types'
 
 
-interface ConfigAssetDescriptor {
+export interface ConfigAssetDescriptor {
   asset: Asset
   longOffset: number
   shortOffset: number

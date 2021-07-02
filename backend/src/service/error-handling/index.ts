@@ -16,12 +16,13 @@ class ErrorHandlingService {
 
   private handleErrors(error: unknown, type: string): void {
     console.log()
-    console.log(`${this.errorBackgroundColor} ${this.errorFontColor} [${type.toUpperCase()}]`)
+    console.log(`[${type.toUpperCase()}]`)
     if (error instanceof Error) {
       const { filename, line } = this.getErrorLocation(error)
       console.log(error.name, ':', error.message)
       console.log('File:', filename)
       console.log('Line:', line)
+      console.log('Stack:\n', error.stack)
     } else console.log(error)
     console.log('\x1b[0m')
     process.exit()
