@@ -1,11 +1,10 @@
-import binanceApi from '@/service/binance-service/api'
 import FuturesWalletSocketManager from './socket-manager'
 import EventedService from '@/lib/evented-service'
 import { LoggerConfigs } from '../helpers'
 import Logger from '@/lib/logger'
 import {
   FuturesWalletServiceEvents,
-  FuturesWalletServiceEventsConfig,
+  FuturesWalletServiceConfig,
   FuturesWalletServiceOptions,
   WalletUpdateEventData
 } from './types'
@@ -14,10 +13,11 @@ import {
   BinanceBalanceData,
   CurrencyAmount,
 } from '@/types'
+import { getFuturesBalance } from './api'
 
 
 export default class FuturesWalletService extends EventedService<
-  FuturesWalletServiceEventsConfig
+  FuturesWalletServiceConfig
 > {
   constructor(options: FuturesWalletServiceOptions) {
     super({
@@ -28,24 +28,22 @@ export default class FuturesWalletService extends EventedService<
         return (message: string, ...args: any[]): void => logger.log(message, ...args)
       })(),
       onStart: async () => {
-        await this.#fetchBalances()
+        await this.#initWallet()
         await this.#walletSocketManager.connect()
       },
       onStop: async () => {
         await this.#walletSocketManager.disconnect()
-        this.#totalBalance = 0
-        this.#availableBalance = 0
       }
     })
 
-    this.#logger = options.logger
     this.#updateWallet = this.#updateWallet.bind(this)
-    this.#totalBalance = 0
-    this.#availableBalance = 0
+    this.#logger = options.logger
     this.#walletSocketManager = new FuturesWalletSocketManager({
       logger: this.#logger.createChild(LoggerConfigs.futuresWalletServiceSocketManager),
       onWalletUpdate: this.#updateWallet
     })
+    this.#totalBalance = 0
+    this.#availableBalance = 0
   }
 
   #logger: Logger
@@ -57,18 +55,26 @@ export default class FuturesWalletService extends EventedService<
   public get availableBalance(): CurrencyAmount { return this.#availableBalance }
 
 
-  #fetchBalances = async (): Promise<void> => {
+  /**
+   * 
+   * 
+   */
+  #initWallet = async (): Promise<void> => {
     this.#logger.log('Fetching futures wallet...')
-    const futuresWallet: BinanceBalanceData = await binanceApi.getFuturesBalance()
+    const futuresWallet: BinanceBalanceData = await getFuturesBalance()
     this.#updateWallet({
       timestamp: Date.now(),
       totalBalance: futuresWallet.totalBalance,
       availableBalance: futuresWallet.availableBalance,
       type: AccountUpdateEventType.BALANCE_FETCH
-    })
+    }, false)
   }
 
-  #updateWallet = (eventData: WalletUpdateEventData): void => {
+  /**
+   * 
+   * 
+   */
+  #updateWallet = (eventData: WalletUpdateEventData, dispatchEvent: boolean = true): void => {
     this.#logger.log(
       'Updating wallet data',
       eventData.type === AccountUpdateEventType.BALANCE_FETCH
@@ -78,9 +84,6 @@ export default class FuturesWalletService extends EventedService<
     )
     this.#totalBalance = eventData.totalBalance
     this.#availableBalance = eventData.availableBalance
-    this.dispatchEvent(
-      this.Event.WALLET_UPDATE,
-      eventData
-    )
+    if (dispatchEvent) this.dispatchEvent(this.Event.WALLET_UPDATE, eventData)
   }
 }

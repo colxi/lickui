@@ -3,7 +3,7 @@ import { createHmac } from 'crypto'
 import { getDateAsDDMMYYYY } from '@/lib/date'
 import config from '@/config'
 import {
-  AssetPair,
+  CryptoAsset,
   BinanceAPIAssetPrice,
   BinanceBalanceData,
   BinanceFuturesAPIOrder,
@@ -60,11 +60,6 @@ export default class {
 
   static async getFuturesExchangeInfo(): Promise<any> {
     const data: any = await binanceFetch('https://fapi.binance.com/fapi/v1/exchangeInfo', 'GET', false)
-    return data
-  }
-
-  static async getAssetsPrice(): Promise<BinanceAPIAssetPrice[]> {
-    const data: any = await binanceFetch('https://fapi.binance.com/fapi/v1/ticker/price', 'GET', false)
     return data
   }
 
@@ -131,7 +126,7 @@ export default class {
     return await binanceFetch('https://fapi.binance.com/fapi/v1/openOrders')
   }
 
-  static async getLastWeekFutureOrders(symbol: AssetPair): Promise<BinanceFuturesAPIOrder[]> {
+  static async getLastWeekFutureOrders(symbol: CryptoAsset): Promise<BinanceFuturesAPIOrder[]> {
     // docs: https://binance-docs.github.io/apidocs/futures/en/#all-orders-user_data
     return await binanceFetch(`https://fapi.binance.com/fapi/v1/allOrders?limit=1000&symbol=${symbol}`, 'GET')
   }

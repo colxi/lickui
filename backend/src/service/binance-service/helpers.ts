@@ -26,6 +26,7 @@ export const LoggerConfigs = {
       text: 'BinanceClient'
     }
   },
+  // FUTURES WALLET SERVICE
   futuresWalletService: {
     context: {
       background: Logger.hexColor('#ebb359'),
@@ -38,6 +39,23 @@ export const LoggerConfigs = {
     context: {
       background: Logger.hexColor('#e0c182'),
       color: Logger.hexColor('#FFFFFF'),
+      padding: 1,
+      text: 'SocketManager'
+    }
+  },
+  // FUTURES ASSET SERVICE
+  futuresAssetService: {
+    context: {
+      background: Logger.hexColor('#ddd322'),
+      color: Logger.hexColor('#666666'),
+      padding: 1,
+      text: 'FuturesAssetsService'
+    }
+  },
+  futuresAssetServiceSocketManager: {
+    context: {
+      background: Logger.hexColor('#eee359'),
+      color: Logger.hexColor('#666666'),
       padding: 1,
       text: 'SocketManager'
     }

@@ -1,5 +1,5 @@
 import Logger from '@/lib/logger'
-import { AccountUpdateEventType, AssetPair, CurrencyAmount, Timestamp } from '@/types'
+import { AccountUpdateEventType, CryptoAsset, CurrencyAmount, Timestamp } from '@/types'
 
 export interface FuturesWalletServiceOptions {
   logger: Logger
@@ -16,7 +16,7 @@ export const FuturesWalletServiceEvents = {
   WALLET_UPDATE: (eventData: WalletUpdateEventData): void => { void (eventData) },
 }
 
-export interface FuturesWalletServiceEventsConfig {
+export interface FuturesWalletServiceConfig {
   verbose: boolean,
   logger: (...args: any) => void
   events: typeof FuturesWalletServiceEvents

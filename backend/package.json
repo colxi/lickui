@@ -18,6 +18,7 @@
     "node-fetch": "^2.6.0",
     "rest-api-service": "^1.0.26",
     "sqlite3": "^5.0.2",
+    "ts-node-dev": "^1.1.8",
     "ws": "^7.4.3"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
   },
   "scripts": {
     "start": "yarn run build:live",
+    "debug": "nodemon --watch 'src/**/*.ts' --exec 'ts-node-dev --inspect -r tsconfig-paths/register' src/index.ts",
     "lint": "eslint 'src/**/*.ts'",
     "build": "yarn lint & tsc -p .",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node -r tsconfig-paths/register' src/index.ts",

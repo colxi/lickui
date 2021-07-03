@@ -1,4 +1,4 @@
-import { AccountUpdateEventType, AssetPair, CurrencyAmount, OrderId, OrderSide, OrderStatus, OrderType, Timestamp } from '@/types'
+import { AccountUpdateEventType, CryptoAsset, CurrencyAmount, OrderId, OrderSide, OrderStatus, OrderType, Timestamp } from '@/types'
 
 interface WalletUpdateEventData {
   totalBalance: CurrencyAmount
@@ -8,7 +8,7 @@ interface WalletUpdateEventData {
 
 interface PositionUpdateEventData {
   time: Timestamp
-  assetPair: AssetPair
+  assetPair: CryptoAsset
   entryPrice: CurrencyAmount
   quantity: number
   unrealizedPnL: CurrencyAmount
@@ -16,7 +16,7 @@ interface PositionUpdateEventData {
 
 interface OrderUpdateEventData {
   time: Timestamp
-  assetPair: AssetPair
+  assetPair: CryptoAsset
   price: CurrencyAmount
   quantity: number
   side: OrderSide

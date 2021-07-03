@@ -65,7 +65,7 @@
 
 //   private subscribeToLiquidationsStream(): void {
 //     const enabledCoins = Object.values(config.assets).filter(i => i.enabled)
-//     // this.logger.notification(`Subscribing to liquidations stream for ${enabledCoins.length} coins...`)
+//     // this.logger.notification(`Subscribing to liquidations stream for ${enabledCoins.length} assets...`)
 //     // Binance will push snapshot data at a maximum frequency of 1 push per second
 //     this.#futuresSocket.send({
 //       "method": "SUBSCRIBE",

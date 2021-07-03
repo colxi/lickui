@@ -7,6 +7,8 @@ import { config } from './config'
 // import futuresWalletService from './service/futures-wallet'
 // import indicatorsFeed from './service/indicators-feed'
 
+// make Binance object available for debugging pùrposes (yarn debug + devtools)
+(global as any).Binance = BinanceService
 
 console.clear()
 

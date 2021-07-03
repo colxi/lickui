@@ -62,10 +62,10 @@ export default abstract class EventedService<
    */
   public async start(...args: START_METHOD_PARAMS): Promise<void> {
     if (this.#serviceStatus === ServiceStatus.RUNNING) return
-    this.dispatchEvent('SERVICE_STARTING', undefined)
+    this.dispatchEvent('SERVICE_STARTING', undefined, true)
     await this.#onStart(...args)
     this.#serviceStatus = ServiceStatus.RUNNING
-    this.dispatchEvent('SERVICE_STARTED', undefined)
+    this.dispatchEvent('SERVICE_STARTED', undefined, true)
   }
 
   /**
@@ -74,10 +74,10 @@ export default abstract class EventedService<
    */
   public async stop(...args: STOP_METHOD_PARAMS): Promise<void> {
     if (this.#serviceStatus === ServiceStatus.STOPPED) return
-    this.dispatchEvent('SERVICE_STARTED', undefined)
+    this.dispatchEvent('SERVICE_STARTED', undefined, true)
     await this.#onStop(...args)
     this.#serviceStatus = ServiceStatus.STOPPED
-    this.dispatchEvent('SERVICE_STOPPED', undefined)
+    this.dispatchEvent('SERVICE_STOPPED', undefined, true)
 
   }
 
@@ -88,10 +88,11 @@ export default abstract class EventedService<
   // Parameters<E_DICTIONARY[E_NAME]>[0] extends never ? never : Parameters<E_DICTIONARY[E_NAME]>[0]
   protected dispatchEvent<E_NAME extends keyof E_DICTIONARY>(
     eventName: E_NAME,
-    eventData: Parameters<E_DICTIONARY[E_NAME]>[0]
+    eventData: Parameters<E_DICTIONARY[E_NAME]>[0],
+    forceLog: boolean = false
   ): void {
     // const [eventName, eventData] = args
-    if (this.#verbose) this.#log(`${eventName}`)
+    if (this.#verbose || forceLog) this.#log(`${eventName}`)
     for (const eventHandler of this.#subscribers[eventName]) {
       eventHandler(eventData)
     }

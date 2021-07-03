@@ -1,5 +1,5 @@
 import WebsocketConnection from '@/lib/websocket'
-import { getFuturesUserDataKey } from './api'
+import { getFuturesUserDataKey } from '../api'
 import { OnWalletUpdateCallback, FuturesWalletSocketManagerOptions } from './types'
 import config from '@/config'
 import { isAccountUpdateEvent } from './helpers'
@@ -12,12 +12,13 @@ export default class FuturesWalletSocketManager {
   constructor(options: FuturesWalletSocketManagerOptions) {
     this.#logger = options.logger
     this.#onWalletUpdateCallback = options.onWalletUpdate
+    this.#onSocketMessage = this.#onSocketMessage.bind(this)
     const socketLogger = this.#logger.createChild(LoggerConfigs.socket)
     this.#socket = new WebsocketConnection({
       host: config.binance.production.futuresWS,
       reconnectOnDisconnection: true,
       reconnectOnDisconnectionDelay: 2000,
-      onMessageCallback: (ws, msg): any => this.#onSocketMessage(ws, msg),
+      onMessageCallback: this.#onSocketMessage,
       logger: (msg: any): void => socketLogger.log(msg)
     })
   }
@@ -28,6 +29,10 @@ export default class FuturesWalletSocketManager {
 
   public get isConnected(): boolean { return this.#socket.isConnected }
 
+  /**
+   * 
+   * 
+   */
   public async connect(): Promise<void> {
     this.#logger.log('Starting manager...')
     const futuresWsKey = await this.#getBinanceWebsocketDataKey()
@@ -38,17 +43,29 @@ export default class FuturesWalletSocketManager {
     })
   }
 
+  /**
+   * 
+   * 
+   */
   public async disconnect(): Promise<void> {
     this.#logger.log('Stopping manager...')
     this.#socket.disconnect()
   }
 
+  /**
+   * 
+   * 
+   */
   #getBinanceWebsocketDataKey = async (): Promise<string> => {
     this.#logger.log('Fetching UserDataKey...')
     const futuresWsKey = await getFuturesUserDataKey()
     return futuresWsKey
   }
 
+  /**
+   * 
+   * 
+   */
   #onSocketMessage = async (
     ws: WebsocketConnection,
     message: unknown
