@@ -192,7 +192,7 @@
       "longOffset": 4,
       "shortOffset": 4,
       "lickValue": 7,
-      "enabled": false
+      "enabled": true
     },
     "BTCSTUSDT": {
       "symbol": "BTCST",

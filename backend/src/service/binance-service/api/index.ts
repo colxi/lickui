@@ -4,7 +4,6 @@ import { getDateAsDDMMYYYY } from '@/lib/date'
 import config from '@/config'
 import {
   CryptoAsset,
-  BinanceAPIAssetPrice,
   BinanceBalanceData,
   BinanceFuturesAPIOrder,
   BinanceFuturesAPIPosition
@@ -39,6 +38,8 @@ export async function binanceFetch(requestUrl: string, method = 'GET', passUrlPa
   let data: any
   try {
     data = await response.json()
+    const usedWeight = response.headers.get('x-mbx-used-weight-1m')
+    if (usedWeight) console.log('API Used weight=', usedWeight)
   } catch (e) {
     console.log(await response.text())
     throw new Error('Binance fetch invalid JSON response')
@@ -46,16 +47,17 @@ export async function binanceFetch(requestUrl: string, method = 'GET', passUrlPa
   return data || []
 }
 
+
+/**
+ * Returns : timezone, serverTime, rateLimits, exchangeFilters, symbols
+ */
+export async function getExchangeInfo(): Promise<any> {
+  const data: any = await binanceFetch('https://api.binance.com/api/v3/exchangeInfo', 'GET', false)
+  return data
+}
+
+
 export default class {
-
-
-  /**
-   * Returns : timezone, serverTime, rateLimits, exchangeFilters, symbols
-   */
-  static async getExchangeInfo(): Promise<any> {
-    const data: any = await binanceFetch('https://api.binance.com/api/v3/exchangeInfo', 'GET', false)
-    return data
-  }
 
 
   static async getFuturesExchangeInfo(): Promise<any> {

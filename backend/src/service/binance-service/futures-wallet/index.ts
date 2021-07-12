@@ -74,7 +74,10 @@ export default class FuturesWalletService extends EventedService<
    * 
    * 
    */
-  #updateWallet = (eventData: WalletUpdateEventData, dispatchEvent: boolean = true): void => {
+  #updateWallet = (
+    eventData: WalletUpdateEventData,
+    dispatchEvent: boolean = true
+  ): void => {
     this.#logger.log(
       'Updating wallet data',
       eventData.type === AccountUpdateEventType.BALANCE_FETCH

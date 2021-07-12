@@ -7,6 +7,7 @@ import Logger from '@/lib/logger'
 import { LoggerConfigs } from './helpers'
 import { CryptoAsset } from '@/types'
 import { config } from '@/config'
+import { getExchangeInfo } from './api'
 
 
 interface BinanceServiceStartOptions {
@@ -38,10 +39,25 @@ class BinanceService {
   // public readonly pricesSocket: PricesSocketService
   // public readonly liquidationsSocket: LiquidationsSocketService
 
+  requestsLimits: {
+    rateLimitType: 'REQUEST_WEIGHT' | 'ORDERS' | 'RAW_REQUESTS',
+    interval: 'MINUTE' | 'SECOND' | 'DAY',
+    intervalNum: number,
+    limit: number
+  }[] = []
 
   async start(options: BinanceServiceStartOptions): Promise<void> {
     this.#logger.log('Starting Binance client...')
-    void (options)
+
+    // get exchange limits
+    const exchangeInfo = await getExchangeInfo()
+    this.requestsLimits = exchangeInfo.rateLimits
+
+    if (this.#enabledAssets.length > 1024) {
+      throw new Error(`BinanceClient: Max allowed assets is 1024 (Requested ${this.#enabledAssets.length})`)
+    }
+    // TODO : Validate that requestes assets exist in binance futures
+
     await this.wallet.start()
     await this.asset.start({ assets: this.#enabledAssets })
 

@@ -1,11 +1,11 @@
 import {
-  AssetPriceUpdateEvent,
   BinanceWebsocketEventType,
 } from '@/types'
+import { BinanceWebsocketAssetCandleUpdateEvent } from './types'
 
 
-export function isAssetUpdateEvent(
+export function isAssetCandleUpdateEvent(
   eventData: any
-): eventData is AssetPriceUpdateEvent {
-  return eventData?.e === BinanceWebsocketEventType.ASSET_PRICE_UPDATE
+): eventData is BinanceWebsocketAssetCandleUpdateEvent {
+  return eventData?.e === BinanceWebsocketEventType.ASSET_CANDLE_UPDATE
 }
