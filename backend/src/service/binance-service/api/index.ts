@@ -3,7 +3,7 @@ import { createHmac } from 'crypto'
 import { getDateAsDDMMYYYY } from '@/lib/date'
 import config from '@/config'
 import {
-  CryptoAsset,
+  AssetName,
   BinanceBalanceData,
   BinanceFuturesAPIOrder,
   BinanceFuturesAPIPosition
@@ -39,7 +39,7 @@ export async function binanceFetch(requestUrl: string, method = 'GET', passUrlPa
   try {
     data = await response.json()
     const usedWeight = response.headers.get('x-mbx-used-weight-1m')
-    if (usedWeight) console.log('API Used weight=', usedWeight)
+    if (usedWeight) console.log('API Used weight=', usedWeight, effectiveUrl)
   } catch (e) {
     console.log(await response.text())
     throw new Error('Binance fetch invalid JSON response')
@@ -128,7 +128,7 @@ export default class {
     return await binanceFetch('https://fapi.binance.com/fapi/v1/openOrders')
   }
 
-  static async getLastWeekFutureOrders(symbol: CryptoAsset): Promise<BinanceFuturesAPIOrder[]> {
+  static async getLastWeekFutureOrders(symbol: AssetName): Promise<BinanceFuturesAPIOrder[]> {
     // docs: https://binance-docs.github.io/apidocs/futures/en/#all-orders-user_data
     return await binanceFetch(`https://fapi.binance.com/fapi/v1/allOrders?limit=1000&symbol=${symbol}`, 'GET')
   }

@@ -1,5 +1,5 @@
 import {
-  CryptoAsset,
+  AssetName,
   FuturesOrderDescriptor,
   FuturesPositionDescriptor,
   OrderStatus,
@@ -20,7 +20,7 @@ export default class FuturesPosition {
   }
 
   #history: any[]
-  #assetPair: CryptoAsset
+  #assetPair: AssetName
   #entryPrice: number
   #initialQuantity: number
   #quantity: number

@@ -1,16 +1,16 @@
 import Logger from '@/lib/logger'
-import { BinanceSocketEvent, BinanceWebsocketEventType, CandlestickInterval, CryptoAsset, CurrencyAmountString, OrderId, QuantityString, Timestamp } from '@/types'
-import { CryptoAssetCandle } from '../../types'
+import { BinanceSocketEvent, BinanceWebsocketEventType, CandlestickInterval, AssetName, CurrencyAmountString, OrderId, QuantityString, Timestamp } from '@/types'
+import { AssetCandle } from '../../types'
 
 
-export type OnAssetCandleUpdateCallback = (eventData: CryptoAssetCandle) => void
+export type OnAssetCandleUpdateCallback = (eventData: AssetCandle) => void
 
 export interface FuturesAssetsSocketManagerOptions {
   logger: Logger
   onAssetCandleUpdate: OnAssetCandleUpdateCallback
 }
 export interface FuturesAssetsSocketManagerConnectOptions {
-  assets: CryptoAsset[]
+  assets: AssetName[]
 }
 
 export interface BinanceWebsocketAssetCandleUpdateEvent {
@@ -19,14 +19,14 @@ export interface BinanceWebsocketAssetCandleUpdateEvent {
   /** Event time */
   E: Timestamp
   /** Symbol (asset pair) */
-  s: CryptoAsset
+  s: AssetName
   k: {
     /** Kline start time */
     t: Timestamp
     /** Kline close time */
     T: Timestamp
     /** Symbol (asset pair) */
-    s: CryptoAsset
+    s: AssetName
     /** Interval */
     i: CandlestickInterval
     /** First trade ID */

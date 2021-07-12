@@ -2,11 +2,11 @@
 import lickuiConfig from '../../config.json'
 // @ts-ignore
 import _configKeys from '../../config.keys.json'
-import { CryptoSymbol, Immutable } from '@/types'
+import { CoinName, Immutable } from '@/types'
 
 
 export interface ConfigAssetDescriptor {
-  asset: CryptoSymbol
+  asset: CoinName
   longOffset: number
   shortOffset: number
   lickValue: number
@@ -31,13 +31,13 @@ class Config {
   get binanceApiKey(): string { return _configKeys.binanceApiKey }
   get binanceApiSecret(): string { return _configKeys.binanceApiSecret }
   get taapiApiKey(): string { return _configKeys.taapiApiKey }
-  get assets(): Immutable<Record<CryptoSymbol, ConfigAssetDescriptor>> { return lickuiConfig.assets }
+  get assets(): Immutable<Record<CoinName, ConfigAssetDescriptor>> { return lickuiConfig.assets }
 
-  public isAssetSupported(asset: CryptoSymbol): asset is keyof typeof lickuiConfig.assets {
+  public isAssetSupported(asset: CoinName): asset is keyof typeof lickuiConfig.assets {
     return asset in lickuiConfig.assets
   }
 
-  public getEnabledAssetsList(): CryptoSymbol[] {
+  public getEnabledAssetsList(): CoinName[] {
     const assets = Object.values(lickuiConfig.assets)
       .filter(i => i.enabled)
       .map(i => i.asset)
@@ -45,9 +45,9 @@ class Config {
   }
 
   // 
-  public enableAsset(asset: CryptoSymbol): void {
+  public enableAsset(asset: CoinName): void {
     if (!this.isAssetSupported(asset)) {
-      console.log('CryptoSymbol no suported', asset)
+      console.log('CoinName no suported', asset)
       return
     }
 

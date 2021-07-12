@@ -1,6 +1,6 @@
 // import Logger from '@/lib/logger'
 // import {
-//     CryptoAsset,
+//     AssetName,
 //     Immutable,
 //     FuturesPositionDescriptor,
 //     FuturesOrderDescriptor,
@@ -70,7 +70,7 @@
 //     this.#history = []
 //   }
 
-//   #open: Record<CryptoAsset, FuturesPosition>
+//   #open: Record<AssetName, FuturesPosition>
 //   #history: Array<FuturesPosition>
 
 //   public get open(): Immutable<Record<string, unknown>> {

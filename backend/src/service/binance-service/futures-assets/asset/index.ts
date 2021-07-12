@@ -1,9 +1,9 @@
 import Logger from '@/lib/logger'
-import { CryptoAsset, CurrencyAmount, Immutable } from '@/types'
-import { CryptoAssetCandle } from '../types'
+import { AssetName, CurrencyAmount, Immutable } from '@/types'
+import { AssetCandle } from '../types'
 
 
-function calculateTypicalPrice(candle: CryptoAssetCandle): number {
+function calculateTypicalPrice(candle: AssetCandle): number {
   return (candle.high + candle.low + candle.close) / 3
 }
 
@@ -13,7 +13,7 @@ function calculateTypicalPrice(candle: CryptoAssetCandle): number {
  * Calculation : cumulative(typicalPrice * volume)/cumulative(volume)
  * 
  */
-function calculateVWAP(candles: CryptoAssetCandle[]): number {
+function calculateVWAP(candles: AssetCandle[]): number {
   // generate a collection of candles, containing each candle volume and  
   // normalized price ( hight + low + close / 3 )
   const normalizedCandles: Array<{ volume: number, price: number }> = candles.map(candle => {
@@ -31,7 +31,7 @@ function calculateVWAP(candles: CryptoAssetCandle[]): number {
 }
 
 export default class Asset {
-  constructor(assetPair: CryptoAsset, candles: CryptoAssetCandle[], maxCandles: number, logger: Logger) {
+  constructor(assetPair: AssetName, candles: AssetCandle[], maxCandles: number, logger: Logger) {
     this.#assetPair = assetPair
     this.#candles = candles
     this.#maxCandles = maxCandles
@@ -40,15 +40,15 @@ export default class Asset {
 
   readonly #logger: Logger
   readonly #maxCandles: number
-  readonly #assetPair: CryptoAsset
-  readonly #candles: CryptoAssetCandle[]
+  readonly #assetPair: AssetName
+  readonly #candles: AssetCandle[]
 
   /**
    * 
    * 
    * 
    */
-  public get assetPair(): CryptoAsset {
+  public get assetPair(): AssetName {
     return this.#assetPair
   }
 
@@ -83,7 +83,7 @@ export default class Asset {
    * Returns last candle from asset candles collection
    * 
    */
-  public get lastCandle(): Immutable<CryptoAssetCandle> {
+  public get lastCandle(): Immutable<AssetCandle> {
     return this.#candles[this.candlesCount]
   }
 
@@ -98,16 +98,14 @@ export default class Asset {
     if (anchorPeriod > candles.length) {
       this.#logger.log(`VWAP: requested period (${anchorPeriod}) is bigger than available sample (${candles.length})`)
     }
-    const vwap = calculateVWAP(candles)
-    console.log('current VWAP using last', anchorPeriod, 'hours=', vwap)
-    return vwap
+    return calculateVWAP(candles)
   }
 
   /**
    * 
    * 
    */
-  public updateAsset(newCandle: CryptoAssetCandle): void {
+  public updateAsset(newCandle: AssetCandle): void {
     const lastCandle = this.#candles[this.candlesCount]
     if (newCandle.openTime < lastCandle.openTime) {
       this.#logger.log(`Provided ${this.assetPair} candle openTime is older than last candle openTime. Ignoring it`)

@@ -5,13 +5,13 @@ import FuturesAssetsService from './futures-assets'
 // import LiquidationsSocketService from './sockets/liquidations-socket'
 import Logger from '@/lib/logger'
 import { LoggerConfigs } from './helpers'
-import { CryptoAsset } from '@/types'
+import { AssetName } from '@/types'
 import { config } from '@/config'
 import { getExchangeInfo } from './api'
 
 
 interface BinanceServiceStartOptions {
-  assetPairs: CryptoAsset[]
+  assetPairs: AssetName[]
 }
 class BinanceService {
   constructor() {
@@ -32,7 +32,7 @@ class BinanceService {
   }
 
   #logger: Logger
-  #enabledAssets: CryptoAsset[]
+  #enabledAssets: AssetName[]
   public readonly wallet: FuturesWalletService
   public readonly asset: FuturesAssetsService
   // public readonly futuresSocket: FuturesSocketService

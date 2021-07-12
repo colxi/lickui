@@ -4,7 +4,7 @@ export type PlainObject = Record<PropertyKey, unknown>
 export interface FuturesOrderDescriptor {
   time: Timestamp,
   id: OrderId
-  assetPair: CryptoAsset
+  assetPair: AssetName
   price: number
   quantity: number
   side: OrderSide
@@ -14,7 +14,7 @@ export interface FuturesOrderDescriptor {
 
 export interface FuturesPositionDescriptor {
   time: Timestamp
-  assetPair: CryptoAsset
+  assetPair: AssetName
   entryPrice: number
   quantity: number
   unrealizedPnL: number
@@ -23,7 +23,7 @@ export interface FuturesPositionDescriptor {
 
 export type BinanceClientOrderMap = Record<OrderIdString, FuturesOrderDescriptor>
 
-export type BinanceClientPositionMap = Record<CryptoAsset, FuturesPositionDescriptor>
+export type BinanceClientPositionMap = Record<AssetName, FuturesPositionDescriptor>
 
 ////////////////////
 
@@ -49,8 +49,8 @@ type DeepReadonlyObject<T> = {
 
 ///
 
-export type CryptoSymbol = string
-export type CryptoAsset = string
+export type CoinName = string
+export type AssetName = string
 export type CurrencyAmountString = string
 export type CurrencyAmount = number
 export type Leverage = string
@@ -143,7 +143,7 @@ export interface BinanceFuturesAPIOrder {
   status: OrderStatus,
   stopPrice: CurrencyAmountString, // please ignore when order type is TRAILING_STOP_MARKET
   closePosition: false, // if Close-All
-  symbol: CryptoAsset,
+  symbol: AssetName,
   time: number, // order time
   timeInForce: TimeInForce,
   type: OrderType,
@@ -155,7 +155,7 @@ export interface BinanceFuturesAPIOrder {
 }
 
 export interface BinanceFuturesAPIPosition {
-  symbol: CryptoAsset
+  symbol: AssetName
   initialMargin: CurrencyAmountString
   maintMargin: CurrencyAmountString
   unrealizedProfit: CurrencyAmountString
@@ -228,8 +228,8 @@ export interface BinanceSocketEvent {
  */
 
 export interface AccountUpdateEventWalletData {
-  /** CryptoSymbol */
-  a: CryptoSymbol
+  /** CoinName */
+  a: CoinName
   /** Wallet Balance */
   wb: CurrencyAmountString
   /** Cross Wallet Balance */
@@ -237,8 +237,8 @@ export interface AccountUpdateEventWalletData {
 }
 
 export interface AccountUpdateEventPositionData {
-  /** CryptoSymbol */
-  s: CryptoAsset
+  /** CoinName */
+  s: AssetName
   /** Position Amount */
   pa: CurrencyAmountString,
   /** Entry Price */
@@ -286,8 +286,8 @@ export interface AccountUpdateEvent extends BinanceSocketEvent {
  ******************************************************************************/
 
 export interface OrderUpdateEventOrderData {
-  /**  CryptoSymbol */
-  s: CryptoAsset,
+  /**  CoinName */
+  s: AssetName,
   /** Client Order Id */
   c: string, // special client order id: starts with "autoclose-": liquidation order "adl_autoclose": ADL auto close order
   /** Side */
@@ -314,7 +314,7 @@ export interface OrderUpdateEventOrderData {
   l: "0",
   z: "0",                    // Order Filled Accumulated Quantity
   L: "0",                    // Last Filled Price
-  N: "USDT",             // Commission CryptoSymbol, will not push if no commission
+  N: "USDT",             // Commission CoinName, will not push if no commission
   n: "0",                // Commission, will not push if no commission
   T: 1568879465651,          // Order Trade Time
   t: 0,                      // Trade Id
@@ -361,8 +361,8 @@ export interface BinanceBalanceData {
  ******************************************************************************/
 
 export interface LiquidationsEventLiquidationsData {
-  /** CryptoSymbol */
-  s: CryptoAsset
+  /** CoinName */
+  s: AssetName
   /** Side */
   S: OrderSide
   /** Order Type */

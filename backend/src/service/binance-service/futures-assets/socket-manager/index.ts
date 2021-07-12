@@ -1,7 +1,7 @@
 import config from '@/config'
 import Logger from '@/lib/logger'
 import WebsocketConnection from '@/lib/websocket'
-import { CryptoAsset } from '@/types'
+import { AssetName } from '@/types'
 import { LoggerConfigs } from '../../helpers'
 import { isAssetCandleUpdateEvent } from './helpers'
 import {
@@ -60,7 +60,7 @@ export default class FuturesAssetsSocketManager {
    * 
    * 
    */
-  #subscribeToCandlesStream = (assets: CryptoAsset[]): void => {
+  #subscribeToCandlesStream = (assets: AssetName[]): void => {
     this.#logger.log(`Subscribing to candles stream for ${assets.length} assets...`)
     const request = {
       "method": "SUBSCRIBE",

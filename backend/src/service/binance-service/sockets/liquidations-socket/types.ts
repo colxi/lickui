@@ -1,7 +1,7 @@
-import { CryptoAsset, CurrencyAmount, OrderSide } from '@/types'
+import { AssetName, CurrencyAmount, OrderSide } from '@/types'
 
 interface LiquidationsUpdateEventData {
-  assetPair: CryptoAsset
+  assetPair: AssetName
   price: CurrencyAmount
   total: CurrencyAmount
   quantity: number

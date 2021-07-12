@@ -1,16 +1,16 @@
 import { binanceFetch } from '../../api'
-import { CandlestickInterval, CryptoAsset, Timestamp } from '@/types'
+import { CandlestickInterval, AssetName, Timestamp } from '@/types'
 import { BinanceAPIAssetCandle } from '../types'
 
 interface GetAssetPairCandlesOptions {
-  asset: CryptoAsset
+  asset: AssetName
   interval: CandlestickInterval
   startTime: Timestamp
   endTime?: Timestamp
   limit?: number
 }
 
-export async function getAssetPairCandles({
+export async function getAssetCandles({
   asset,
   interval,
   startTime,

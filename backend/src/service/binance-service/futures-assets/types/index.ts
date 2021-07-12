@@ -1,5 +1,5 @@
 import Logger from '@/lib/logger'
-import { CryptoAsset, CurrencyAmount, CurrencyAmountString, Timestamp } from '@/types'
+import { AssetName, CurrencyAmount, CurrencyAmountString, Timestamp } from '@/types'
 
 export interface FuturesAssetsServiceOptions {
   logger: Logger
@@ -7,14 +7,14 @@ export interface FuturesAssetsServiceOptions {
 
 
 export const FuturesAssetsServiceEvents = {
-  ASSET_CANDLE_UPDATE: (eventData: CryptoAssetCandle): void => { void (eventData) },
+  ASSET_CANDLE_UPDATE: (eventData: AssetCandle): void => { void (eventData) },
 }
 
 export interface FuturesAssetsServiceConfig {
   verbose: boolean,
   logger: (...args: any) => void
   events: typeof FuturesAssetsServiceEvents
-  onStart: (options: { assets: CryptoAsset[] }) => Promise<void>
+  onStart: (options: { assets: AssetName[] }) => Promise<void>
   onStop: () => Promise<void>
 }
 
@@ -50,8 +50,8 @@ export type BinanceAPIAssetCandle = [
 ]
 
 
-export interface CryptoAssetCandle {
-  asset: CryptoAsset
+export interface AssetCandle {
+  asset: AssetName
   open: CurrencyAmount
   close: CurrencyAmount
   high: CurrencyAmount

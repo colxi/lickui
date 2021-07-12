@@ -1,18 +1,17 @@
 import Logger from '@/lib/logger'
 import EventedService from '@/lib/evented-service'
 import FuturesAssetsSocketManager from './socket-manager'
-import { getAssetPairCandles } from './api'
+import { getAssetCandles } from './api'
 import { LoggerConfigs } from '../helpers'
 import Asset from './asset'
 import {
-  CryptoAsset,
-  Immutable,
+  AssetName,
   CandlestickInterval,
-  CurrencyAmount
+  Immutable,
 } from '@/types'
 import {
   BinanceAPIAssetCandle,
-  CryptoAssetCandle,
+  AssetCandle,
   FuturesAssetsServiceConfig,
   FuturesAssetsServiceEvents,
   FuturesAssetsServiceOptions
@@ -31,6 +30,7 @@ const INITIAL_CANDLE_FETCH_COLLECTION_AMOUNT = 99
  * cost for each request to the candles API, as it can escalate 
  * very fast when requesting a big collection of assets. Once cumulated weight over 
  * calls exceeds the minute limits, requests will be rejected.
+ * Source : https://binance-docs.github.io/apidocs/futures/en/#kline-candlestick-data
  * 
  * CANDLES    WEIGHT
  * < 100     	1
@@ -59,41 +59,50 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
     })
 
     this.#updateAsset = this.#updateAsset.bind(this)
+    this.#assets = {}
     this.#logger = options.logger
     this.#assetSocketManager = new FuturesAssetsSocketManager({
       logger: this.#logger.createChild(LoggerConfigs.futuresAssetServiceSocketManager),
       onAssetCandleUpdate: this.#updateAsset
     })
-    this.#assets = {}
   }
 
+
   #logger: Logger
-  #assets: Record<CryptoAsset, Asset>
+  #assets: Record<AssetName, Asset>
   #assetSocketManager: FuturesAssetsSocketManager
 
 
+  /**
+   * 
+   * Public access to the assets
+   * 
+   */
+  get assets(): Immutable<Record<AssetName, Asset>> {
+    return this.#assets
+  }
+
   /***
    * 
+   * Initialize the list of provided assets
    * 
    */
   #initAssets = async (
-    assets: CryptoAsset[]
+    assets: AssetName[]
   ): Promise<void> => {
-    //  
-    this.#assets = {}
     this.#logger.log(`Fetching last ${INITIAL_CANDLE_FETCH_COLLECTION_AMOUNT} hour (1h) candles for ${assets.length} assets ...`)
-
-    // Request minute candles for each one of the assets 
-    const candlesInitialTime = Date.now() - (INITIAL_CANDLE_FETCH_COLLECTION_AMOUNT * TimeInMillis.ONE_HOUR)
-
+    // reset all asset instances
+    this.#assets = {}
+    // Iterate the list of provided asset names
     for (const asset of assets) {
-      const candles = await getAssetPairCandles({
+      // Fetch the candles fot the asset
+      const candles = await getAssetCandles({
         asset: asset,
         interval: CandlestickInterval.HOUR_1,
-        startTime: candlesInitialTime,
+        startTime: Date.now() - (INITIAL_CANDLE_FETCH_COLLECTION_AMOUNT * TimeInMillis.ONE_HOUR),
         limit: INITIAL_CANDLE_FETCH_COLLECTION_AMOUNT
       })
-      const normalizedCandles = candles.map((candle: BinanceAPIAssetCandle): CryptoAssetCandle => {
+      const normalizedCandles = candles.map((candle: BinanceAPIAssetCandle): AssetCandle => {
         const [openTime, open, high, low, close, volume, closeTime] = candle
         return {
           asset: asset,
@@ -106,6 +115,7 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
           closeTime: closeTime,
         }
       })
+      // initialize the asset
       this.#assets[asset] = new Asset(
         asset,
         normalizedCandles,
@@ -118,8 +128,9 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
   /**
    * 
    * 
+   * 
    */
-  #updateAsset = (candle: CryptoAssetCandle) => {
+  #updateAsset = (candle: AssetCandle): void => {
     this.#assets[candle.asset].updateAsset(candle)
   }
 }
