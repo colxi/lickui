@@ -1,6 +1,7 @@
 
 export type PlainObject = Record<PropertyKey, unknown>
 
+
 export interface FuturesOrderDescriptor {
   time: Timestamp,
   id: OrderId
@@ -338,58 +339,5 @@ export interface OrderUpdateEvent extends BinanceSocketEvent {
   /** Transaction time */
   T: number
   o: OrderUpdateEventOrderData
-}
-
-
-/******************************************************************************
- *
- * Balance
- *
- ******************************************************************************/
-
-
-export interface BinanceBalanceData {
-  totalBalance: number,
-  availableBalance: number
-}
-
-
-/******************************************************************************
- *
- * Liquidations
- *
- ******************************************************************************/
-
-export interface LiquidationsEventLiquidationsData {
-  /** CoinName */
-  s: AssetName
-  /** Side */
-  S: OrderSide
-  /** Order Type */
-  o: OrderType.LIMIT
-  // Time in Force
-  f: TimeInForce
-  // Original Quantity
-  q: QuantityString
-  // Price
-  p: CurrencyAmountString
-  // Average Price
-  ap: CurrencyAmountString
-  // Order Status
-  X: OrderStatus.FILLED
-  // Order Last Filled Quantity
-  l: QuantityString
-  // Order Filled Accumulated Quantity
-  z: QuantityString
-  // Order Trade Time
-  T: Timestamp
-}
-
-export interface LiquidationsEvent extends BinanceSocketEvent {
-  /**  Event type */
-  e: BinanceWebsocketEventType.LIQUIDATIONS_UPDATE
-  /** Transaction time */
-  T: number
-  o: LiquidationsEventLiquidationsData
 }
 

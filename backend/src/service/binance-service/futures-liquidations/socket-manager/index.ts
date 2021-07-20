@@ -3,18 +3,17 @@ import Logger from '@/lib/logger'
 import WebsocketConnection from '@/lib/websocket'
 import { AssetName } from '@/types'
 import { LoggerConfigs } from '../../helpers'
-import { isAssetCandleUpdateEvent } from './helpers'
+import { isLiquidationsUpdateEvent } from './helpers'
 import {
-  FuturesAssetsSocketManagerConnectOptions,
-  FuturesAssetsSocketManagerOptions,
-  OnAssetCandleUpdateCallback
+  FuturesLiquidationsSocketManagerConnectOptions,
+  FuturesLiquidationsSocketManagerOptions, OntLiquidationUpdateCallback,
 } from './types'
 
 
-export default class FuturesAssetsSocketManager {
-  constructor(options: FuturesAssetsSocketManagerOptions) {
+export default class FuturesLiquidationsSocketManager {
+  constructor(options: FuturesLiquidationsSocketManagerOptions) {
     this.#logger = options.logger
-    this.#onAssetCandleUpdateCallback = options.onAssetCandleUpdate
+    this.#onLiquidationUpdateCallback = options.onLiquidationUpdate
     this.#onSocketMessage = this.#onSocketMessage.bind(this)
     const socketLogger = this.#logger.createChild(LoggerConfigs.socket)
     this.#socket = new WebsocketConnection({
@@ -28,7 +27,7 @@ export default class FuturesAssetsSocketManager {
 
   #logger: Logger
   #socket: WebsocketConnection
-  #onAssetCandleUpdateCallback: OnAssetCandleUpdateCallback
+  #onLiquidationUpdateCallback: OntLiquidationUpdateCallback
 
   public get isConnected(): boolean { return this.#socket.isConnected }
 
@@ -36,11 +35,11 @@ export default class FuturesAssetsSocketManager {
    * 
    * 
    */
-  public async connect(options: FuturesAssetsSocketManagerConnectOptions): Promise<void> {
+  public async connect(options: FuturesLiquidationsSocketManagerConnectOptions): Promise<void> {
     return new Promise(resolve => {
       this.#logger.log('Starting socket...')
       this.#socket.onConnectCallback = (): void => {
-        this.#subscribeToCandlesStream(options.assets)
+        this.#subscribeToLiquidationsStream(options.assets)
         resolve()
       }
       this.#socket.connect()
@@ -60,12 +59,12 @@ export default class FuturesAssetsSocketManager {
    * 
    * 
    */
-  #subscribeToCandlesStream = (assets: AssetName[]): void => {
-    this.#logger.log(`Subscribing to candles stream for ${assets.length} assets...`)
+  #subscribeToLiquidationsStream = (assets: AssetName[]): void => {
+    this.#logger.log(`Subscribing to liquidations stream for ${assets.length} assets...`)
     const request = {
       "method": "SUBSCRIBE",
       "id": this.#socket.sentMessagesCount + 1,
-      "params": [...assets.map(asset => `${asset.toLowerCase()}@kline_1m`)],
+      "params": [...assets.map(asset => `${asset.toLowerCase()}@forceOrder`)],
     }
     this.#socket.send(request)
   }
@@ -78,16 +77,14 @@ export default class FuturesAssetsSocketManager {
     ws: WebsocketConnection,
     message: unknown
   ): Promise<void> => {
-    if (!isAssetCandleUpdateEvent(message)) return
-    this.#onAssetCandleUpdateCallback({
-      assetName: message.s,
-      open: Number(message.k.o),
-      close: Number(message.k.c),
-      high: Number(message.k.h),
-      low: Number(message.k.l),
-      volume: Number(message.k.v),
-      openTime: message.k.t,
-      closeTime: message.k.T
+    if (!isLiquidationsUpdateEvent(message)) return
+    this.#onLiquidationUpdateCallback({
+      timestamp: message.E,
+      assetName: message.o.s,
+      total: Number(message.o.ap) * Number(message.o.q),
+      price: Number(message.o.ap),
+      quantity: Number(message.o.q),
+      side: message.o.S,
     })
   }
 }

@@ -1,71 +1,113 @@
 import FuturesWalletService from './futures-wallet'
 import FuturesAssetsService from './futures-assets'
-// import FuturesSocketService from './sockets/futures-socket'
-// import PricesSocketService from './asset-price/socket-manager'
-// import LiquidationsSocketService from './sockets/liquidations-socket'
+import FuturesApiService from './futures-api'
 import Logger from '@/lib/logger'
 import { LoggerConfigs } from './helpers'
-import { AssetName } from '@/types'
-import { config } from '@/config'
-import { getExchangeInfo } from './api'
+import { AssetName, Timestamp } from '@/types'
+import FuturesLiquidationsService from './futures-liquidations'
+import { ServiceStatus } from '@/lib/evented-service/types'
+import { BinanceServiceStartOptions, BinanceServiceStatus } from './types'
 
 
-interface BinanceServiceStartOptions {
-  assetPairs: AssetName[]
-}
 class BinanceService {
   constructor() {
-
     const binanceLogger = new Logger(LoggerConfigs.binanceClient)
+    const futuresApiServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresApiService)
     const futuresWalletServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresWalletService)
     const futuresAssetServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresAssetService)
+    const futuresLiquidationServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresLiquidationsService)
 
-    this.#enabledAssets = config.getEnabledAssetsList()
+    this.#assetsList = []
+    this.#startTime = 0
+    this.#isBusy = false
     this.#logger = binanceLogger
-    this.wallet = new FuturesWalletService({ logger: futuresWalletServiceLogger })
-    this.asset = new FuturesAssetsService({ logger: futuresAssetServiceLogger })
-
-    // this.futuresSocket = new FuturesSocketService()
-    // this.pricesSocket = new PricesSocketService()
-    // this.liquidationsSocket = new LiquidationsSocketService()
-
+    this.api = new FuturesApiService({ logger: futuresApiServiceLogger })
+    this.liquidations = new FuturesLiquidationsService({ logger: futuresLiquidationServiceLogger })
+    this.wallet = new FuturesWalletService({ api: this.api, logger: futuresWalletServiceLogger })
+    this.assets = new FuturesAssetsService({ api: this.api, logger: futuresAssetServiceLogger })
   }
 
-  #logger: Logger
-  #enabledAssets: AssetName[]
+  #isBusy: boolean
+  #startTime: Timestamp
+
+  readonly #logger: Logger
+  readonly #assetsList: AssetName[]
+
+  public readonly api: FuturesApiService
   public readonly wallet: FuturesWalletService
-  public readonly asset: FuturesAssetsService
-  // public readonly futuresSocket: FuturesSocketService
-  // public readonly pricesSocket: PricesSocketService
-  // public readonly liquidationsSocket: LiquidationsSocketService
+  public readonly assets: FuturesAssetsService
+  public readonly liquidations: FuturesLiquidationsService
 
-  requestsLimits: {
-    rateLimitType: 'REQUEST_WEIGHT' | 'ORDERS' | 'RAW_REQUESTS',
-    interval: 'MINUTE' | 'SECOND' | 'DAY',
-    intervalNum: number,
-    limit: number
-  }[] = []
+  get startTime(): Timestamp { return this.#startTime }
 
-  async start(options: BinanceServiceStartOptions): Promise<void> {
-    this.#logger.log('Starting Binance client...')
-
-    // get exchange limits
-    const exchangeInfo = await getExchangeInfo()
-    this.requestsLimits = exchangeInfo.rateLimits
-
-    if (this.#enabledAssets.length > 1024) {
-      throw new Error(`BinanceClient: Max allowed assets is 1024 (Requested ${this.#enabledAssets.length})`)
+  get status(): BinanceServiceStatus {
+    const isActive = (
+      this.assets.serviceStatus === ServiceStatus.RUNNING &&
+      this.liquidations.serviceStatus === ServiceStatus.RUNNING &&
+      this.wallet.serviceStatus === ServiceStatus.RUNNING
+    )
+    return {
+      isActive: isActive,
+      isBusy: this.#isBusy,
+      services: {
+        wallet: {
+          status: this.wallet.serviceStatus,
+          isSocketConnected: this.wallet.isSocketConnected,
+        },
+        liquidations: {
+          status: this.liquidations.serviceStatus,
+          isSocketConnected: this.liquidations.isSocketConnected,
+        },
+        assets: {
+          status: this.assets.serviceStatus,
+          isSocketConnected: this.assets.isSocketConnected,
+        }
+      }
     }
-    // TODO : Validate that requestes assets exist in binance futures
-
-    await this.wallet.start()
-    await this.asset.start({ assets: this.#enabledAssets })
-
-    // await this.futuresSocket.start()
-    // await this.pricesSocket.start()
-    // await this.liquidationsSocket.start()
   }
 
+  async start(options: BinanceServiceStartOptions): Promise<boolean> {
+    if (this.#isBusy) return false
+    this.#isBusy = true
+
+    this.#logger.log('Starting Binance client...')
+    if (options.assetPairs.length > 1024) throw new Error(`BinanceClient: Max allowed assets is 1024 (Requested ${this.#assetsList.length})`)
+    if (options.assetPairs.length === 0) throw new Error(`BinanceClient: No assets where provided `)
+
+    // TODO : Validate that requested assets exist in binance futures
+
+    // empty assets array and insert provided assets
+    this.#assetsList.splice(0, this.#assetsList.length)
+    this.#assetsList.push(...options.assetPairs)
+
+    // start child services
+    await this.api.start()
+    await this.wallet.start()
+    await this.assets.start({ assets: this.#assetsList })
+    await this.liquidations.start({ assets: this.#assetsList })
+
+    // done!
+    this.#startTime = Date.now()
+    this.#isBusy = false
+    return true
+  }
+
+  async stop(): Promise<boolean> {
+    if (this.#isBusy) return false
+    this.#isBusy = true
+
+    this.#logger.log('Stopping Binance client...')
+    await this.api.stop()
+    await this.wallet.stop()
+    await this.assets.stop()
+    await this.liquidations.stop()
+    if (this.#isBusy) return false
+
+    // done!
+    this.#startTime = 0
+    this.#isBusy = false
+    return true
+  }
 }
 
 export default new BinanceService()

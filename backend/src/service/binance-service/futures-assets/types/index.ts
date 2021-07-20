@@ -1,13 +1,14 @@
 import Logger from '@/lib/logger'
-import { AssetName, CurrencyAmount, CurrencyAmountString, Timestamp } from '@/types'
+import { AssetName, CurrencyAmount, Timestamp } from '@/types'
+import FuturesApiService from '../../futures-api'
 
 export interface FuturesAssetsServiceOptions {
+  api: FuturesApiService
   logger: Logger
 }
 
-
 export const FuturesAssetsServiceEvents = {
-  ASSET_CANDLE_UPDATE: (eventData: AssetCandle): void => { void (eventData) },
+  // none
 }
 
 export interface FuturesAssetsServiceConfig {
@@ -18,40 +19,9 @@ export interface FuturesAssetsServiceConfig {
   onStop: () => Promise<void>
 }
 
-/**
- * Candlestick type definition from : 
- * https://binance-docs.github.io/apidocs/futures/en/#kline-candlestick-data
- */
-export type BinanceAPIAssetCandle = [
-  /** Open time */
-  Timestamp,
-  /** Open */
-  CurrencyAmountString,
-  /** High */
-  CurrencyAmountString,
-  /** Low */
-  CurrencyAmountString,
-  /** Close */
-  CurrencyAmountString,
-  /** Volume */
-  CurrencyAmountString,
-  /** Close time */
-  Timestamp,
-  /** Quote asset volume */
-  CurrencyAmountString,
-  /** Number of trades */
-  number,
-  /** Taker buy base asset volume */
-  CurrencyAmountString,
-  /** Taker buy quote asset volume */
-  CurrencyAmountString,
-  /** Ignore. */
-  CurrencyAmountString
-]
-
 
 export interface AssetCandle {
-  asset: AssetName
+  assetName: AssetName
   open: CurrencyAmount
   close: CurrencyAmount
   high: CurrencyAmount

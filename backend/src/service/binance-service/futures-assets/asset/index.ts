@@ -1,59 +1,44 @@
+import { calculateTypicalPrice, calculateVWAP } from '@/lib/indicators'
 import Logger from '@/lib/logger'
 import { AssetName, CurrencyAmount, Immutable } from '@/types'
 import { AssetCandle } from '../types'
+import { AssetOptions } from './types'
 
-
-function calculateTypicalPrice(candle: AssetCandle): number {
-  return (candle.high + candle.low + candle.close) / 3
-}
 
 /**
  * 
- * VWAP indicator
- * Calculation : cumulative(typicalPrice * volume)/cumulative(volume)
+ * The Asset Entity holds candles and provides several methods and getters 
+ * to retrieve common indicators values
  * 
  */
-function calculateVWAP(candles: AssetCandle[]): number {
-  // generate a collection of candles, containing each candle volume and  
-  // normalized price ( hight + low + close / 3 )
-  const normalizedCandles: Array<{ volume: number, price: number }> = candles.map(candle => {
-    const typicalPrice = calculateTypicalPrice(candle)
-    return { volume: candle.volume, price: typicalPrice }
-  })
-
-  // calculate VWAP
-  const cumulativePricePerVolume = normalizedCandles.reduce((acc, candle) => acc + (candle.volume * candle.price), 0)
-  const cumulativeVolume = normalizedCandles.reduce((acc, candle) => acc + candle.volume, 0) || 0
-  const vwap = cumulativePricePerVolume / cumulativeVolume
-
-  // done!
-  return vwap
-}
-
 export default class Asset {
-  constructor(assetPair: AssetName, candles: AssetCandle[], maxCandles: number, logger: Logger) {
-    this.#assetPair = assetPair
-    this.#candles = candles
-    this.#maxCandles = maxCandles
-    this.#logger = logger
+  constructor(options: AssetOptions) {
+    this.#validateOptions(options)
+    this.#assetName = options.assetName
+    this.#candles = options.candles
+    this.#maxCandles = options.maxCandles
+    this.#logger = options.logger
   }
+
 
   readonly #logger: Logger
   readonly #maxCandles: number
-  readonly #assetPair: AssetName
+  readonly #assetName: AssetName
   readonly #candles: AssetCandle[]
+
 
   /**
    * 
-   * 
+   * Return the asset name
    * 
    */
-  public get assetPair(): AssetName {
-    return this.#assetPair
+  public get assetName(): AssetName {
+    return this.#assetName
   }
 
   /**
    * 
+   *  Return the current asset price (current candle.close value)
    * 
    */
   public get price(): CurrencyAmount {
@@ -103,12 +88,14 @@ export default class Asset {
 
   /**
    * 
+   * Updates the last candle, or creates a new candle when represents a new 
+   * time period
    * 
    */
   public updateAsset(newCandle: AssetCandle): void {
     const lastCandle = this.#candles[this.candlesCount]
     if (newCandle.openTime < lastCandle.openTime) {
-      this.#logger.log(`Provided ${this.assetPair} candle openTime is older than last candle openTime. Ignoring it`)
+      this.#logger.log(`Provided ${this.assetName} candle openTime is older than last candle openTime. Ignoring it`)
       return
     }
     else if (newCandle.openTime > lastCandle.openTime) {
@@ -127,6 +114,23 @@ export default class Asset {
       lastCandle.open = newCandle.open
       lastCandle.close = newCandle.close
       lastCandle.volume = newCandle.volume
+    }
+  }
+
+  /**
+  * 
+  * Throw an Error if options are not valid
+  * 
+  */
+  #validateOptions = (options: AssetOptions): void => {
+    if (!options.candles) {
+      throw new Error(`Asset ${options.assetName} cannot be initialized without candles`)
+    }
+    if (options.maxCandles < 1) {
+      throw new Error(`Asset ${options.assetName} requires maxCandles value to be greater than 1`)
+    }
+    if (options.assetName.trim() === '') {
+      throw new Error(`Detected empty Asset name. Cannot initialize Asset`)
     }
   }
 

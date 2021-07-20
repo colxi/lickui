@@ -1,7 +1,9 @@
 import Logger from '@/lib/logger'
-import { AccountUpdateEventType, AssetName, CurrencyAmount, Timestamp } from '@/types'
+import { AccountUpdateEventType, CurrencyAmount, Timestamp } from '@/types'
+import FuturesApiService from '../../futures-api'
 
 export interface FuturesWalletServiceOptions {
+  api: FuturesApiService
   logger: Logger
 }
 

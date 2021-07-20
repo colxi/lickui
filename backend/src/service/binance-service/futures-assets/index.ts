@@ -1,8 +1,8 @@
 import Logger from '@/lib/logger'
 import EventedService from '@/lib/evented-service'
-import FuturesAssetsSocketManager from './socket-manager'
-import { getAssetCandles } from './api'
+import { TimeInMillis } from '@/lib/date'
 import { LoggerConfigs } from '../helpers'
+import FuturesAssetsSocketManager from './socket-manager'
 import Asset from './asset'
 import {
   AssetName,
@@ -10,13 +10,12 @@ import {
   Immutable,
 } from '@/types'
 import {
-  BinanceAPIAssetCandle,
   AssetCandle,
   FuturesAssetsServiceConfig,
   FuturesAssetsServiceEvents,
   FuturesAssetsServiceOptions
 } from './types'
-import { TimeInMillis } from '@/lib/date'
+import FuturesApiService from '../futures-api'
 
 
 // Max asset candles collection size 
@@ -48,39 +47,33 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
         const logger = options.logger.createChild(LoggerConfigs.serviceEvent)
         return (message: string, ...args: any[]): void => logger.log(message, ...args)
       })(),
-      onStart: async (options) => {
-        // options.assets = ['BTCUSDT']
-        await this.#initAssets(options.assets)
-        //await this.#assetSocketManager.connect({ assets: options.assets })
+      onStart: async ({ assets }) => {
+        await this.#initAssets(assets)
+        await this.#socketManager.connect({ assets })
       },
       onStop: async () => {
-        await this.#assetSocketManager.disconnect()
+        await this.#socketManager.disconnect()
       }
     })
 
-    this.#updateAsset = this.#updateAsset.bind(this)
-    this.#assets = {}
+    this.#api = options.api
     this.#logger = options.logger
-    this.#assetSocketManager = new FuturesAssetsSocketManager({
+    this.#asset = {}
+    this.#socketManager = new FuturesAssetsSocketManager({
       logger: this.#logger.createChild(LoggerConfigs.futuresAssetServiceSocketManager),
-      onAssetCandleUpdate: this.#updateAsset
+      onAssetCandleUpdate: (candle: AssetCandle): void => this.#asset[candle.assetName].updateAsset(candle)
     })
   }
 
 
+  #api: FuturesApiService
   #logger: Logger
-  #assets: Record<AssetName, Asset>
-  #assetSocketManager: FuturesAssetsSocketManager
+  #asset: Record<AssetName, Asset>
+  #socketManager: FuturesAssetsSocketManager
 
 
-  /**
-   * 
-   * Public access to the assets
-   * 
-   */
-  get assets(): Immutable<Record<AssetName, Asset>> {
-    return this.#assets
-  }
+  public get asset(): Immutable<Record<AssetName, Asset>> { return this.#asset }
+  public get isSocketConnected(): boolean { return this.#socketManager.isConnected }
 
   /***
    * 
@@ -92,45 +85,36 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
   ): Promise<void> => {
     this.#logger.log(`Fetching last ${INITIAL_CANDLE_FETCH_COLLECTION_AMOUNT} hour (1h) candles for ${assets.length} assets ...`)
     // reset all asset instances
-    this.#assets = {}
+    this.#asset = {}
     // Iterate the list of provided asset names
-    for (const asset of assets) {
+    for (const assetName of assets) {
       // Fetch the candles fot the asset
-      const candles = await getAssetCandles({
-        asset: asset,
+      const candles = await this.#api.getFuturesAssetCandles({
+        asset: assetName,
         interval: CandlestickInterval.HOUR_1,
         startTime: Date.now() - (INITIAL_CANDLE_FETCH_COLLECTION_AMOUNT * TimeInMillis.ONE_HOUR),
         limit: INITIAL_CANDLE_FETCH_COLLECTION_AMOUNT
       })
-      const normalizedCandles = candles.map((candle: BinanceAPIAssetCandle): AssetCandle => {
-        const [openTime, open, high, low, close, volume, closeTime] = candle
-        return {
-          asset: asset,
-          open: Number(open),
-          high: Number(high),
-          low: Number(low),
-          close: Number(close),
-          volume: Number(volume),
-          openTime: openTime,
-          closeTime: closeTime,
-        }
-      })
+      const normalizedCandles = candles.map(
+        ([openTime, open, high, low, close, volume, closeTime]): AssetCandle => {
+          return {
+            assetName,
+            openTime,
+            closeTime,
+            open: Number(open),
+            high: Number(high),
+            low: Number(low),
+            close: Number(close),
+            volume: Number(volume),
+          }
+        })
       // initialize the asset
-      this.#assets[asset] = new Asset(
-        asset,
-        normalizedCandles,
-        MAX_ASSET_CANDLES_COLLECTION,
-        this.#logger
-      )
+      this.#asset[assetName] = new Asset({
+        assetName: assetName,
+        candles: normalizedCandles,
+        maxCandles: MAX_ASSET_CANDLES_COLLECTION,
+        logger: this.#logger
+      })
     }
-  }
-
-  /**
-   * 
-   * 
-   * 
-   */
-  #updateAsset = (candle: AssetCandle): void => {
-    this.#assets[candle.asset].updateAsset(candle)
   }
 }

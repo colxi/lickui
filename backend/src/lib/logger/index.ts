@@ -1,3 +1,4 @@
+import { getTimeAsHHMMSS } from '../date'
 import { isChainable, LoggerColorRGB } from './helpers'
 import {
   LoggerFontBackground,
@@ -82,7 +83,19 @@ export default class Logger {
       else items.push(arg)
     }
 
+    // If running in debug mode, remove all formatting special chars  in order to display 
+    // a clean  view of the messages in the browser console
+    const isDebugMode = typeof global.v8debug === 'object' || /--debug|--inspect/.test(process.execArgv.join(' '))
+    if (isDebugMode) {
+      /*eslint no-control-regex: "off"*/
+      const formatting = /((\[48|\[38|\[0)((;\d+)+)?m)|\u001B/g
+      const arrow = //g
+      for (const i in items) {
+        if (typeof items[i] === 'string') items[i] = items[i].replace(formatting, '').replace(arrow, '-->')
+      }
+    }
+
     // render message data
-    console.log(...items, LoggerFontStyle.reset)
+    console.log(getTimeAsHHMMSS(), ...items, isDebugMode ? '' : LoggerFontStyle.reset)
   }
 }

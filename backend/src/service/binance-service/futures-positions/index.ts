@@ -1,3 +1,53 @@
+/// old implementation :
+
+//   readonly #onSocketMessage = async (ws: WebsocketConnection, message: unknown): Promise<void> => {
+//      if (isAccountUpdateEvent(message)) {
+//       const eventData = message.a
+//       const positions = eventData.P
+//       for (const positionData of positions) this.onPositionUpdate(positionData)
+//     }
+//     else if (isOrderTradeUpdateEvent(message)) {
+//       const orderData: OrderUpdateEventOrderData = message.o
+//       this.onOrderUpdate(orderData)
+//     }
+//    
+//   }
+
+//   private onPositionUpdate(
+//     positionData: AccountUpdateEventPositionData
+//   ): void {
+//     this.dispatchEvent(
+//       this.Event.POSITION_UPDATE,
+//       {
+//         time: Date.now(),
+//         assetPair: positionData.s,
+//         entryPrice: Number(positionData.ep),
+//         quantity: Number(positionData.pa),
+//         unrealizedPnL: Number(positionData.up)
+//       }
+//     )
+//   }
+
+//   private onOrderUpdate(orderData: OrderUpdateEventOrderData): void {
+//     this.dispatchEvent(
+//       this.Event.ORDER_UPDATE,
+//       {
+//         time: orderData.T,
+//         assetPair: orderData.s,
+//         price: Number(orderData.p),
+//         quantity: Number(orderData.q),
+//         side: orderData.S,
+//         type: orderData.o,
+//         id: orderData.i,
+//         status: orderData.X
+//       }
+//     )
+//   }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// NEW IMPLEMENTATION
+
 // import Logger from '@/lib/logger'
 // import {
 //     AssetName,

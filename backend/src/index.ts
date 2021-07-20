@@ -12,7 +12,7 @@ import { config } from './config'
 
 console.clear()
 
-function validate() {
+function validate(): void {
   const activeCoinsCount = Object.values(config.assets).filter(i => i.enabled).length
   console.log('ENABLED COINS :', activeCoinsCount)
   if (activeCoinsCount > 199) throw new Error('a maximum of 199 coins are allowed simultanously')

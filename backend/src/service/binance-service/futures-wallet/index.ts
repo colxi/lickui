@@ -10,11 +10,9 @@ import {
 } from './types'
 import {
   AccountUpdateEventType,
-  BinanceBalanceData,
   CurrencyAmount,
 } from '@/types'
-import { getFuturesBalance } from './api'
-
+import FuturesApiService from '../futures-api'
 
 export default class FuturesWalletService extends EventedService<
   FuturesWalletServiceConfig
@@ -29,16 +27,19 @@ export default class FuturesWalletService extends EventedService<
       })(),
       onStart: async () => {
         await this.#initWallet()
-        await this.#walletSocketManager.connect()
+        const userDataKey = await this.#api.getFuturesUserDataKey()
+        await this.#socketManager.connect(userDataKey)
       },
       onStop: async () => {
-        await this.#walletSocketManager.disconnect()
+        await this.#socketManager.disconnect()
       }
     })
 
     this.#updateWallet = this.#updateWallet.bind(this)
+
+    this.#api = options.api
     this.#logger = options.logger
-    this.#walletSocketManager = new FuturesWalletSocketManager({
+    this.#socketManager = new FuturesWalletSocketManager({
       logger: this.#logger.createChild(LoggerConfigs.futuresWalletServiceSocketManager),
       onWalletUpdate: this.#updateWallet
     })
@@ -46,13 +47,15 @@ export default class FuturesWalletService extends EventedService<
     this.#availableBalance = 0
   }
 
+  #api: FuturesApiService
   #logger: Logger
   #totalBalance: CurrencyAmount
   #availableBalance: CurrencyAmount
-  #walletSocketManager: FuturesWalletSocketManager
+  #socketManager: FuturesWalletSocketManager
 
   public get totalBalance(): CurrencyAmount { return this.#totalBalance }
   public get availableBalance(): CurrencyAmount { return this.#availableBalance }
+  public get isSocketConnected(): boolean { return this.#socketManager.isConnected }
 
 
   /**
@@ -61,7 +64,7 @@ export default class FuturesWalletService extends EventedService<
    */
   #initWallet = async (): Promise<void> => {
     this.#logger.log('Fetching futures wallet...')
-    const futuresWallet: BinanceBalanceData = await getFuturesBalance()
+    const futuresWallet = await this.#api.getFuturesBalance()
     this.#updateWallet({
       timestamp: Date.now(),
       totalBalance: futuresWallet.totalBalance,
@@ -78,11 +81,13 @@ export default class FuturesWalletService extends EventedService<
     eventData: WalletUpdateEventData,
     dispatchEvent: boolean = true
   ): void => {
+    const balanceChangeSign = Math.sign(eventData.totalBalance - this.#totalBalance) >= 0 ? '+' : '-'
+    const balanceChangeDiff = Math.abs(eventData.totalBalance - this.#totalBalance)
     this.#logger.log(
       'Updating wallet data',
       eventData.type === AccountUpdateEventType.BALANCE_FETCH
         ? ` - Current balance: ${eventData.totalBalance.toFixed(2)}$\n`
-        : ` - Balance Change: ${Math.sign(eventData.totalBalance - this.#totalBalance)}${(Math.abs(eventData.totalBalance - this.#totalBalance)).toFixed(2)}$\n`,
+        : ` - Balance change: ${balanceChangeSign}${balanceChangeDiff.toFixed(2)}$\n`,
       ` - Data : ${JSON.stringify(eventData)}`
     )
     this.#totalBalance = eventData.totalBalance
