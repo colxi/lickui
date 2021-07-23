@@ -13,6 +13,7 @@ import {
   FuturesLiquidationsServiceOptions,
   LiquidationEvent
 } from './types'
+import { clearObject } from '@/lib/object'
 
 const LIQUIDATIONS_HISTORY_MAX_LENGTH = 5
 
@@ -51,9 +52,9 @@ export default class FuturesLiquidationsService extends EventedService<FuturesLi
   }
 
 
-  #logger: Logger
-  #asset: Record<AssetName, List<LiquidationEvent>>
-  #socketManager: FuturesAssetsSocketManager
+  readonly #logger: Logger
+  readonly #asset: Record<AssetName, List<LiquidationEvent>>
+  readonly #socketManager: FuturesAssetsSocketManager
 
   public get assets(): Immutable<Record<AssetName, List<LiquidationEvent>>> { return this.#asset }
   public get isSocketConnected(): boolean { return this.#socketManager.isConnected }
@@ -67,7 +68,7 @@ export default class FuturesLiquidationsService extends EventedService<FuturesLi
   #initAssets = async (
     assets: AssetName[]
   ): Promise<void> => {
-    this.#asset = {}
+    clearObject(this.#asset)
     for (const assetName of assets) {
       this.#asset[assetName] = new List<LiquidationEvent>(LIQUIDATIONS_HISTORY_MAX_LENGTH)
     }

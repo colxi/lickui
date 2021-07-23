@@ -7,6 +7,7 @@ import { AssetName, Timestamp } from '@/types'
 import FuturesLiquidationsService from './futures-liquidations'
 import { ServiceStatus } from '@/lib/evented-service/types'
 import { BinanceServiceStartOptions, BinanceServiceStatus } from './types'
+import { clearArray } from '@/lib/array'
 
 
 class BinanceService {
@@ -17,7 +18,7 @@ class BinanceService {
     const futuresAssetServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresAssetService)
     const futuresLiquidationServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresLiquidationsService)
 
-    this.#assetsList = []
+    this.#assetPairs = []
     this.#startTime = 0
     this.#isBusy = false
     this.#logger = binanceLogger
@@ -31,7 +32,7 @@ class BinanceService {
   #startTime: Timestamp
 
   readonly #logger: Logger
-  readonly #assetsList: AssetName[]
+  readonly #assetPairs: AssetName[]
 
   public readonly api: FuturesApiService
   public readonly wallet: FuturesWalletService
@@ -71,20 +72,20 @@ class BinanceService {
     this.#isBusy = true
 
     this.#logger.log('Starting Binance client...')
-    if (options.assetPairs.length > 1024) throw new Error(`BinanceClient: Max allowed assets is 1024 (Requested ${this.#assetsList.length})`)
+    if (options.assetPairs.length > 1024) throw new Error(`BinanceClient: Max allowed assets is 1024 (Requested ${this.#assetPairs.length})`)
     if (options.assetPairs.length === 0) throw new Error(`BinanceClient: No assets where provided `)
 
     // TODO : Validate that requested assets exist in binance futures
 
     // empty assets array and insert provided assets
-    this.#assetsList.splice(0, this.#assetsList.length)
-    this.#assetsList.push(...options.assetPairs)
+    clearArray(this.#assetPairs)
+    this.#assetPairs.push(...options.assetPairs)
 
     // start child services
     await this.api.start()
     await this.wallet.start()
-    await this.assets.start({ assets: this.#assetsList })
-    await this.liquidations.start({ assets: this.#assetsList })
+    await this.assets.start({ assets: this.#assetPairs })
+    await this.liquidations.start({ assets: this.#assetPairs })
 
     // done!
     this.#startTime = Date.now()

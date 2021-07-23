@@ -26,9 +26,9 @@ export default class FuturesAssetsSocketManager {
     })
   }
 
-  #logger: Logger
-  #socket: WebsocketConnection
-  #onAssetCandleUpdateCallback: OnAssetCandleUpdateCallback
+  readonly #logger: Logger
+  readonly #socket: WebsocketConnection
+  readonly #onAssetCandleUpdateCallback: OnAssetCandleUpdateCallback
 
   public get isConnected(): boolean { return this.#socket.isConnected }
 

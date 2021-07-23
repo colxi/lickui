@@ -29,7 +29,7 @@ export default class FuturesApiService {
   }
 
 
-  #logger: Logger
+  readonly #logger: Logger
   #minuteWeightLimit: number
   #minuteWeightUsed: number
   #minuteWeightUsedResetTimer: NodeJS.Timeout | null

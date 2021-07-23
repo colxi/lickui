@@ -16,6 +16,7 @@ import {
   FuturesAssetsServiceOptions
 } from './types'
 import FuturesApiService from '../futures-api'
+import { clearObject } from '@/lib/object'
 
 
 // Max asset candles collection size 
@@ -66,10 +67,10 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
   }
 
 
-  #api: FuturesApiService
-  #logger: Logger
-  #asset: Record<AssetName, Asset>
-  #socketManager: FuturesAssetsSocketManager
+  readonly #socketManager: FuturesAssetsSocketManager
+  readonly #api: FuturesApiService
+  readonly #logger: Logger
+  readonly #asset: Record<AssetName, Asset>
 
 
   public get asset(): Immutable<Record<AssetName, Asset>> { return this.#asset }
@@ -85,7 +86,7 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
   ): Promise<void> => {
     this.#logger.log(`Fetching last ${INITIAL_CANDLE_FETCH_COLLECTION_AMOUNT} hour (1h) candles for ${assets.length} assets ...`)
     // reset all asset instances
-    this.#asset = {}
+    clearObject(this.#asset)
     // Iterate the list of provided asset names
     for (const assetName of assets) {
       // Fetch the candles fot the asset

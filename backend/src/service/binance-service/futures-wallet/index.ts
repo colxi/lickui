@@ -47,11 +47,12 @@ export default class FuturesWalletService extends EventedService<
     this.#availableBalance = 0
   }
 
-  #api: FuturesApiService
-  #logger: Logger
   #totalBalance: CurrencyAmount
   #availableBalance: CurrencyAmount
-  #socketManager: FuturesWalletSocketManager
+
+  readonly #api: FuturesApiService
+  readonly #logger: Logger
+  readonly #socketManager: FuturesWalletSocketManager
 
   public get totalBalance(): CurrencyAmount { return this.#totalBalance }
   public get availableBalance(): CurrencyAmount { return this.#availableBalance }

@@ -22,9 +22,9 @@ export default class FuturesWalletSocketManager {
     })
   }
 
-  #logger: Logger
-  #socket: WebsocketConnection
-  #onWalletUpdateCallback: OnWalletUpdateCallback
+  readonly #logger: Logger
+  readonly #socket: WebsocketConnection
+  readonly #onWalletUpdateCallback: OnWalletUpdateCallback
 
   public get isConnected(): boolean { return this.#socket.isConnected }
 

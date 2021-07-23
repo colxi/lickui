@@ -25,9 +25,9 @@ export default class FuturesLiquidationsSocketManager {
     })
   }
 
-  #logger: Logger
-  #socket: WebsocketConnection
-  #onLiquidationUpdateCallback: OntLiquidationUpdateCallback
+  readonly #logger: Logger
+  readonly #socket: WebsocketConnection
+  readonly #onLiquidationUpdateCallback: OntLiquidationUpdateCallback
 
   public get isConnected(): boolean { return this.#socket.isConnected }
 
@@ -79,7 +79,7 @@ export default class FuturesLiquidationsSocketManager {
   ): Promise<void> => {
     if (!isLiquidationsUpdateEvent(message)) return
     this.#onLiquidationUpdateCallback({
-      timestamp: message.E,
+      timestamp: message.T,
       assetName: message.o.s,
       total: Number(message.o.ap) * Number(message.o.q),
       price: Number(message.o.ap),
