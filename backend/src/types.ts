@@ -56,6 +56,7 @@ export type CurrencyAmountString = string
 export type CurrencyAmount = number
 export type Leverage = string
 export type OrderId = number
+export type ClientOrderId = string
 export type OrderIdString = string
 export type Timestamp = number
 export type QuantityString = string
@@ -90,6 +91,14 @@ export enum ContractStatus {
   PRE_SETTLE = 'PRE_SETTLE',
   SETTLING = 'SETTLING',
   CLOSE = 'CLOSE'
+}
+
+export enum ExecutionType {
+  NEW = 'NEW',
+  CANCELED = 'CANCELED',
+  CALCULATED = 'CALCULATED',// - Liquidation Execution
+  EXPIRED = 'EXPIRED',
+  TRADE = 'TRADE'
 }
 
 export enum OrderStatus {
@@ -128,49 +137,6 @@ export enum TimeInForce {
   GTX = 'GTX' // Good Till Crossing(Post Only)
 }
 
-
-export interface BinanceFuturesAPIOrder {
-  avgPrice: CurrencyAmountString,
-  clientOrderId: string,
-  cumQuote: string,
-  executedQty: number,
-  orderId: OrderId,
-  origQty: CurrencyAmountString,
-  origType: OrderType,
-  price: CurrencyAmountString,
-  reduceOnly: boolean,
-  side: OrderSide,
-  positionSide: BinancePositionSide,
-  status: OrderStatus,
-  stopPrice: CurrencyAmountString, // please ignore when order type is TRAILING_STOP_MARKET
-  closePosition: false, // if Close-All
-  symbol: AssetName,
-  time: number, // order time
-  timeInForce: TimeInForce,
-  type: OrderType,
-  activatePrice: CurrencyAmountString, // activation price, only return with TRAILING_STOP_MARKET order
-  priceRate: string, // callback rate, only return with TRAILING_STOP_MARKET order (eg. 0.3)
-  updateTime: number, // update time
-  workingType: OrderWorkingType,
-  priceProtect: boolean // if conditional order trigger is protected   
-}
-
-export interface BinanceFuturesAPIPosition {
-  symbol: AssetName
-  initialMargin: CurrencyAmountString
-  maintMargin: CurrencyAmountString
-  unrealizedProfit: CurrencyAmountString
-  positionInitialMargin: CurrencyAmountString
-  openOrderInitialMargin: CurrencyAmountString
-  leverage: Leverage
-  isolated: boolean
-  entryPrice: CurrencyAmountString
-  maxNotional: CurrencyAmountString
-  positionSide: BinancePositionSide
-  positionAmt: CurrencyAmountString
-  notional: CurrencyAmountString
-  isolatedWallet: CurrencyAmountString
-}
 
 export enum BinancePositionSide {
   BOTH = 'BOTH',
@@ -263,7 +229,9 @@ export enum AccountUpdateEventType {
   ADMIN_DEPOSIT = 'ADMIN_DEPOSIT'
 }
 
-export interface AccountUpdateEvent extends BinanceSocketEvent {
+export interface AccountUpdateEvent {
+  /** Event Time */
+  E: number
   /**  Event type */
   e: BinanceWebsocketEventType.ACCOUNT_UPDATE
   /** Transaction time */
@@ -278,66 +246,3 @@ export interface AccountUpdateEvent extends BinanceSocketEvent {
     P: Array<AccountUpdateEventPositionData>
   }
 }
-
-
-/******************************************************************************
- *
- * ORDER UPDATE EVENT
- *
- ******************************************************************************/
-
-export interface OrderUpdateEventOrderData {
-  /**  CoinName */
-  s: AssetName,
-  /** Client Order Id */
-  c: string, // special client order id: starts with "autoclose-": liquidation order "adl_autoclose": ADL auto close order
-  /** Side */
-  S: OrderSide,
-  /** Order Type */
-  o: OrderType,
-  /** Time in Force */
-  f: TimeInForce,
-  /** Original Quantity */
-  q: "0.001",
-  /** Original Price */
-  p: "0",
-  /** Average Price */
-  ap: "0",
-  /** Stop Price. Please ignore with TRAILING_STOP_MARKET order */
-  sp: "7103.04",
-  /** Execution Type */
-  x: "NEW",
-  /** Order Status */
-  X: OrderStatus,
-  /** Order Id */
-  i: OrderId,
-  /** Order Last Filled Quantity */
-  l: "0",
-  z: "0",                    // Order Filled Accumulated Quantity
-  L: "0",                    // Last Filled Price
-  N: "USDT",             // Commission CoinName, will not push if no commission
-  n: "0",                // Commission, will not push if no commission
-  T: 1568879465651,          // Order Trade Time
-  t: 0,                      // Trade Id
-  b: "0",                    // Bids Notional
-  a: "9.91",                 // Ask Notional
-  m: false,                  // Is this trade the maker side?
-  R: false,                  // Is this reduce only
-  /**Stop Price Working Type */
-  wt: OrderWorkingType,
-  ot: "TRAILING_STOP_MARKET",    // Original Order Type
-  ps: BinancePositionSide,                        // Position Side
-  cp: false,                     // If Close-All, pushed with conditional order
-  AP: "7476.89",             // Activation Price, only puhed with TRAILING_STOP_MARKET order
-  cr: "5.0",                 // Callback Rate, only puhed with TRAILING_STOP_MARKET order
-  rp: "0"                            // Realized Profit of the trade
-}
-
-export interface OrderUpdateEvent extends BinanceSocketEvent {
-  /**  Event type */
-  e: BinanceWebsocketEventType.ORDER_TRADE_UPDATE
-  /** Transaction time */
-  T: number
-  o: OrderUpdateEventOrderData
-}
-

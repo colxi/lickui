@@ -1,19 +1,18 @@
 import fetch from 'node-fetch'
 import { createHmac } from 'crypto'
-import { getDateAsDDMMYYYY, TimeInMillis } from '@/lib/date'
+import { TimeInMillis } from '@/lib/date'
 import config from '@/config'
-import {
-  AssetName,
-  BinanceFuturesAPIOrder,
-  BinanceFuturesAPIPosition
-} from '@/types'
 import {
   GetAssetPairCandlesOptions,
   BinanceFuturesApiExchangeInfo,
   BinanceFuturesApiAssetCandle,
   BinanceFuturesApiServerTime,
   BinanceFuturesApiUserDataKey,
-  BinanceFuturesApiBalanceData
+  BinanceFuturesApiBalanceData,
+  BinanceFuturesAPIPosition,
+  BinanceFuturesAPIOrder,
+  CreateFuturesMarketOrderOptions,
+  GetFuturesOrderByClientIdOptions,
 } from './types'
 import { sleep } from '@/lib/sleep'
 import Logger from '@/lib/logger'
@@ -100,6 +99,11 @@ export default class FuturesApiService {
       effectiveUrl,
       { method: method, headers: { "X-MBX-APIKEY": config.binanceApiKey } }
     )
+
+    if (response.status !== 200) {
+      this.#logger.error(`Binance API Request returned an unexpected STATUS CODE ${response.status}`)
+    }
+
     let data: any
     try {
       data = await response.json()
@@ -194,6 +198,59 @@ export default class FuturesApiService {
       availableBalance: Number(USDTCoin.availableBalance)
     }
   }
+
+
+  /**
+   * 
+   */
+  public async getFuturesOpenPosition(): Promise<BinanceFuturesAPIPosition[]> {
+    const data: any = await this.#binanceFetch(
+      'https://fapi.binance.com/fapi/v2/account',
+      'GET',
+      true,
+    )
+    return data.positions.filter((i: any) => Number(i.initialMargin) > 0)
+  }
+
+
+  /**
+   * 
+   * 
+   */
+  public async getFutureOpenOrders(): Promise<BinanceFuturesAPIOrder[]> {
+    return await this.#binanceFetch(
+      'https://fapi.binance.com/fapi/v1/openOrders',
+      'GET',
+      true
+    )
+  }
+
+
+  /**
+   * 
+   */
+  async createFuturesMarketOrder(payload: CreateFuturesMarketOrderOptions): Promise<BinanceFuturesAPIOrder> {
+    const data: BinanceFuturesAPIOrder = await this.#binanceFetch(
+      `https://fapi.binance.com/fapi/v1/order?symbol=${payload.assetName}&side=${payload.side}&type=MARKET&quantity=${payload.quantity}`,
+      'POST',
+      true
+    )
+    return data
+  }
+
+
+  /**
+   * 
+   */
+  async getFuturesOrderByClientId(payload: GetFuturesOrderByClientIdOptions): Promise<any> {
+    const data: any = await this.#binanceFetch(
+      `https://fapi.binance.com/fapi/v1/order?symbol=${payload.assetName}&origClientOrderId=${payload.clientOrderId}`,
+      'GET',
+      true
+    )
+    return data
+  }
+
 }
 
 
@@ -220,13 +277,6 @@ export default class FuturesApiService {
 //     return data
 //   }
 
-//   static async createFuturesMarketOrder(payload: any): Promise<any> {
-//     const data: any = await binanceFetch(
-//       `https://fapi.binance.com/fapi/v1/order?symbol=${payload.symbol}&side=${payload.side}&type=${payload.type}&quantity=${payload.quantity}`,
-//       'POST'
-//     )
-//     return data
-//   }
 
 //   static async createFuturesLimitOrder(payload: any): Promise<any> {
 //     const request = `https://fapi.binance.com/fapi/v1/order?symbol=${payload.symbol}&side=${payload.side}&type=${payload.type}&quantity=${payload.quantity}&price=${payload.price}&timeInForce=${payload.timeInForce}`
@@ -238,13 +288,6 @@ export default class FuturesApiService {
 //     return data
 //   }
 
-//   static async getFuturesOrderInfo(payload: any): Promise<any> {
-//     const data: any = await binanceFetch(
-//       `https://fapi.binance.com/fapi/v1/order?symbol=${payload.symbol}&origClientOrderId=${payload.origClientOrderId}`,
-//       'GET'
-//     )
-//     return data
-//   }
 
 //   static async getUserOpenFuturesOrders(): Promise<any> {
 //     const data: any = await binanceFetch(
@@ -267,15 +310,6 @@ export default class FuturesApiService {
 //       'POST'
 //     )
 //     return data
-//   }
-
-//   static async getFuturesOpenPosition(): Promise<BinanceFuturesAPIPosition[]> {
-//     const data: any = await binanceFetch('https://fapi.binance.com/fapi/v2/account', 'GET')
-//     return data.positions.filter((i: any) => Number(i.initialMargin) > 0)
-//   }
-
-//   static async getOpenFutureOrders(): Promise<BinanceFuturesAPIOrder[]> {
-//     return await binanceFetch('https://fapi.binance.com/fapi/v1/openOrders')
 //   }
 
 //   static async getLastWeekFutureOrders(symbol: AssetName): Promise<BinanceFuturesAPIOrder[]> {

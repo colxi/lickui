@@ -1,3 +1,4 @@
+import FuturesPositionsService from './futures-positions'
 import FuturesWalletService from './futures-wallet'
 import FuturesAssetsService from './futures-assets'
 import FuturesApiService from './futures-api'
@@ -17,6 +18,7 @@ class BinanceService {
     const futuresWalletServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresWalletService)
     const futuresAssetServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresAssetService)
     const futuresLiquidationServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresLiquidationsService)
+    const futuresPositionsServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresPositionsService)
 
     this.#assetPairs = []
     this.#startTime = 0
@@ -26,6 +28,7 @@ class BinanceService {
     this.liquidations = new FuturesLiquidationsService({ logger: futuresLiquidationServiceLogger })
     this.wallet = new FuturesWalletService({ api: this.api, logger: futuresWalletServiceLogger })
     this.assets = new FuturesAssetsService({ api: this.api, logger: futuresAssetServiceLogger })
+    this.positions = new FuturesPositionsService({ api: this.api, logger: futuresPositionsServiceLogger })
   }
 
   #isBusy: boolean
@@ -38,6 +41,7 @@ class BinanceService {
   public readonly wallet: FuturesWalletService
   public readonly assets: FuturesAssetsService
   public readonly liquidations: FuturesLiquidationsService
+  public readonly positions: FuturesPositionsService
 
   get startTime(): Timestamp { return this.#startTime }
 
@@ -83,6 +87,7 @@ class BinanceService {
 
     // start child services
     await this.api.start()
+    await this.positions.start()
     await this.wallet.start()
     await this.assets.start({ assets: this.#assetPairs })
     await this.liquidations.start({ assets: this.#assetPairs })

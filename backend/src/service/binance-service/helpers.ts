@@ -85,6 +85,23 @@ export const LoggerConfigs = {
       padding: 1,
       text: 'SocketManager'
     }
+  },
+  // FUTURES POSITIONs SERVICE
+  futuresPositionsService: {
+    context: {
+      background: Logger.hexColor('#2e83aa'),
+      color: Logger.hexColor('#FFFFFF'),
+      padding: 1,
+      text: 'FuturesPositionsService'
+    }
+  },
+  futuresPositionsServiceSocketManager: {
+    context: {
+      background: Logger.hexColor('#5ea3da'),
+      color: Logger.hexColor('#666666'),
+      padding: 1,
+      text: 'SocketManager'
+    }
   }
 }
 

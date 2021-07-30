@@ -1,5 +1,119 @@
 /// old implementation :
 
+import EventedService from '@/lib/evented-service'
+import Logger from '@/lib/logger'
+import { AssetName, BinancePositionSide, OrderSide, OrderType } from '@/types'
+import FuturesApiService from '../futures-api'
+import { BinanceFuturesAPIOrder, BinanceFuturesAPIPosition } from '../futures-api/types'
+import { LoggerConfigs } from '../helpers'
+import FuturesPositionsSocketManager from './socket-manager'
+import { FuturesPositionsServiceConfig, FuturesPositionsServiceEvents, FuturesPositionsServiceFetchOrderByClientOrderIdOptions, FuturesPositionsServiceOpenPositionOptions } from './types'
+
+
+class FuturesPosition {
+  constructor(options: { assetName: AssetName, position: BinanceFuturesAPIPosition, order: BinanceFuturesAPIOrder | null }) {
+    this.#position = options.position
+    this.#order = options.order
+  }
+
+  #position: BinanceFuturesAPIPosition
+  #order: BinanceFuturesAPIOrder | null
+}
+
+export default class FuturesPositionsService extends EventedService<FuturesPositionsServiceConfig>{
+  constructor(options: { api: FuturesApiService, logger: Logger }) {
+    super({
+      verbose: false,
+      logger: ((): (...args: any[]) => void => {
+        const logger = options.logger.createChild(LoggerConfigs.serviceEvent)
+        return (message: string, ...args: any[]): void => logger.log(message, ...args)
+      })(),
+      events: typeof FuturesPositionsServiceEvents,
+      onStart: async () => {
+        await this.#initPositions()
+        const userDataKey = await this.#api.getFuturesUserDataKey()
+        await this.#socketManager.connect(userDataKey)
+      },
+      onStop: async () => {
+        await this.#socketManager.disconnect()
+      }
+    })
+
+    this.#api = options.api
+    this.#positions = {}
+    this.#socketManager = new FuturesPositionsSocketManager({
+      logger: options.logger,
+      onPositionUpdate: (): void => { this.#updatePosition({}) }
+    })
+  }
+
+  readonly #api: FuturesApiService
+  readonly #positions: Record<AssetName, FuturesPosition>
+  readonly #socketManager: FuturesPositionsSocketManager
+
+  #updatePosition = (a: any) => {
+    //
+  }
+
+  #initPositions = async (): Promise<void> => {
+    const openPositions = await this.#api.getFuturesOpenPosition()
+    const openOrders = await this.#api.getFutureOpenOrders()
+    for (const position of openPositions) {
+      const assetName: AssetName = position.symbol
+      const order = openOrders.find(o => o.symbol === assetName) || null
+      this.#positions[position.symbol] = new FuturesPosition({
+        assetName: assetName,
+        position: position,
+        order: order,
+      })
+      console.log('Position :', position.symbol)
+      console.log('Side :', Number(position.notional) > 0 ? BinancePositionSide.LONG : BinancePositionSide.SHORT)
+      console.log('Margin :', position.initialMargin, 'USDT')
+      console.log('Amount :', position.positionAmt, position.symbol.slice(0, -4))
+      console.log('Leverage :', position.leverage)
+      console.log('UPnL :', position.unrealizedProfit, 'USDT')
+      console.log('Entry Price :', position.entryPrice, 'USDT')
+      console.log('-- LIMIT order ID:', order?.orderId)
+      console.log('-- LIMIT order SIDE:', order?.side)
+      console.log('-- LIMIT order price:', order?.price)
+      console.log('-- LIMIT order quantity:', order?.origQty)
+      console.log('----------')
+    }
+
+  }
+
+  /**
+   * 
+   * 
+   */
+  public async openPosition(
+    options: FuturesPositionsServiceOpenPositionOptions
+  ): Promise<BinanceFuturesAPIOrder> {
+    const marketOrder = await this.#api.createFuturesMarketOrder({
+      assetName: options.assetName,
+      side: options.side,
+      quantity: options.quantity,
+    })
+    return marketOrder
+  }
+
+
+  /**
+   * 
+   * 
+   */
+  public async fetchOrderByClientOrderId(
+    options: FuturesPositionsServiceFetchOrderByClientOrderIdOptions
+  ): Promise<BinanceFuturesAPIOrder> {
+    const order = await this.#api.getFuturesOrderByClientId({
+      assetName: options.assetName,
+      clientOrderId: options.clientOrderId,
+    })
+    return order
+  }
+}
+
+
 //   readonly #onSocketMessage = async (ws: WebsocketConnection, message: unknown): Promise<void> => {
 //      if (isAccountUpdateEvent(message)) {
 //       const eventData = message.a

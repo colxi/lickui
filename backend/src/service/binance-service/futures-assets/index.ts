@@ -88,7 +88,11 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
     // reset all asset instances
     clearObject(this.#asset)
     // Iterate the list of provided asset names
+    const exchangeInfo = await this.#api.getFuturesExchangeInfo()
+
     for (const assetName of assets) {
+      // asset info
+      const assetInfo = exchangeInfo.symbols.find(symbol => symbol.pair === assetName)!
       // Fetch the candles fot the asset
       const candles = await this.#api.getFuturesAssetCandles({
         asset: assetName,
@@ -114,6 +118,7 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
         assetName: assetName,
         candles: normalizedCandles,
         maxCandles: MAX_ASSET_CANDLES_COLLECTION,
+        quantityPrecision: assetInfo.quantityPrecision,
         logger: this.#logger
       })
     }

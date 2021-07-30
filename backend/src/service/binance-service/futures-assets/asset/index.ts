@@ -18,11 +18,13 @@ export default class Asset {
     this.#candles = options.candles
     this.#maxCandles = options.maxCandles
     this.#logger = options.logger
+    this.#quantityPrecision = options.quantityPrecision
   }
 
 
   readonly #logger: Logger
   readonly #maxCandles: number
+  readonly #quantityPrecision: number
   readonly #assetName: AssetName
   readonly #candles: AssetCandle[]
 
@@ -70,6 +72,15 @@ export default class Asset {
    */
   public get lastCandle(): Immutable<AssetCandle> {
     return this.#candles[this.candlesCount]
+  }
+
+  /**
+   * 
+   * Returns asset quantity precision (amount of decimals supported)
+   * 
+   */
+  public get quantityPrecision(): number {
+    return this.#quantityPrecision
   }
 
   /**

@@ -6,5 +6,6 @@ export interface AssetOptions {
   assetName: AssetName
   candles: AssetCandle[]
   maxCandles: number
+  quantityPrecision: number
   logger: Logger
 }

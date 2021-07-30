@@ -2,9 +2,6 @@ import ErrorHandlingService from './service/error-handling'
 import BinanceService from './service/binance-service'
 import TradingBot from './service/trading-bot'
 import { config } from './config'
-import { LiquidationEvent } from './service/binance-service/futures-liquidations/types'
-import fetch from 'node-fetch'
-import { AssetName, CurrencyAmount } from './types'
 
 // import initRESTApiService from './service/api-server'
 

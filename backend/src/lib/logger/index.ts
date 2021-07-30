@@ -1,5 +1,5 @@
 import { getTimeAsHHMMSS } from '../date'
-import { isChainable, LoggerColorRGB } from './helpers'
+import { hexColorToRGB, isChainable, LoggerColorRGB } from './helpers'
 import {
   LoggerFontBackground,
   LoggerFontColor,
@@ -52,6 +52,14 @@ export default class Logger {
     result += text
     if (options.reset !== false) result += LoggerFontStyle.reset
     return result
+  }
+
+  public error(message: string, ...args: unknown[]): void {
+    const formattedMessage = this.formatText({
+      color: 'red',
+      text: message
+    })
+    this.log(formattedMessage, ...args)
   }
 
   public log(message: string, ...args: unknown[]): void {
