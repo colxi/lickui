@@ -1,9 +1,10 @@
 import fetch from 'node-fetch'
 import { createHmac } from 'crypto'
-import { TimeInMillis } from '@/lib/date'
+import Logger from '@/lib/logger'
 import config from '@/config'
+import { TimeInMillis } from '@/lib/date'
+import { sleep } from '@/lib/sleep'
 import {
-  GetAssetPairCandlesOptions,
   BinanceFuturesApiExchangeInfo,
   BinanceFuturesApiAssetCandle,
   BinanceFuturesApiServerTime,
@@ -11,11 +12,15 @@ import {
   BinanceFuturesApiBalanceData,
   BinanceFuturesAPIPosition,
   BinanceFuturesAPIOrder,
-  CreateFuturesMarketOrderOptions,
-  GetFuturesOrderByClientIdOptions,
+  BinanceFuturesAPILeverageandMarginTypeInfo,
+  BinanceFuturesAPIPositionRiskEntry,
+  BinanceFuturesApiSetLeverage,
+  CreateFuturesMarketOrderPayload,
+  GetFuturesOrderByClientIdPayload,
+  GetAssetPairCandlesPayload,
+  SetFuturesAssetLeveragePayload,
+  SetFuturesAssetMarginTypePayload,
 } from './types'
-import { sleep } from '@/lib/sleep'
-import Logger from '@/lib/logger'
 
 
 export default class FuturesApiService {
@@ -159,7 +164,7 @@ export default class FuturesApiService {
     startTime,
     endTime = Date.now(),
     limit = 99
-  }: GetAssetPairCandlesOptions): Promise<BinanceFuturesApiAssetCandle[]> {
+  }: GetAssetPairCandlesPayload): Promise<BinanceFuturesApiAssetCandle[]> {
     return await this.#binanceFetch(
       `https://fapi.binance.com/fapi/v1/klines?symbol=${asset}&interval=${interval}&startTime=${startTime}&endTime=${endTime}&limit=${limit}`,
       'GET',
@@ -229,7 +234,7 @@ export default class FuturesApiService {
   /**
    * 
    */
-  async createFuturesMarketOrder(payload: CreateFuturesMarketOrderOptions): Promise<BinanceFuturesAPIOrder> {
+  async createFuturesMarketOrder(payload: CreateFuturesMarketOrderPayload): Promise<BinanceFuturesAPIOrder> {
     const data: BinanceFuturesAPIOrder = await this.#binanceFetch(
       `https://fapi.binance.com/fapi/v1/order?symbol=${payload.assetName}&side=${payload.side}&type=MARKET&quantity=${payload.quantity}`,
       'POST',
@@ -242,13 +247,60 @@ export default class FuturesApiService {
   /**
    * 
    */
-  async getFuturesOrderByClientId(payload: GetFuturesOrderByClientIdOptions): Promise<any> {
-    const data: any = await this.#binanceFetch(
+  async getFuturesOrderByClientId(payload: GetFuturesOrderByClientIdPayload): Promise<BinanceFuturesAPIOrder> {
+    const data = await this.#binanceFetch(
       `https://fapi.binance.com/fapi/v1/order?symbol=${payload.assetName}&origClientOrderId=${payload.clientOrderId}`,
       'GET',
       true
     )
     return data
+  }
+
+  /**
+   * 
+   */
+  async getFuturesAssetsLeverageAndMarginTypeInfo(): Promise<BinanceFuturesAPILeverageandMarginTypeInfo> {
+    const data: BinanceFuturesAPIPositionRiskEntry[] = await this.#binanceFetch(
+      `https://fapi.binance.com/fapi/v2/positionRisk`,
+      'GET',
+      true
+    )
+    const dictionary: BinanceFuturesAPILeverageandMarginTypeInfo = {}
+    for (const assetInfo of data) {
+      dictionary[assetInfo.symbol] = {
+        assetName: assetInfo.symbol,
+        leverage: Number(assetInfo.leverage),
+        marginType: assetInfo.marginType,
+      }
+    }
+    return dictionary
+  }
+
+  /**
+   * 
+   * 
+   */
+  async setFuturesAssetLeverage(payload: SetFuturesAssetLeveragePayload): Promise<BinanceFuturesApiSetLeverage> {
+    const data = await this.#binanceFetch(
+      `https://fapi.binance.com/fapi/v1/leverage?symbol=${payload.assetName}&leverage=${payload.leverage}`,
+      'POST',
+      true
+    )
+    return data
+  }
+
+
+  /**
+   * 
+   * 
+   */
+  async setFuturesAssetMarginType(payload: SetFuturesAssetMarginTypePayload): Promise<void> {
+    await this.#binanceFetch(
+      `https://fapi.binance.com/fapi/v1/marginType?symbol=${payload.assetName}&marginType=${payload.marginType}`,
+      'POST',
+      true
+    )
+    return
   }
 
 }
@@ -296,21 +348,6 @@ export default class FuturesApiService {
 //     return data
 //   }
 
-//   static async setFuturesSymbolLeverage(payload: any): Promise<any> {
-//     const data: any = await binanceFetch(
-//       `https://fapi.binance.com/fapi/v1/leverage?symbol=${payload.symbol}&leverage=${payload.leverage}`,
-//       'POST'
-//     )
-//     return data
-//   }
-
-//   static async setFuturesSymbolMarginType(payload: any): Promise<any> {
-//     const data: any = await binanceFetch(
-//       `https://fapi.binance.com/fapi/v1/marginType?symbol=${payload.symbol}&marginType=${payload.marginType}`,
-//       'POST'
-//     )
-//     return data
-//   }
 
 //   static async getLastWeekFutureOrders(symbol: AssetName): Promise<BinanceFuturesAPIOrder[]> {
 //     // docs: https://binance-docs.github.io/apidocs/futures/en/#all-orders-user_data

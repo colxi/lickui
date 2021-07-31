@@ -2,7 +2,7 @@
 import lickuiConfig from '../../config.json'
 // @ts-ignore
 import _configKeys from '../../config.keys.json'
-import { CoinName, Immutable } from '@/types'
+import { BinanceMarginType, CoinName, Immutable } from '@/types'
 
 
 export interface ConfigAssetDescriptor {
@@ -32,6 +32,8 @@ class Config {
   get binanceApiSecret(): string { return _configKeys.binanceApiSecret }
   get taapiApiKey(): string { return _configKeys.taapiApiKey }
   get assets(): Immutable<Record<CoinName, ConfigAssetDescriptor>> { return lickuiConfig.assets }
+  get futuresLeverage(): number { return lickuiConfig.futuresLeverage }
+  get futuresMarginType(): BinanceMarginType { return lickuiConfig.futuresMarginType as BinanceMarginType }
 
   public isAssetSupported(asset: CoinName): asset is keyof typeof lickuiConfig.assets {
     return asset in lickuiConfig.assets

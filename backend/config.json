@@ -20,7 +20,7 @@
   "httpServiceIp": "localhost",
   "futuresQuoteAsset": "USDT",
   "futuresLeverage": 5,
-  "futuresMarginType": "ISOLATED",
+  "futuresMarginType": "cross",
   "setLeverageOnBoot": false,
   "setMarginTypeOnBoot": false,
   "takeProfit": 0.3,

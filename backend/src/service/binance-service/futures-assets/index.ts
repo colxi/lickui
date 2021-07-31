@@ -62,7 +62,7 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
     this.#asset = {}
     this.#socketManager = new FuturesAssetsSocketManager({
       logger: this.#logger.createChild(LoggerConfigs.futuresAssetServiceSocketManager),
-      onAssetCandleUpdate: (candle: AssetCandle): void => this.#asset[candle.assetName].updateAsset(candle)
+      onAssetCandleUpdate: (candle: AssetCandle): void => this.#asset[candle.assetName].updateAssetCandle(candle)
     })
   }
 
@@ -89,6 +89,7 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
     clearObject(this.#asset)
     // Iterate the list of provided asset names
     const exchangeInfo = await this.#api.getFuturesExchangeInfo()
+    const assetFuturesInfo = await this.#api.getFuturesAssetsLeverageAndMarginTypeInfo()
 
     for (const assetName of assets) {
       // asset info
@@ -116,10 +117,13 @@ export default class FuturesAssetsService extends EventedService<FuturesAssetsSe
       // initialize the asset
       this.#asset[assetName] = new Asset({
         assetName: assetName,
+        leverage: assetFuturesInfo[assetName].leverage,
+        marginType: assetFuturesInfo[assetName].marginType,
         candles: normalizedCandles,
         maxCandles: MAX_ASSET_CANDLES_COLLECTION,
         quantityPrecision: assetInfo.quantityPrecision,
-        logger: this.#logger
+        logger: this.#logger,
+        api: this.#api
       })
     }
   }

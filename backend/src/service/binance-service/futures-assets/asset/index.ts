@@ -1,6 +1,7 @@
 import { calculateTypicalPrice, calculateVWAP } from '@/lib/indicators'
 import Logger from '@/lib/logger'
-import { AssetName, CurrencyAmount, Immutable } from '@/types'
+import { AssetName, BinanceMarginType, CurrencyAmount, Immutable } from '@/types'
+import FuturesApiService from '../../futures-api'
 import { AssetCandle } from '../types'
 import { AssetOptions } from './types'
 
@@ -17,16 +18,21 @@ export default class Asset {
     this.#assetName = options.assetName
     this.#candles = options.candles
     this.#maxCandles = options.maxCandles
-    this.#logger = options.logger
     this.#quantityPrecision = options.quantityPrecision
+    this.#leverage = options.leverage
+    this.#marginType = options.marginType
+    this.#logger = options.logger
+    this.#api = options.api
   }
 
-
+  readonly #api: FuturesApiService
   readonly #logger: Logger
   readonly #maxCandles: number
   readonly #quantityPrecision: number
   readonly #assetName: AssetName
   readonly #candles: AssetCandle[]
+  #marginType: BinanceMarginType
+  #leverage: number
 
 
   /**
@@ -83,6 +89,25 @@ export default class Asset {
     return this.#quantityPrecision
   }
 
+
+  /**
+   * 
+   * Returns asset established leverage for user account
+   * 
+   */
+  public get leverage(): number {
+    return this.#leverage
+  }
+
+  /**
+   * 
+   * Returns asset established marginType for user account
+   * 
+   */
+  public get marginType(): BinanceMarginType {
+    return this.#marginType
+  }
+
   /**
    * 
    * Asset Last 24h vwap indicator value
@@ -97,13 +122,45 @@ export default class Asset {
     return calculateVWAP(candles)
   }
 
+
+  /**
+   * 
+   * 
+   * 
+   */
+  public async setLeverage(leverage: number): Promise<void> {
+    this.#logger.log(`Setting leverage=${leverage} for ${this.#assetName}`)
+    const leverageResponse = await this.#api.setFuturesAssetLeverage({
+      assetName: this.assetName,
+      leverage: leverage
+    })
+    if (leverageResponse.leverage !== leverage) {
+      throw new Error(`Could not set leverage level for asset ${this.#assetName}`)
+    }
+  }
+
+
+  /**
+   * 
+   * 
+   * 
+   */
+  public async setMarginType(marginType: BinanceMarginType): Promise<void> {
+    this.#logger.log(`Setting margin type=${marginType} for ${this.#assetName}`)
+    await this.#api.setFuturesAssetMarginType({
+      assetName: this.assetName,
+      marginType: marginType
+    })
+  }
+
+
   /**
    * 
    * Updates the last candle, or creates a new candle when represents a new 
    * time period
    * 
    */
-  public updateAsset(newCandle: AssetCandle): void {
+  public updateAssetCandle(newCandle: AssetCandle): void {
     const lastCandle = this.#candles[this.candlesCount]
     if (newCandle.openTime < lastCandle.openTime) {
       this.#logger.log(`Provided ${this.assetName} candle openTime is older than last candle openTime. Ignoring it`)

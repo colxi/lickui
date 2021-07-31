@@ -1,9 +1,11 @@
-import { AssetName, BinancePositionSide, CandlestickInterval, ClientOrderId, CoinName, CurrencyAmount, CurrencyAmountString, Leverage, OrderId, OrderSide, OrderStatus, OrderType, OrderWorkingType, QuantityString, TimeInForce, Timestamp } from '@/types'
+import { AssetName, BinanceMarginType, BinancePositionSide, CandlestickInterval, ClientOrderId, CoinName, CurrencyAmount, CurrencyAmountString, Leverage, OrderId, OrderSide, OrderStatus, OrderType, OrderWorkingType, QuantityString, TimeInForce, Timestamp } from '@/types'
 
-// API SERVICE TYPES 
-
-
-export interface GetAssetPairCandlesOptions {
+/*******************************************************************************
+ * 
+ *  API PAYLOADS
+ * 
+ *******************************************************************************/
+export interface GetAssetPairCandlesPayload {
   asset: AssetName
   interval: CandlestickInterval
   startTime: Timestamp
@@ -11,19 +13,33 @@ export interface GetAssetPairCandlesOptions {
   limit?: number
 }
 
-
-export interface CreateFuturesMarketOrderOptions {
+export interface CreateFuturesMarketOrderPayload {
   assetName: AssetName
   side: OrderSide
   quantity: CurrencyAmount
 }
 
-export interface GetFuturesOrderByClientIdOptions {
+export interface GetFuturesOrderByClientIdPayload {
   assetName: AssetName
   clientOrderId: ClientOrderId
 }
 
-// BINANCE API TYPES
+export interface SetFuturesAssetLeveragePayload {
+  assetName: AssetName,
+  leverage: number
+}
+
+export interface SetFuturesAssetMarginTypePayload {
+  assetName: AssetName
+  marginType: BinanceMarginType
+}
+
+
+/*******************************************************************************
+ *
+ *  API RESPONSES
+ *
+ *******************************************************************************/
 
 /**
  * 
@@ -149,11 +165,16 @@ export interface BinanceFuturesAPIPosition {
 }
 
 
+export interface BinanceFuturesApiSetLeverage {
+  leverage: number
+  maxNotionalValue: QuantityString
+  symbol: AssetName
+}
+
 /**
  * 
  * 
  */
-
 export interface BinanceFuturesAPIOrder {
   avgPrice: CurrencyAmountString,
   clientOrderId: string,
@@ -179,4 +200,36 @@ export interface BinanceFuturesAPIOrder {
   workingType: OrderWorkingType,
   priceProtect: boolean // if conditional order trigger is protected   
 }
+
+
+/**
+ * 
+ * 
+ */
+export interface BinanceFuturesAPIPositionRiskEntry {
+  symbol: AssetName
+  leverage: QuantityString
+  marginType: BinanceMarginType
+  positionAmt: CurrencyAmountString
+  entryPrice: CurrencyAmountString
+  markPrice: CurrencyAmountString
+  unRealizedProfit: CurrencyAmountString
+  liquidationPrice: CurrencyAmountString
+  maxNotionalValue: QuantityString
+  isolatedMargin: CurrencyAmountString
+  isAutoAddMargin: 'false' | 'true' // string booleans
+  positionSide: BinancePositionSide
+  notional: QuantityString
+  isolatedWallet: CurrencyAmountString
+  updateTime: Timestamp
+}
+
+export type BinanceFuturesAPILeverageandMarginTypeInfo = Record<
+  AssetName,
+  {
+    assetName: AssetName
+    leverage: number
+    marginType: BinanceMarginType
+  }
+>
 
