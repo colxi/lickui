@@ -1,5 +1,5 @@
 import { getTimeAsHHMMSS } from '../date'
-import { hexColorToRGB, isChainable, LoggerColorRGB } from './helpers'
+import { isChainable, LoggerColorRGB } from './helpers'
 import {
   LoggerFontBackground,
   LoggerFontColor,

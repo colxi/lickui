@@ -1,4 +1,4 @@
-import config from '@/config'
+import { config } from '@/config'
 import sqlite3 from 'sqlite3'
 
 class Database {

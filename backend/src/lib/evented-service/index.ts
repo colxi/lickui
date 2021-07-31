@@ -1,4 +1,4 @@
-import { Immutable, PlainObject } from '@/types'
+import { Immutable } from '@/types'
 import {
   EventedServiceOptions,
   EventsDictionary,
@@ -94,7 +94,8 @@ export default abstract class EventedService<
     // const [eventName, eventData] = args
     if (this.#verbose || forceLog) this.#log(`${eventName}`)
     for (const eventHandler of this.#subscribers[eventName]) {
-      eventHandler(eventData)
+      const result = eventHandler(eventData)
+      if (result && 'catch' in result) result.catch(e => { throw e })
     }
   }
 

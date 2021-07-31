@@ -1,5 +1,13 @@
 import Logger from '@/lib/logger'
-import { BinanceSocketEvent, BinanceWebsocketEventType, CandlestickInterval, AssetName, CurrencyAmountString, OrderId, QuantityString, Timestamp } from '@/types'
+import {
+  BinanceWebsocketEventType,
+  CandlestickInterval,
+  AssetName,
+  CurrencyAmountString,
+  OrderId,
+  QuantityString,
+  Timestamp
+} from '@/types'
 import { AssetCandle } from '../../types'
 
 

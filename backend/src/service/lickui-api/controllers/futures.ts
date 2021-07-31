@@ -22,12 +22,12 @@ export const getFuturesBalanceHistory: RESTApiServiceController = async (
    response(200, { limit, page, total, data })
 }
 
-export const getFuturesOpenPositions: RESTApiServiceController = async (
-   response: RESTApiServiceRequestResponder,
-   payload: RESTApiServiceRequestPayload,
-): Promise<void> => {
-   response(200, {
-      // futuresWallet: binanceFuturesService.futuresWallet,
-      // futuresPositions: binanceFuturesService.futuresPositions
-   })
-}
+// export const getFuturesOpenPositions: RESTApiServiceController = async (
+//    response: RESTApiServiceRequestResponder,
+//    payload: RESTApiServiceRequestPayload,
+// ): Promise<void> => {
+//    response(200, {
+//       // futuresWallet: binanceFuturesService.futuresWallet,
+//       // futuresPositions: binanceFuturesService.futuresPositions
+//    })
+// }

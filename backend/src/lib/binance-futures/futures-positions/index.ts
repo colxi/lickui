@@ -7,7 +7,12 @@ import FuturesApiService from '../futures-api'
 import { BinanceFuturesAPIOrder, BinanceFuturesAPIPosition } from '../futures-api/types'
 import { LoggerConfigs } from '../logger.config'
 import FuturesPositionsSocketManager from './socket-manager'
-import { FuturesPositionsServiceConfig, FuturesPositionsServiceEvents, FuturesPositionsServiceFetchOrderByClientOrderIdOptions, FuturesPositionsServiceOpenPositionOptions } from './types'
+import {
+  FuturesPositionsServiceConfig,
+  FuturesPositionsServiceEvents,
+  FuturesPositionsServiceFetchOrderByClientOrderIdOptions,
+  FuturesPositionsServiceOpenPositionOptions
+} from './types'
 
 
 class FuturesPosition {
@@ -51,8 +56,8 @@ export default class FuturesPositionsService extends EventedService<FuturesPosit
   readonly #positions: Record<AssetName, FuturesPosition>
   readonly #socketManager: FuturesPositionsSocketManager
 
-  #updatePosition = (a: any) => {
-    //
+  #updatePosition = (a: any): void => {
+    void (a)
   }
 
   #initPositions = async (): Promise<void> => {

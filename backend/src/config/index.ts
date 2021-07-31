@@ -26,6 +26,7 @@ class Config {
   get taapiApiKey(): string { return this.#keysConfig.taapiApiKey }
   get futuresLeverage(): number { return this.#generalConfig.futuresLeverage }
   get futuresMarginType(): BinanceMarginType { return this.#generalConfig.futuresMarginType as BinanceMarginType }
+  get databaseName(): string { return this.#generalConfig.databaseName }
 
 
   public getEnabledAssetsList(): AssetName[] {
