@@ -1,19 +1,19 @@
+import FuturesLiquidationsService from './futures-liquidations'
 import FuturesPositionsService from './futures-positions'
 import FuturesWalletService from './futures-wallet'
 import FuturesAssetsService from './futures-assets'
 import FuturesApiService from './futures-api'
 import Logger from '@/lib/logger'
-import { LoggerConfigs } from './helpers'
+import { LoggerConfigs } from './logger.config'
 import { AssetName, Timestamp } from '@/types'
-import FuturesLiquidationsService from './futures-liquidations'
 import { ServiceStatus } from '@/lib/evented-service/types'
 import { BinanceServiceStartOptions, BinanceServiceStatus } from './types'
 import { clearArray } from '@/lib/array'
 
 
-class BinanceService {
+export default class BinanceFutures {
   constructor() {
-    const binanceLogger = new Logger(LoggerConfigs.binanceClient)
+    const binanceLogger = new Logger(LoggerConfigs.binanceFutures)
     const futuresApiServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresApiService)
     const futuresWalletServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresWalletService)
     const futuresAssetServiceLogger = binanceLogger.createChild(LoggerConfigs.futuresAssetService)
@@ -76,8 +76,8 @@ class BinanceService {
     this.#isBusy = true
 
     this.#logger.log('Starting Binance client...')
-    if (options.assetPairs.length > 1024) throw new Error(`BinanceClient: Max allowed assets is 1024 (Requested ${this.#assetPairs.length})`)
-    if (options.assetPairs.length === 0) throw new Error(`BinanceClient: No assets where provided `)
+    if (options.assetPairs.length > 1024) throw new Error(`BinanceFutures: Max allowed assets is 1024 (Requested ${this.#assetPairs.length})`)
+    if (options.assetPairs.length === 0) throw new Error(`BinanceFutures: No assets where provided `)
 
     // TODO : Validate that requested assets exist in binance futures
 
@@ -116,4 +116,3 @@ class BinanceService {
   }
 }
 
-export default new BinanceService()

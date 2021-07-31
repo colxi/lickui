@@ -21,11 +21,6 @@ export interface FuturesPositionDescriptor {
   unrealizedPnL: number
 }
 
-
-export type BinanceClientOrderMap = Record<OrderIdString, FuturesOrderDescriptor>
-
-export type BinanceClientPositionMap = Record<AssetName, FuturesPositionDescriptor>
-
 ////////////////////
 
 // export type Immutable<T extends Record<string, unknown>> = {
@@ -147,11 +142,6 @@ export enum BinancePositionSide {
 export enum BinanceMarginType {
   ISOLATED = 'isolated',
   CROSS = 'cross'
-}
-
-export enum BinanceClientMode {
-  PRODUCTION = 'PRODUCTION',
-  TEST = 'TEST'
 }
 
 export interface BinanceFuturesWallet {

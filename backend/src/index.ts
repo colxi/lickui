@@ -1,5 +1,4 @@
 import ErrorHandlingService from './service/error-handling'
-import BinanceService from './service/binance-service'
 import TradingBot from './service/trading-bot'
 import { config } from './config'
 
@@ -7,7 +6,6 @@ import { config } from './config'
 // import initRESTApiService from './service/api-server'
 
 // make Binance object available for debugging pùrposes (yarn debug + devtools)
-(global as any).Binance = BinanceService
 
 console.clear()
 

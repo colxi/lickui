@@ -1,6 +1,6 @@
 import FuturesWalletSocketManager from './socket-manager'
 import EventedService from '@/lib/evented-service'
-import { LoggerConfigs } from '../helpers'
+import { LoggerConfigs } from '../logger.config'
 import Logger from '@/lib/logger'
 import {
   FuturesWalletServiceEvents,

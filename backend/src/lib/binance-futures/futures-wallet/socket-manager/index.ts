@@ -4,7 +4,7 @@ import { config } from '@/config'
 import { isAccountUpdateEvent } from './helpers'
 import { AccountUpdateEventWalletData } from '@/types'
 import Logger from '@/lib/logger'
-import { LoggerConfigs } from '../../helpers'
+import { LoggerConfigs } from '../../logger.config'
 
 
 export default class FuturesWalletSocketManager {

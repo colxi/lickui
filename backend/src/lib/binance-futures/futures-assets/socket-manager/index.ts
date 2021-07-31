@@ -2,7 +2,7 @@ import { config } from '@/config'
 import Logger from '@/lib/logger'
 import WebsocketConnection from '@/lib/websocket'
 import { AssetName } from '@/types'
-import { LoggerConfigs } from '../../helpers'
+import { LoggerConfigs } from '../../logger.config'
 import { isAssetCandleUpdateEvent } from './helpers'
 import {
   FuturesAssetsSocketManagerConnectOptions,

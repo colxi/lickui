@@ -1,4 +1,4 @@
-import { AssetCandle } from '@/service/binance-service/futures-assets/types'
+import { AssetCandle } from '@/lib/binance-futures/futures-assets/types'
 
 /**
  * 

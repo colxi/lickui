@@ -1,7 +1,7 @@
 import Logger from '@/lib/logger'
 import EventedService from '@/lib/evented-service'
 import { TimeInMillis } from '@/lib/date'
-import { LoggerConfigs } from '../helpers'
+import { LoggerConfigs } from '../logger.config'
 import FuturesAssetsSocketManager from './socket-manager'
 import Asset from './asset'
 import {

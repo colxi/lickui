@@ -1,6 +1,6 @@
 import Logger from '@/lib/logger'
 import EventedService from '@/lib/evented-service'
-import { LoggerConfigs } from '../helpers'
+import { LoggerConfigs } from '../logger.config'
 import FuturesAssetsSocketManager from './socket-manager'
 import List from '@/lib/list'
 import {

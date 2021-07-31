@@ -1,7 +1,7 @@
 import { config } from '@/config'
 import Logger from '@/lib/logger'
 import WebsocketConnection from '@/lib/websocket'
-import { LoggerConfigs } from '../../helpers'
+import { LoggerConfigs } from '../../logger.config'
 import { isAccountUpdateEvent, isOrderUpdateEvent } from './helpers'
 import {
   FuturesPositionsSocketManagerOptions,

@@ -17,13 +17,13 @@ export const LoggerConfigs = {
       text: '␥ Socket'
     }
   },
-  binanceClient: {
+  binanceFutures: {
     renderTime: false,
     context: {
       background: Logger.hexColor('#f59542'),
       color: Logger.hexColor('#FFFFFF'),
       padding: 1,
-      text: 'BinanceClient'
+      text: 'BinanceFutures'
     }
   },
   // FUTURES API SERVICE

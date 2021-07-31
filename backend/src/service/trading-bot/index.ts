@@ -4,20 +4,21 @@ import { getPercentage } from '@/lib/math'
 import { clearObject } from '@/lib/object'
 import { sleep } from '@/lib/sleep'
 import { AssetName, CurrencyAmount, OrderSide } from '@/types'
-import { LiquidationEvent } from '../binance-service/futures-liquidations/types'
+import { LiquidationEvent } from '../../lib/binance-futures/futures-liquidations/types'
 import fetch from 'node-fetch'
-import BinanceService from '../binance-service'
+import BinanceFutures from '@/lib/binance-futures'
 
 class TradingBot {
   constructor() {
     this.#liquidationsMedian24h = {}
     this.#assetPairs = []
-
+    this.#binanceFutures = new BinanceFutures()
     this.#handleLiquidationEvent = this.#handleLiquidationEvent.bind(this)
   }
 
   readonly #liquidationsMedian24h: Record<AssetName, CurrencyAmount>
   readonly #assetPairs: AssetName[]
+  readonly #binanceFutures: BinanceFutures
 
   public async start(options: { assetPairs: AssetName[] }): Promise<void> {
     clearArray(this.#assetPairs)
@@ -25,7 +26,7 @@ class TradingBot {
 
     this.#assetPairs.push(...options.assetPairs)
     // start the Binance Client
-    await BinanceService.start({ assetPairs: options.assetPairs })
+    await this.#binanceFutures.start({ assetPairs: options.assetPairs })
     // set the correct leverage and marginType to assets
     await this.#initializeAssets()
 
@@ -36,19 +37,19 @@ class TradingBot {
       this.#liquidationsMedian24h[assetName] = liquidationsMedian
     }
 
-    // BinanceService.liquidations.subscribe(
-    //   BinanceService.liquidations.Event.LIQUIDATION_EVENT,
+    // BinanceFutures.liquidations.subscribe(
+    //   BinanceFutures.liquidations.Event.LIQUIDATION_EVENT,
     //   this.#handleLiquidationEvent
     // )
   }
 
   public async stop(): Promise<void> {
-    BinanceService.liquidations.unsubscribe(
-      BinanceService.liquidations.Event.LIQUIDATION_EVENT,
+    this.#binanceFutures.liquidations.unsubscribe(
+      this.#binanceFutures.liquidations.Event.LIQUIDATION_EVENT,
       this.#handleLiquidationEvent
     )
 
-    await BinanceService.stop()
+    await this.#binanceFutures.stop()
   }
 
 
@@ -62,9 +63,9 @@ class TradingBot {
 
     // Calculate position quantity
     const percentBal = 1
-    const amountToTrade = getPercentage(BinanceService.wallet.totalBalance, percentBal)
-    const assetPrice = BinanceService.assets.asset[assetName].price
-    const assetQuantityPrecision = BinanceService.assets.asset[assetName].quantityPrecision
+    const amountToTrade = getPercentage(this.#binanceFutures.wallet.totalBalance, percentBal)
+    const assetPrice = this.#binanceFutures.assets.asset[assetName].price
+    const assetQuantityPrecision = this.#binanceFutures.assets.asset[assetName].quantityPrecision
     const quantityToTradeRaw = amountToTrade / assetPrice
     let quantityToTrade = Number(quantityToTradeRaw.toFixed(assetQuantityPrecision))
 
@@ -75,7 +76,7 @@ class TradingBot {
 
     // OPEN the position
     console.log(`Opening position ${assetName} side=${orderSide} quantity=${quantityToTrade} (precision=${assetQuantityPrecision}, unformatted=${quantityToTradeRaw}) symbolPrice=${assetPrice}`)
-    const marketOrder = await BinanceService.positions.openPosition({
+    const marketOrder = await this.#binanceFutures.positions.openPosition({
       assetName: assetName,
       side: orderSide,
       quantity: quantityToTrade
@@ -84,7 +85,7 @@ class TradingBot {
     await sleep(500)
 
     // GET MARKER ORDER INFO (required for avgPrice)
-    const order = await BinanceService.positions.fetchOrderByClientOrderId({
+    const order = await this.#binanceFutures.positions.fetchOrderByClientOrderId({
       assetName: assetName,
       clientOrderId: marketOrder.clientOrderId
     })
@@ -104,28 +105,28 @@ class TradingBot {
     // Iterate all assets and set correct leverage for those that have a wrong one
     console.log('Setting config leverage value to assets...')
     for (const assetName of this.#assetPairs) {
-      const asset = BinanceService.assets.asset[assetName]
+      const asset = this.#binanceFutures.assets.asset[assetName]
       if (asset.leverage !== config.futuresLeverage) {
-        await BinanceService.assets.asset[assetName].setLeverage(config.futuresLeverage)
+        await this.#binanceFutures.assets.asset[assetName].setLeverage(config.futuresLeverage)
       }
     }
     console.log('All assets have correct leverage')
     // Iterate all assets and set correct margin type for those that have a wrong one
     console.log('Setting config margin type to assets...')
     for (const assetName of this.#assetPairs) {
-      const asset = BinanceService.assets.asset[assetName]
+      const asset = this.#binanceFutures.assets.asset[assetName]
       if (asset.marginType !== config.futuresMarginType) {
-        await BinanceService.assets.asset[assetName].setMarginType(config.futuresMarginType)
+        await this.#binanceFutures.assets.asset[assetName].setMarginType(config.futuresMarginType)
       }
     }
     console.log('All assets have correct margin Type')
   }
 
   #handleLiquidationEvent = async (eventData: LiquidationEvent): Promise<void> => {
-    const vwap = BinanceService.assets.asset[eventData.assetName].vwap
+    const vwap = this.#binanceFutures.assets.asset[eventData.assetName].vwap
     const longOffset = config.assets[eventData.assetName].longOffset
     const shortOffset = config.assets[eventData.assetName].shortOffset
-    const assetPrice = BinanceService.assets.asset[eventData.assetName].price
+    const assetPrice = this.#binanceFutures.assets.asset[eventData.assetName].price
     const requiredLiquidationTotal = this.#liquidationsMedian24h[eventData.assetName] //config.assets[a.assetName].lickValue
     const liquidationTotal = eventData.total
     const levelToOpenShort = vwap + (vwap * (shortOffset / 100))

@@ -2,10 +2,10 @@
 
 import EventedService from '@/lib/evented-service'
 import Logger from '@/lib/logger'
-import { AssetName, BinancePositionSide, OrderSide, OrderType } from '@/types'
+import { AssetName, BinancePositionSide } from '@/types'
 import FuturesApiService from '../futures-api'
 import { BinanceFuturesAPIOrder, BinanceFuturesAPIPosition } from '../futures-api/types'
-import { LoggerConfigs } from '../helpers'
+import { LoggerConfigs } from '../logger.config'
 import FuturesPositionsSocketManager from './socket-manager'
 import { FuturesPositionsServiceConfig, FuturesPositionsServiceEvents, FuturesPositionsServiceFetchOrderByClientOrderIdOptions, FuturesPositionsServiceOpenPositionOptions } from './types'
 
