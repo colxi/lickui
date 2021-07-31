@@ -4,9 +4,9 @@ import { getPercentage } from '@/lib/math'
 import { clearObject } from '@/lib/object'
 import { sleep } from '@/lib/sleep'
 import { AssetName, CurrencyAmount, OrderSide } from '@/types'
+import { LiquidationEvent } from '../binance-service/futures-liquidations/types'
 import fetch from 'node-fetch'
 import BinanceService from '../binance-service'
-import { LiquidationEvent } from '../binance-service/futures-liquidations/types'
 
 class TradingBot {
   constructor() {
@@ -17,21 +17,22 @@ class TradingBot {
   readonly #liquidationsMedian24h: Record<AssetName, CurrencyAmount>
   readonly #assetPairs: AssetName[]
 
-  async start(options: { assetPairs: AssetName[] }): Promise<void> {
+  public async start(options: { assetPairs: AssetName[] }): Promise<void> {
     clearArray(this.#assetPairs)
     clearObject(this.#liquidationsMedian24h)
 
     this.#assetPairs.push(...options.assetPairs)
+    // start the Binance Client
+    await BinanceService.start({ assetPairs: options.assetPairs })
+    // set the correct leverage and marginType to assets
+    await this.#initializeAssets()
 
+    // TODO: create a service that updates the 24h liquidations data every 
+    // 30 minutes, instead of this initial  fetch
     const liquidations = await this.#get24HLiquidationsData()
     for (const [assetName, liquidationsMedian] of Object.entries(liquidations)) {
       this.#liquidationsMedian24h[assetName] = liquidationsMedian
     }
-
-    // TODO: validate all assetPairs are present in the get24HLiquidationsData response
-
-    await BinanceService.start({ assetPairs: options.assetPairs })
-    await this.#initializeAssets()
 
     // BinanceService.liquidations.subscribe(
     //   BinanceService.liquidations.Event.LIQUIDATION_EVENT,
@@ -142,7 +143,6 @@ class TradingBot {
           break
         }
       }
-
     }
     // console.log('Offset', config.assets[a.assetName].longOffset)
     console.log('----------')

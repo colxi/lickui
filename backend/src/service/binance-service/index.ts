@@ -24,20 +24,20 @@ class BinanceService {
     this.#startTime = 0
     this.#isBusy = false
     this.#logger = binanceLogger
-    this.api = new FuturesApiService({ logger: futuresApiServiceLogger })
+    this.#api = new FuturesApiService({ logger: futuresApiServiceLogger })
     this.liquidations = new FuturesLiquidationsService({ logger: futuresLiquidationServiceLogger })
-    this.wallet = new FuturesWalletService({ api: this.api, logger: futuresWalletServiceLogger })
-    this.assets = new FuturesAssetsService({ api: this.api, logger: futuresAssetServiceLogger })
-    this.positions = new FuturesPositionsService({ api: this.api, logger: futuresPositionsServiceLogger })
+    this.wallet = new FuturesWalletService({ api: this.#api, logger: futuresWalletServiceLogger })
+    this.assets = new FuturesAssetsService({ api: this.#api, logger: futuresAssetServiceLogger })
+    this.positions = new FuturesPositionsService({ api: this.#api, logger: futuresPositionsServiceLogger })
   }
 
   #isBusy: boolean
   #startTime: Timestamp
 
   readonly #logger: Logger
+  readonly #api: FuturesApiService
   readonly #assetPairs: AssetName[]
 
-  public readonly api: FuturesApiService
   public readonly wallet: FuturesWalletService
   public readonly assets: FuturesAssetsService
   public readonly liquidations: FuturesLiquidationsService
@@ -86,7 +86,7 @@ class BinanceService {
     this.#assetPairs.push(...options.assetPairs)
 
     // start child services
-    await this.api.start()
+    await this.#api.start()
     await this.positions.start()
     await this.wallet.start()
     await this.assets.start({ assets: this.#assetPairs })
@@ -103,7 +103,7 @@ class BinanceService {
     this.#isBusy = true
 
     this.#logger.log('Stopping Binance client...')
-    await this.api.stop()
+    await this.#api.stop()
     await this.wallet.stop()
     await this.assets.stop()
     await this.liquidations.stop()
