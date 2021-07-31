@@ -1,9 +1,9 @@
+import { BinanceWebsocketEventType } from '@/lib/binance-futures/types'
 import Logger from '@/lib/logger'
 import {
   AssetName,
   BinanceMarginType,
   BinancePositionSide,
-  BinanceWebsocketEventType,
   CoinName,
   CurrencyAmountString,
   ExecutionType,
@@ -14,10 +14,8 @@ import {
   OrderWorkingType,
   QuantityString,
   TimeInForce,
-} from '@/types'
-
-
-export const ServiceName = 'LiquidationsSocketService'
+  Timestamp,
+} from '../../../types'
 
 export const ServiceEventsDescriptor = {
   //
@@ -133,4 +131,24 @@ export interface BinanceWebsocketOrderUpdateEvent {
     cr: "5.0",                 // Callback Rate, only puhed with TRAILING_STOP_MARKET order
     rp: "0"                            // Realized Profit of the trade
   }
+}
+
+
+export interface FuturesOrderDescriptor {
+  time: Timestamp,
+  id: OrderId
+  assetPair: AssetName
+  price: number
+  quantity: number
+  side: OrderSide
+  type: OrderType
+  status: OrderStatus
+}
+
+export interface FuturesPositionDescriptor {
+  time: Timestamp
+  assetPair: AssetName
+  entryPrice: number
+  quantity: number
+  unrealizedPnL: number
 }

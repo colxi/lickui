@@ -1,6 +1,7 @@
 import { calculateTypicalPrice, calculateVWAP } from '@/lib/indicators'
 import Logger from '@/lib/logger'
-import { AssetName, BinanceMarginType, CurrencyAmount, Immutable } from '@/types'
+import { Immutable } from '@/types'
+import { AssetName, BinanceMarginType, CurrencyAmount } from '../../types'
 import FuturesApiService from '../../futures-api'
 import { AssetCandle } from '../types'
 import { AssetOptions } from './types'

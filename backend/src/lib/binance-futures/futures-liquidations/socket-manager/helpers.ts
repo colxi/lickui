@@ -1,4 +1,4 @@
-import { BinanceWebsocketEventType, } from '@/types'
+import { BinanceWebsocketEventType } from '../../types'
 import { BinanceWebsocketLiquidationEvent } from './types'
 
 

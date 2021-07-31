@@ -4,16 +4,14 @@ import { LoggerConfigs } from '../logger.config'
 import FuturesAssetsSocketManager from './socket-manager'
 import List from '@/lib/list'
 import {
-  AssetName,
-  Immutable,
-} from '@/types'
-import {
   FuturesLiquidationsServiceConfig,
   FuturesLiquidationsServiceEvents,
   FuturesLiquidationsServiceOptions,
   LiquidationEvent
 } from './types'
 import { clearObject } from '@/lib/object'
+import { Immutable } from '@/types'
+import { AssetName } from '../types'
 
 const LIQUIDATIONS_HISTORY_MAX_LENGTH = 5
 

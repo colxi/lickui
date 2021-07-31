@@ -3,10 +3,10 @@ import { clearArray } from '@/lib/array'
 import { getPercentage } from '@/lib/math'
 import { clearObject } from '@/lib/object'
 import { sleep } from '@/lib/sleep'
-import { AssetName, CurrencyAmount, OrderSide } from '@/types'
 import { LiquidationEvent } from '../../lib/binance-futures/futures-liquidations/types'
 import fetch from 'node-fetch'
 import BinanceFutures from '@/lib/binance-futures'
+import { AssetName, CurrencyAmount, OrderSide } from '@/lib/binance-futures/types'
 
 class TradingBot {
   constructor() {

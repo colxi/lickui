@@ -5,7 +5,7 @@
 //   OrderStatus,
 //   OrderType,
 //   Timestamp
-// } from '@/types'
+// } from '@/types_old'
 
 // export default class FuturesPosition {
 //   constructor(position: FuturesPositionDescriptor) {

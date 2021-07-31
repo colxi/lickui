@@ -2,7 +2,6 @@ import Logger from '@/lib/logger'
 import { LiquidationEvent } from '../../types'
 import {
   AssetName,
-  BinanceWebsocketEventType,
   CurrencyAmount,
   CurrencyAmountString,
   OrderSide,
@@ -11,7 +10,8 @@ import {
   QuantityString,
   TimeInForce,
   Timestamp
-} from '@/types'
+} from '../../../types'
+import { BinanceWebsocketEventType } from '@/lib/binance-futures/types'
 
 interface LiquidationsUpdateEventData {
   assetPair: AssetName
@@ -20,8 +20,6 @@ interface LiquidationsUpdateEventData {
   quantity: number
   side: OrderSide
 }
-
-export const ServiceName = 'LiquidationsSocketService'
 
 export const ServiceEventsDescriptor = {
   LIQUIDATIONS_UPDATE: (eventData: LiquidationsUpdateEventData): void => { void (eventData) }

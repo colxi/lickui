@@ -1,6 +1,7 @@
 import Logger from '@/lib/logger'
-import { AccountUpdateEventType, CurrencyAmount, Timestamp } from '@/types'
+import { CurrencyAmount, Timestamp } from '../../types'
 import FuturesApiService from '../../futures-api'
+import { BinanceWebsocketAccountUpdateEventType } from '../../futures-positions/socket-manager/types'
 
 export interface FuturesWalletServiceOptions {
   api: FuturesApiService
@@ -11,7 +12,7 @@ export interface WalletUpdateEventData {
   timestamp: Timestamp
   totalBalance: CurrencyAmount
   availableBalance: CurrencyAmount
-  type: AccountUpdateEventType
+  type: BinanceWebsocketAccountUpdateEventType
 }
 
 export const FuturesWalletServiceEvents = {

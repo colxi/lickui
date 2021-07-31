@@ -1,13 +1,12 @@
+import { BinanceWebsocketEventType, CandlestickInterval } from '@/lib/binance-futures/types'
 import Logger from '@/lib/logger'
 import {
-  BinanceWebsocketEventType,
-  CandlestickInterval,
   AssetName,
   CurrencyAmountString,
   OrderId,
   QuantityString,
   Timestamp
-} from '@/types'
+} from '../../../types'
 import { AssetCandle } from '../../types'
 
 

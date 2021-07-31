@@ -2,7 +2,6 @@ import WebsocketConnection from '@/lib/websocket'
 import { OnWalletUpdateCallback, FuturesWalletSocketManagerOptions } from './types'
 import { config } from '@/config'
 import { isAccountUpdateEvent } from './helpers'
-import { AccountUpdateEventWalletData } from '@/types'
 import Logger from '@/lib/logger'
 import { LoggerConfigs } from '../../logger.config'
 
@@ -61,7 +60,7 @@ export default class FuturesWalletSocketManager {
     const eventData = message.a
     const eventTime = message.E
     const eventType = eventData.m
-    const walletData = eventData.B.find((i: AccountUpdateEventWalletData) => i.a === 'USDT')
+    const walletData = eventData.B.find((i) => i.a === 'USDT')
     if (walletData) {
       const totalBalance = Number(walletData.wb)
       const availableBalance = Number(walletData.cw)

@@ -8,11 +8,9 @@ import {
   FuturesWalletServiceOptions,
   WalletUpdateEventData
 } from './types'
-import {
-  AccountUpdateEventType,
-  CurrencyAmount,
-} from '@/types'
 import FuturesApiService from '../futures-api'
+import { BinanceWebsocketAccountUpdateEventType } from '../futures-positions/socket-manager/types'
+import { CurrencyAmount } from '../types'
 
 export default class FuturesWalletService extends EventedService<
   FuturesWalletServiceConfig
@@ -70,7 +68,7 @@ export default class FuturesWalletService extends EventedService<
       timestamp: Date.now(),
       totalBalance: futuresWallet.totalBalance,
       availableBalance: futuresWallet.availableBalance,
-      type: AccountUpdateEventType.BALANCE_FETCH
+      type: BinanceWebsocketAccountUpdateEventType.BALANCE_FETCH
     }, false)
   }
 
@@ -86,7 +84,7 @@ export default class FuturesWalletService extends EventedService<
     const balanceChangeDiff = Math.abs(eventData.totalBalance - this.#totalBalance)
     this.#logger.log(
       'Updating wallet data',
-      eventData.type === AccountUpdateEventType.BALANCE_FETCH
+      eventData.type === BinanceWebsocketAccountUpdateEventType.BALANCE_FETCH
         ? ` - Current balance: ${eventData.totalBalance.toFixed(2)}$\n`
         : ` - Balance change: ${balanceChangeSign}${balanceChangeDiff.toFixed(2)}$\n`,
       ` - Data : ${JSON.stringify(eventData)}`

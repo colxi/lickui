@@ -1,5 +1,5 @@
 import Logger from '@/lib/logger'
-import { AssetName, CurrencyAmount, Timestamp } from '@/types'
+import { AssetName, CurrencyAmount, Timestamp } from '../../types'
 import FuturesApiService from '../../futures-api'
 
 export interface FuturesAssetsServiceOptions {

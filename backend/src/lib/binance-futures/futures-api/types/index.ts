@@ -1,4 +1,21 @@
-import { AssetName, BinanceMarginType, BinancePositionSide, CandlestickInterval, ClientOrderId, CoinName, CurrencyAmount, CurrencyAmountString, Leverage, OrderId, OrderSide, OrderStatus, OrderType, OrderWorkingType, QuantityString, TimeInForce, Timestamp } from '@/types'
+import {
+  AssetName,
+  BinanceMarginType,
+  BinancePositionSide,
+  ClientOrderId,
+  CoinName,
+  CurrencyAmount,
+  CurrencyAmountString,
+  OrderId,
+  OrderSide,
+  OrderStatus,
+  OrderType,
+  OrderWorkingType,
+  QuantityString,
+  TimeInForce,
+  Timestamp,
+  CandlestickInterval
+} from '../../types'
 
 /*******************************************************************************
  * 
@@ -154,7 +171,7 @@ export interface BinanceFuturesAPIPosition {
   unrealizedProfit: CurrencyAmountString
   positionInitialMargin: CurrencyAmountString
   openOrderInitialMargin: CurrencyAmountString
-  leverage: Leverage
+  leverage: string
   isolated: boolean
   entryPrice: CurrencyAmountString
   maxNotional: CurrencyAmountString

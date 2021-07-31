@@ -1,4 +1,4 @@
-import { AssetName, CoinName } from '@/types'
+import { AssetName, CoinName } from '@/lib/binance-futures/types'
 
 export interface ConfigAssetDescriptor {
   asset: AssetName

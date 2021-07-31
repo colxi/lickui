@@ -5,9 +5,8 @@ import FuturesAssetsService from './futures-assets'
 import FuturesApiService from './futures-api'
 import Logger from '@/lib/logger'
 import { LoggerConfigs } from './logger.config'
-import { AssetName, Timestamp } from '@/types'
 import { ServiceStatus } from '@/lib/evented-service/types'
-import { BinanceServiceStartOptions, BinanceServiceStatus } from './types'
+import { AssetName, BinanceServiceStartOptions, BinanceServiceStatus, Timestamp } from './types'
 import { clearArray } from '@/lib/array'
 
 

@@ -5,11 +5,6 @@ import { LoggerConfigs } from '../logger.config'
 import FuturesAssetsSocketManager from './socket-manager'
 import Asset from './asset'
 import {
-  AssetName,
-  CandlestickInterval,
-  Immutable,
-} from '@/types'
-import {
   AssetCandle,
   FuturesAssetsServiceConfig,
   FuturesAssetsServiceEvents,
@@ -17,6 +12,8 @@ import {
 } from './types'
 import FuturesApiService from '../futures-api'
 import { clearObject } from '@/lib/object'
+import { Immutable } from '@/types'
+import { AssetName, CandlestickInterval } from '../types'
 
 
 // Max asset candles collection size 

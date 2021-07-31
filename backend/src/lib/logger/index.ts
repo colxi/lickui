@@ -15,9 +15,15 @@ export default class Logger {
     this.#contextTree = Array.isArray(options.context) ? options.context : [options.context]
   }
 
+
   #contextTree: LoggerFormattedTextOptions[]
   #renderTime: boolean
 
+
+  /**
+   *
+   *
+   */
   public createChild(options: LoggerOptions): Logger {
     const context = Array.isArray(options.context) ? options.context : [options.context]
     return new Logger({
@@ -26,14 +32,29 @@ export default class Logger {
     })
   }
 
+
+  /**
+   *
+   *
+   */
   static hexColor(hexColor: string): LoggerColorRGB {
     return new LoggerColorRGB(hexColor)
   }
 
+
+  /**
+   *
+   *
+   */
   public hexColor(hexColor: string): LoggerColorRGB {
     return new LoggerColorRGB(hexColor)
   }
 
+
+  /**
+   *
+   *
+   */
   public formatText(options: LoggerFormattedTextOptions): string {
     let text = options.text
     let result = ''
@@ -54,6 +75,11 @@ export default class Logger {
     return result
   }
 
+
+  /**
+   * 
+   * 
+   */
   public error(message: string, ...args: unknown[]): void {
     const formattedMessage = this.formatText({
       color: 'red',
@@ -62,6 +88,37 @@ export default class Logger {
     this.log(formattedMessage, ...args)
   }
 
+
+  /**
+   *
+   *
+   */
+  public warn(message: string, ...args: unknown[]): void {
+    const formattedMessage = this.formatText({
+      color: 'yellow',
+      text: message
+    })
+    this.log(formattedMessage, ...args)
+  }
+
+
+  /**
+   *
+   *
+   */
+  public info(message: string, ...args: unknown[]): void {
+    const formattedMessage = this.formatText({
+      color: 'blue',
+      text: message
+    })
+    this.log(formattedMessage, ...args)
+  }
+
+
+  /**
+   *
+   *
+   */
   public log(message: string, ...args: unknown[]): void {
     const items: any[] = []
     // render the contexts

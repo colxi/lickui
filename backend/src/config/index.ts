@@ -2,8 +2,9 @@ import fs from 'fs'
 import assetsConfig from './json/assets.json'
 import generalConfig from './json/general.json'
 import keysConfig from './json/keys.json'
-import { AssetName, BinanceMarginType, Immutable } from '@/types'
 import { ConfigAssetDescriptor } from './types'
+import { Immutable } from '@/types'
+import { AssetName, BinanceMarginType } from '@/lib/binance-futures/types'
 
 
 class Config {

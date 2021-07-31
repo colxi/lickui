@@ -1,4 +1,4 @@
-import { BinanceWebsocketEventType, } from '@/types'
+import { BinanceWebsocketEventType } from '../../types'
 import { BinanceWebsocketAccountUpdateEvent, BinanceWebsocketOrderUpdateEvent } from './types'
 
 export function isAccountUpdateEvent(

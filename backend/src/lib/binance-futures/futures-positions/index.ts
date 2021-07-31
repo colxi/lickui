@@ -2,10 +2,10 @@
 
 import EventedService from '@/lib/evented-service'
 import Logger from '@/lib/logger'
-import { AssetName, BinancePositionSide } from '@/types'
 import FuturesApiService from '../futures-api'
 import { BinanceFuturesAPIOrder, BinanceFuturesAPIPosition } from '../futures-api/types'
 import { LoggerConfigs } from '../logger.config'
+import { AssetName, BinancePositionSide } from '../types'
 import FuturesPositionsSocketManager from './socket-manager'
 import {
   FuturesPositionsServiceConfig,
@@ -175,7 +175,7 @@ export default class FuturesPositionsService extends EventedService<FuturesPosit
 //     FuturesOrderDescriptor,
 //     OrderType,
 //     OrderStatus
-// } from '@/types'
+// } from '@/types_old'
 // import FuturesPosition from './position'
 
 
@@ -289,7 +289,7 @@ export default class FuturesPositionsService extends EventedService<FuturesPosit
 // DATA PORVIDERSSS!!!!
 
 // import binanceApi from '@/core/binance-api'
-// import { BinanceBalanceData, BinanceClientOrderMap, BinanceClientPositionMap } from '@/types'
+// import { BinanceBalanceData, BinanceClientOrderMap, BinanceClientPositionMap } from '@/types_old'
 
 
 // export default class DataProvider {

@@ -1,6 +1,6 @@
 import Logger from '@/lib/logger'
 import FuturesApiService from '@/lib/binance-futures/futures-api'
-import { AssetName, BinanceMarginType } from '@/types'
+import { AssetName, BinanceMarginType } from '../../../types'
 import { AssetCandle } from '../../types'
 
 export interface AssetOptions {
