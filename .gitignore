@@ -109,3 +109,6 @@ backend/src/.DS_Store
 .DS_Store
 .DS_Store
 backend/other_keys.txt
+backend/src/config/json/keys.json
+backend/src/config/json/assets.json
+backend/src/config/json/general.json

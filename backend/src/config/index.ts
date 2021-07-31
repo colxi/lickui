@@ -1,65 +1,59 @@
-// @ts-ignore
-import lickuiConfig from '../../config.json'
-// @ts-ignore
-import _configKeys from '../../config.keys.json'
-import { BinanceMarginType, CoinName, Immutable } from '@/types'
-
-
-export interface ConfigAssetDescriptor {
-  asset: CoinName
-  longOffset: number
-  shortOffset: number
-  lickValue: number
-  enabled: boolean
-}
-
-const _config = {
-  ...lickuiConfig,
-  ..._configKeys
-}
-
-export default _config
+import fs from 'fs'
+import assetsConfig from './json/assets.json'
+import generalConfig from './json/general.json'
+import keysConfig from './json/keys.json'
+import { AssetName, BinanceMarginType, Immutable } from '@/types'
+import { ConfigAssetDescriptor } from './types'
 
 
 class Config {
   constructor() {
-    //
+    this.#assetsConfig = assetsConfig
+    this.#generalConfig = generalConfig
+    this.#keysConfig = keysConfig
   }
 
-  // CREDENTIALS 
+  #assetsConfig: Record<AssetName, ConfigAssetDescriptor>
+  #generalConfig: typeof generalConfig
+  #keysConfig: typeof keysConfig
 
-  get binanceApiKey(): string { return _configKeys.binanceApiKey }
-  get binanceApiSecret(): string { return _configKeys.binanceApiSecret }
-  get taapiApiKey(): string { return _configKeys.taapiApiKey }
-  get assets(): Immutable<Record<CoinName, ConfigAssetDescriptor>> { return lickuiConfig.assets }
-  get futuresLeverage(): number { return lickuiConfig.futuresLeverage }
-  get futuresMarginType(): BinanceMarginType { return lickuiConfig.futuresMarginType as BinanceMarginType }
 
-  public isAssetSupported(asset: CoinName): asset is keyof typeof lickuiConfig.assets {
-    return asset in lickuiConfig.assets
-  }
+  get assets(): Immutable<Record<AssetName, ConfigAssetDescriptor>> { return this.#assetsConfig }
+  get futuresBinanceWS(): string { return this.#generalConfig.futuresBinanceWS }
+  get futuresBinanceAPI(): string { return this.#generalConfig.futuresBinanceAPI }
+  get binanceApiKey(): string { return this.#keysConfig.binanceApiKey }
+  get binanceApiSecret(): string { return this.#keysConfig.binanceApiSecret }
+  get taapiApiKey(): string { return this.#keysConfig.taapiApiKey }
+  get futuresLeverage(): number { return this.#generalConfig.futuresLeverage }
+  get futuresMarginType(): BinanceMarginType { return this.#generalConfig.futuresMarginType as BinanceMarginType }
 
-  public getEnabledAssetsList(): CoinName[] {
-    const assets = Object.values(lickuiConfig.assets)
+
+  public getEnabledAssetsList(): AssetName[] {
+    return Object.values(this.#assetsConfig)
       .filter(i => i.enabled)
       .map(i => i.asset)
-    return assets
   }
 
-  // 
-  public enableAsset(asset: CoinName): void {
-    if (!this.isAssetSupported(asset)) {
-      console.log('CoinName no suported', asset)
-      return
+
+  #saveCoinsData = (coinsData: Record<AssetName, ConfigAssetDescriptor>): void => {
+    console.log('aaa', __dirname)
+    fs.writeFileSync(`${__dirname}/json/assets.json`, JSON.stringify(coinsData, null, 2))
+  }
+
+
+  #migrateLHConfig = (lhConfig: any): void => {
+    const assets: any = {}
+    for (const coin of lhConfig.coins) {
+      assets[coin.symbol + 'USDT'] = {
+        baseAsset: coin.symbol,
+        asset: coin.symbol + 'USDT',
+        longOffset: Number(coin.longoffset),
+        shortOffset: Number(coin.shortoffset),
+        lickValue: Number(coin.lickvalue),
+        enabled: coin.var_enabled
+      }
     }
-
-    lickuiConfig.assets[asset].enabled = true
-    this.saveData()
-    //this.EventDispatch
-  }
-
-  private saveData(): void {
-    //
+    this.#saveCoinsData(assets)
   }
 }
 

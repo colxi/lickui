@@ -6,7 +6,7 @@ export interface FuturesLiquidationsServiceOptions {
 }
 
 export const FuturesLiquidationsServiceEvents = {
-  LIQUIDATION_EVENT: (eventData: LiquidationEvent): void => { void (eventData) },
+  LIQUIDATION_EVENT: (eventData: LiquidationEvent): void | Promise<void> => { void (eventData) },
 }
 
 export interface FuturesLiquidationsServiceConfig {

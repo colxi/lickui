@@ -1,0 +1,10 @@
+{
+  "1000SHIBUSDT": {
+    "baseAsset": "BTC",
+    "asset": "BTCUSDT",
+    "longOffset": 4,
+    "shortOffset": 4,
+    "lickValue": 199,
+    "enabled": true
+  }
+}

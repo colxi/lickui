@@ -1,0 +1,12 @@
+{
+  "futuresBinanceWS": "wss://fstream.binance.com/ws",
+  "futuresBinanceAPI": "https://fapi.binance.com/fapi/",
+  "futuresMarginType": "cross",
+  "futuresLeverage": 5,
+  "futuresMaxPositions": 1,
+  "futuresTakeProfit": 0.3,
+  "databaseName": "my_db",
+  "apiServicePort": 3300,
+  "httpServicePort": 8888,
+  "httpServiceIp": "localhost"
+}

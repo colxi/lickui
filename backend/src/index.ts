@@ -3,6 +3,7 @@ import BinanceService from './service/binance-service'
 import TradingBot from './service/trading-bot'
 import { config } from './config'
 
+
 // import initRESTApiService from './service/api-server'
 
 // make Binance object available for debugging pùrposes (yarn debug + devtools)

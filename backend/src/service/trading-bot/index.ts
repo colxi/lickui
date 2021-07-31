@@ -12,6 +12,8 @@ class TradingBot {
   constructor() {
     this.#liquidationsMedian24h = {}
     this.#assetPairs = []
+
+    this.#handleLiquidationEvent = this.#handleLiquidationEvent.bind(this)
   }
 
   readonly #liquidationsMedian24h: Record<AssetName, CurrencyAmount>
@@ -36,13 +38,24 @@ class TradingBot {
 
     // BinanceService.liquidations.subscribe(
     //   BinanceService.liquidations.Event.LIQUIDATION_EVENT,
-    //   (eventData) => {
-    //     this.#handleLiquidationEvent(eventData).catch(e => { throw e })
-    //   }
+    //   this.#handleLiquidationEvent
     // )
   }
 
-  public async createOrUpdatePosition(assetName: AssetName, orderSide: OrderSide): Promise<void> {
+  public async stop(): Promise<void> {
+    BinanceService.liquidations.unsubscribe(
+      BinanceService.liquidations.Event.LIQUIDATION_EVENT,
+      this.#handleLiquidationEvent
+    )
+
+    await BinanceService.stop()
+  }
+
+
+  #createOrUpdatePosition = async (
+    assetName: AssetName,
+    orderSide: OrderSide
+  ): Promise<void> => {
     // 1- check if position is already open
     // 2- if its open, check dca and inject
     // 3- if not open, open the order
@@ -131,14 +144,14 @@ class TradingBot {
         // Liquidations ocurred on SHORT orders
         case OrderSide.BUY: {
           console.log(`Take longs below: ${levelToOpenLong} USDT (longOffset=${longOffset}%)`)
-          if (assetPrice < levelToOpenLong) await this.createOrUpdatePosition(eventData.assetName, OrderSide.BUY)
+          if (assetPrice < levelToOpenLong) await this.#createOrUpdatePosition(eventData.assetName, OrderSide.BUY)
           else console.log('Price not below required price. Ignoring')
           break
         }
         // Liquidations ocurred on LONG orders
         case OrderSide.SELL: {
           console.log(`Take shorts above: ${levelToOpenShort} USDT (shortOffset=${shortOffset}%)`)
-          if (assetPrice > levelToOpenShort) await this.createOrUpdatePosition(eventData.assetName, OrderSide.SELL)
+          if (assetPrice > levelToOpenShort) await this.#createOrUpdatePosition(eventData.assetName, OrderSide.SELL)
           else console.log('Price not above required price. Ignoring')
           break
         }

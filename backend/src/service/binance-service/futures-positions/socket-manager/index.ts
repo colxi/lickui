@@ -1,4 +1,4 @@
-import config from '@/config'
+import { config } from '@/config'
 import Logger from '@/lib/logger'
 import WebsocketConnection from '@/lib/websocket'
 import { LoggerConfigs } from '../../helpers'
@@ -16,7 +16,7 @@ export default class FuturesPositionsSocketManager {
     this.#onSocketMessage = this.#onSocketMessage.bind(this)
     const socketLogger = this.#logger.createChild(LoggerConfigs.socket)
     this.#socket = new WebsocketConnection({
-      host: config.binance.production.futuresWS,
+      host: config.futuresBinanceWS,
       reconnectOnDisconnection: true,
       reconnectOnDisconnectionDelay: 2000,
       onMessageCallback: this.#onSocketMessage,

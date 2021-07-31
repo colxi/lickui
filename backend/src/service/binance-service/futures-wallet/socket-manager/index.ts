@@ -1,6 +1,6 @@
 import WebsocketConnection from '@/lib/websocket'
 import { OnWalletUpdateCallback, FuturesWalletSocketManagerOptions } from './types'
-import config from '@/config'
+import { config } from '@/config'
 import { isAccountUpdateEvent } from './helpers'
 import { AccountUpdateEventWalletData } from '@/types'
 import Logger from '@/lib/logger'
@@ -14,7 +14,7 @@ export default class FuturesWalletSocketManager {
     this.#onSocketMessage = this.#onSocketMessage.bind(this)
     const socketLogger = this.#logger.createChild(LoggerConfigs.socket)
     this.#socket = new WebsocketConnection({
-      host: config.binance.production.futuresWS,
+      host: config.futuresBinanceWS,
       reconnectOnDisconnection: true,
       reconnectOnDisconnectionDelay: 2000,
       onMessageCallback: this.#onSocketMessage,

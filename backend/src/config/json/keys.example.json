@@ -1,5 +1,5 @@
 {
-  taapiApiKey: "",
+  "taapiApiKey": "",
   "binanceApiKey": "",
   "binanceApiSecret": ""
 }

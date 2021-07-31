@@ -15,7 +15,7 @@ export interface WalletUpdateEventData {
 }
 
 export const FuturesWalletServiceEvents = {
-  WALLET_UPDATE: (eventData: WalletUpdateEventData): void => { void (eventData) },
+  WALLET_UPDATE: (eventData: WalletUpdateEventData): void | Promise<void> => { void (eventData) },
 }
 
 export interface FuturesWalletServiceConfig {

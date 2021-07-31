@@ -1,4 +1,4 @@
-import { AssetName, ClientOrderId, CurrencyAmount, OrderId, OrderSide } from '@/types'
+import { AssetName, ClientOrderId, CurrencyAmount, OrderSide } from '@/types'
 
 export const FuturesPositionsServiceEvents = {
   //

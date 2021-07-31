@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import { createHmac } from 'crypto'
 import Logger from '@/lib/logger'
-import config from '@/config'
+import { config } from '@/config'
 import { TimeInMillis } from '@/lib/date'
 import { sleep } from '@/lib/sleep'
 import {
