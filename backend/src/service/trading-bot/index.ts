@@ -37,10 +37,10 @@ class TradingBot {
       this.#liquidationsMedian24h[assetName] = liquidationsMedian
     }
 
-    // BinanceFutures.liquidations.subscribe(
-    //   BinanceFutures.liquidations.Event.LIQUIDATION_EVENT,
-    //   this.#handleLiquidationEvent
-    // )
+    this.#binanceFutures.liquidations.subscribe(
+      this.#binanceFutures.liquidations.Event.LIQUIDATION_EVENT,
+      this.#handleLiquidationEvent
+    )
   }
 
   public async stop(): Promise<void> {
