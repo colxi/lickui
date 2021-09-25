@@ -1,5 +1,8 @@
-# v0.21.0
-[2021-05-29]
+# v0.24.0
+[2021-09-25]
+
+# v1.0.7
+[2021-06-05]
 
 ### Features
 
@@ -7,6 +10,7 @@
 * feature: optimized requests (allow ranges) ([`a23c01f`](https://github.com/colxi/lickui/commit/a23c01fb700462e48d73d7b455dfa64a4b0c3737))
 * feature: code modulariation ([`3e8803c`](https://github.com/colxi/lickui/commit/3e8803c34125bd88f3a4512538b184f626567453))
 * feature: Position close detection + position duration ([`2be717a`](https://github.com/colxi/lickui/commit/2be717a9dadec0f5f8231e1851cc9f223bb994b3))
+* feature: fix sorting ([`0321d2e`](https://github.com/colxi/lickui/commit/0321d2ef53ff677c402aa5ce3b4aad1ba2adb246))
 * feature: test ([`2410f27`](https://github.com/colxi/lickui/commit/2410f27aedcf01c115550b869c4857ff7980fbe3))
 * feature: test ([`c0e5d62`](https://github.com/colxi/lickui/commit/c0e5d6281689fd0a5d5874927b0c17e5806e6a28))
 
@@ -17,42 +21,3 @@
 * fix: commit script ([`747b111`](https://github.com/colxi/lickui/commit/747b111b489b38008c954af3110b3a5ec3857255))
 * fix: remove unnecessary import ([`d526c3a`](https://github.com/colxi/lickui/commit/d526c3a9487fc7df8ff0263b34bd3f5040cf254c))
 * fix: test ([`38608c6`](https://github.com/colxi/lickui/commit/38608c62e094ddc35f36060ba451dd88708a6c3e))
-
-
-# v1.0
-[2021-05-19]
-
-
-
-
-# v0.5.0
-[2021-05-19]
-
-
-
-
-# v0.4.0
-[2021-05-19]
-
-
-
-
-# v0.3.0
-[2021-05-19]
-
-
-
-
-# v0.2.0
-[2021-05-19]
-
-### Features
-
-* feature: test ([`2410f27`](https://github.com/colxi/lickui/commit/2410f27aedcf01c115550b869c4857ff7980fbe3))
-* feature: test ([`c0e5d62`](https://github.com/colxi/lickui/commit/c0e5d6281689fd0a5d5874927b0c17e5806e6a28))
-
-### Fixes
-
-* fix: remove unnecessary import ([`d526c3a`](https://github.com/colxi/lickui/commit/d526c3a9487fc7df8ff0263b34bd3f5040cf254c))
-
-

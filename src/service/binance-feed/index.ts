@@ -3,7 +3,6 @@ import binanceApi from '@/core/binance-api'
 import config from '@/core/config'
 import database from '@/core/database'
 
-
 export default class BinanceFeedService {
 
   public static cachePositions: any = {}
@@ -36,21 +35,21 @@ export default class BinanceFeedService {
     }
   }
 
-  public static async getPositionsHistory(dateStart:number){
+  public static async getPositionsHistory(dateStart: number) {
     //
   }
 
-  public static async getOpenPositions(){
+  public static async getOpenPositions() {
     //
   }
 
-  public static async getDatapointsHistory(){
+  public static async getDatapointsHistory() {
     //
   }
 
   private static async updateOpenPositions(): Promise<void> {
     const positions: any = await binanceApi.getOpenFuturesPositions()
-    
+
     // iterate cachedPositions and try to match it with fetched positions
     for (const cachedPosition of Object.values(this.cachePositions) as any[]) {
       const symbol: string = cachedPosition.symbol
@@ -87,32 +86,49 @@ export default class BinanceFeedService {
   private static async createPosition(position: any) {
     this.cachePositions[position.symbol] = {
       ...position,
-      creationTime: position.updateTime
+      creationTime: position.updateTime,
+      maxLostAmount: 0,
+      maxLostPercent: 0,
     }
     console.log('CREATED', this.cachePositions[position.symbol].symbol)
-
   }
 
   private static async updatePosition(position: any) {
+    // calculate the temporary looses. If they are greater than current, update 
+    // the value, in order to keep track of max -unrealized- loses for each order
+    const positionAmount = Math.abs(Number(position.positionAmt) * Number(position.markPrice) / Number(position.leverage))
+    const unRealizedProfit = Number(position.unRealizedProfit)
+    const lostAmount = unRealizedProfit < 0 ? Math.abs(unRealizedProfit) : 0
+    const lostPercent = lostAmount * 100 / positionAmount
+    const isLoosingMore = lostAmount > this.cachePositions[position.symbol].maxLostAmount
     // update cached position
+
+
     this.cachePositions[position.symbol] = {
       ...position,
-      creationTime: this.cachePositions[position.symbol].creationTime
+      creationTime: this.cachePositions[position.symbol].creationTime,
+      maxLostAmount: isLoosingMore ? lostAmount : this.cachePositions[position.symbol].maxLostAmount,
+      maxLostPercent: isLoosingMore ? lostPercent : this.cachePositions[position.symbol].maxLostPercent
     }
+
     console.log('UPDATED', this.cachePositions[position.symbol].symbol)
+    console.log('UPDATED', this.cachePositions[position.symbol])
+    // console.log('position amount', positionAmount, '$')
+    // console.log('lostAmount', lostAmount, '$')
+    // console.log('lostPercent', lostPercent, '%')
   }
 
   private static async closePosition(position: any) {
-    const cachedPosition = this.cachePositions[position.symbol]
     // extract closed position from cache
+    const cachedPosition = this.cachePositions[position.symbol]
     const duration = Date.now() - cachedPosition.creationTime
     delete this.cachePositions[position.symbol]
     console.log('CLOSED', cachedPosition.symbol)
     await this.savePosition(cachedPosition, duration)
   }
 
-  private static async savePosition(position:any, duration:number){
-   // return true;
+  private static async savePosition(position: any, duration: number) {
+    // return true;
     const queryStr = `
       INSERT INTO positions (
         timestamp,
@@ -121,23 +137,27 @@ export default class BinanceFeedService {
         amount,
         size,
         takeProfit,
-        leverage
+        leverage,
+        maxLostAmount,
+        maxLostPercent
       )
       VALUES(
         ${position.creationTime},
         ${duration},
-        "${position.symbol.slice(0,-4)}",
+        "${position.symbol.slice(0, -4)}",
         ${Math.abs(Number(position.positionAmt) * Number(position.markPrice) / Number(position.leverage))},
         ${Number(position.positionAmt)},
         ${config.takeProfit},
-        ${Number(position.leverage)}
+        ${Number(position.leverage)},
+        ${Number(position.maxLostAmount)},
+        ${Number(position.maxLostPercent)}
       )
     `
 
     console.log('SAVING closed', queryStr)
-    try{
+    try {
       await database.query(queryStr)
-    }catch(e){
+    } catch (e) {
       console.log('ERROR SAVING POSITION DB\n', queryStr)
       throw e
     }
@@ -165,9 +185,9 @@ export default class BinanceFeedService {
         "${datapoint.date}"
       )
     `
-    try{
+    try {
       await database.query(queryStr)
-    }catch(e){
+    } catch (e) {
       console.log('ERROR SAVING IN DB\n', queryStr)
       throw e
     }

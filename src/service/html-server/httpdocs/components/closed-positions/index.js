@@ -1,4 +1,4 @@
-import config from "/SERVER_CONFIG"
+import config from '/SERVER_CONFIG'
 
 const ClosedOperationsSortBy = {
   SYMBOL: 'SYMBOL',
@@ -29,12 +29,11 @@ export async function updatePosittionsHistory(positionsHistory = _positionsHisto
 
   const averageTimeInMin = getAverageByProperty(positionsHistory, 'duration') / 1000 / 60
   const averageAmountInDolars = getAverageByProperty(positionsHistory, 'amount')
-  const averageProfitInDolars = (config.takeProfit * averageAmountInDolars / 100) * 4
+  const averageProfitInDolars = ((config.takeProfit * averageAmountInDolars) / 100) * 4
   totalCountDOM.innerHTML = positionsHistory.length
   averageTimeDOM.innerHTML = `${averageTimeInMin.toFixed(2)}min`
   averageAmountDOM.innerHTML = `${averageAmountInDolars.toFixed(2)}$`
   averageProfitDOM.innerHTML = `${averageProfitInDolars.toFixed(2)}$`
-
 
   const closedPositionsHistory = document.getElementById('closedPositionsHistory')
   const dictionary = createDictionaryFromProperty(positionsHistory, 'symbol')
@@ -52,10 +51,10 @@ export async function updatePosittionsHistory(positionsHistory = _positionsHisto
   if (sortBy === ClosedOperationsSortBy.SYMBOL) sortKey = 'symbol'
   else if (sortBy === ClosedOperationsSortBy.TOTAL_OPERATIONS) sortKey = 'totalOperations'
   else if (sortBy === ClosedOperationsSortBy.AVERAGE_AMOUNT) sortKey = 'averageAmount'
-  else if (sortBy === ClosedOperationsSortBy.AVERAGE_DURATION_IN_MIN) sortKey = 'averageDurationInMin'
-  operationsByAsset.sort((a, b) => a[sortKey] < b[sortKey] ? 1 : -1)
+  else if (sortBy === ClosedOperationsSortBy.AVERAGE_DURATION_IN_MIN)
+    sortKey = 'averageDurationInMin'
+  operationsByAsset.sort((a, b) => (a[sortKey] < b[sortKey] ? 1 : -1))
   if (sortBy === ClosedOperationsSortBy.SYMBOL) operationsByAsset.reverse()
-
 
   document.getElementById('closedPositionsHistoryCount').innerHTML = operationsByAsset.length
 

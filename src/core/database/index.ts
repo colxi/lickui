@@ -34,10 +34,12 @@ const createPositionTableQuery = `
     "amount" REAL NOT NULL,
     "size" REAL NOT NULL,
     "takeProfit" REAL NOT NULL,
-    "leverage" INTEGER NOT NULL
+    "leverage" INTEGER NOT NULL,
+    "maxLostAmount" INTEGER NOT NULL,
+    "maxLostPercent" REAL NOT NULL
   );
 `
-const createPositiondTimestampIndexQuery = `
+const createPositiAndTimestampIndexQuery = `
   CREATE INDEX IF NOT EXISTS "timestamp" ON "positions" (
     "timestamp"	ASC
   );
@@ -63,7 +65,7 @@ class Database {
               if (err) reject(err)
               else this.db.run(createPositionTableQuery, err => {
                 if (err) reject(err)
-                else this.db.run(createPositiondTimestampIndexQuery, err => {
+                else this.db.run(createPositiAndTimestampIndexQuery, err => {
                   if (err) reject(err)
                   else resolve()
                 })
