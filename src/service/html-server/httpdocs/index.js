@@ -3,7 +3,10 @@ import { updateAccountStats } from './common/stats/index.js'
 import { TimeRange, getTimeRangeStartDate } from './lib/time/index.js'
 import { updatePositions } from './components/open-positions/index.js'
 import { updateCoinbaseAlerts } from './components/coinbase-alerts/index.js'
-import { initPosittionsHistory, updatePosittionsHistory } from './components/closed-positions/index.js'
+import {
+  initPosittionsHistory,
+  updatePosittionsHistory
+} from './components/closed-positions/index.js'
 import { includeComponents } from './lib/include/index.js'
 import { hideLoader, showLoader } from './components/loader/index.js'
 import { showErrorMessage, hideErrorMessage } from './components/error-notification/index.js'
@@ -15,21 +18,24 @@ import {
   updateUsedBalanceChart,
   updateOpenOrdersChart,
   updateTotalBalanceChart,
-  updateUnrealizedLostsChart,
+  updateUnrealizedLostsChart
 } from './common/chart/index.js'
 import { initDashboardHeader, updateDashboardHeader } from './components/dashboard-header/index.js'
 import { initializeChartJS } from './lib/chart-js/index.js'
-
+import { initHEader } from './components/header-bar/index.js'
 
 let activetimeRange = TimeRange.TODAY
 
-init().catch(e => { throw e })
+init().catch(e => {
+  throw e
+})
 
 async function init() {
   initializeChartJS()
   await includeComponents()
   document.getElementById('resetDbButton').addEventListener('click', resetDb)
   document.getElementById('timeRangeSelector').addEventListener('change', setTimeRange)
+  initHEader()
   initDashboardHeader()
 
   initTotalBalanceChart()
@@ -42,7 +48,6 @@ async function init() {
   setInterval(refreshData, 30000)
   refreshData()
 }
-
 
 async function refreshData() {
   showLoader()
@@ -91,7 +96,10 @@ async function fetchData() {
 }
 
 function updateView(data) {
-  updateDashboardHeader(data.futuresBalanceFullHistoryDownsampled, data.futuresBalanceHistoryCurrentMonth)
+  updateDashboardHeader(
+    data.futuresBalanceFullHistoryDownsampled,
+    data.futuresBalanceHistoryCurrentMonth
+  )
 
   updateCoinbaseAlerts(data.coinbaseAlerts)
   updatePosittionsHistory(data.futuresPositionsHistory)
@@ -101,7 +109,6 @@ function updateView(data) {
   updateUsedBalanceChart(data.futuresBalanceHistory)
   updateOpenOrdersChart(data.futuresBalanceHistory)
   updateUnrealizedLostsChart(data.futuresBalanceHistory)
-
 }
 
 async function setTimeRange(a) {

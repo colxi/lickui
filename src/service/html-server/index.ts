@@ -3,6 +3,7 @@ import url from "url"
 import path from "path"
 import fs from "fs"
 import config from '@/core/config'
+import packageJSON from '@/../package.json'
 
 const httpDocsPath = '/src/service/html-server/httpdocs/'
 
@@ -20,6 +21,8 @@ export default async function initHTMLServerService() {
 
     if (uri === '/SERVER_CONFIG') {
       const publicConfig = {
+        version: packageJSON.version,
+        botName: config.botName,
         apiServicePort: config.apiServicePort,
         apiServiceIp: config.apiServiceIp,
         updateIntervalInMillis: config.updateIntervalInMillis,
@@ -32,11 +35,11 @@ export default async function initHTMLServerService() {
       return
     }
 
-    const basePath =  path.join(process.cwd(), httpDocsPath )
+    const basePath = path.join(process.cwd(), httpDocsPath)
     let filename = path.join(basePath, uri)
-    
+
     // prevent directory traversal
-    if(filename.substr(0, basePath.length) !== basePath){
+    if (filename.substr(0, basePath.length) !== basePath) {
       response.writeHead(404, { "Content-Type": "text/plain" })
       response.write("404 Not Found\n")
       response.end()

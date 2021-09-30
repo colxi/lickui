@@ -1,5 +1,6 @@
 {
-  "sentryDsn" : "https://xxxxxxx@xxxx.ingest.sentry.io/xxxx",
+  "botName": "config.bot.name",
+  "sentryDsn": "https://xxxxxxx@xxxx.ingest.sentry.io/xxxx",
   "binanceApiKey": "YOUR_KEY",
   "binanceApiSecret": "YOUR_SECRET",
   "updateIntervalInMillis": 60000,

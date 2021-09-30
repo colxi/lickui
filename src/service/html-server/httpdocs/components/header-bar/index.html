@@ -1,6 +1,9 @@
 <div id="headerBarContainer">
-  LICKUI
-  <span class="version">v0.1.7</span>
+  <div>
+    LICKUI
+    <span class="version" id="headerBarLickuiVersion">v0.1.7</span>
+  </div>
+  <div id="headerBarBotName">botName</div>
 </div>
 
 <style>
@@ -9,6 +12,8 @@
     margin: 0px;
     font-size: 16px;
     padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 
   .version {
