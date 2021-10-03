@@ -9,5 +9,6 @@
   "httpServiceIp": "127.0.0.1",
   "apiServicePort": 3300,
   "httpServicePort": 80,
-  "takeProfit": 0.55
+  "takeProfit": 0.55,
+  "network": [{ "name": "Place here your bot name", "url": "http://www.my-bot-address.com:80/" }]
 }

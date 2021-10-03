@@ -26,11 +26,12 @@ export default async function initHTMLServerService() {
         apiServicePort: config.apiServicePort,
         apiServiceIp: config.apiServiceIp,
         updateIntervalInMillis: config.updateIntervalInMillis,
-        takeProfit: config.takeProfit
+        takeProfit: config.takeProfit,
+        network: config.network,
       }
 
       response.writeHead(200, { 'Content-Type': 'text/javascript' })
-      response.write(`export default ${JSON.stringify(publicConfig)}`, 'binary')
+      response.write(`export default ${JSON.stringify(publicConfig)}`, 'utf-8')
       response.end()
       return
     }

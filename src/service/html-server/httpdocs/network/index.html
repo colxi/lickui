@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <div id="container">
+      <div>
+        <div id="title">Network</div>
+        <div id="network"></div>
+      </div>
+    </div>
+  </body>
+
+  <script type="module">
+    import config from '/SERVER_CONFIG'
+
+    const container = document.getElementById('network')
+    for (const server of config.network) {
+      const entry = document.createElement('div')
+      entry.innerText = server.name
+      entry.className = 'server'
+      entry.addEventListener('click', () => (document.location = server.url))
+      container.appendChild(entry)
+    }
+  </script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0px;
+      padding: 0px;
+    }
+
+    #container {
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto;
+      place-content: center;
+      background: linear-gradient(186deg, #3b3b98, 20px, #2b2b41);
+      font-family: arial;
+    }
+
+    #network {
+      display: grid;
+      grid-template-rows: auto;
+      gap: 10px;
+      text-align: center;
+      place-self: center center;
+    }
+
+    .server {
+      border-bottom: 1px solid #262d34;
+      background: #3a74af;
+      color: #dfdfdf;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .server:hover {
+      background: white;
+      color: #2d2d4c;
+    }
+
+    #title {
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+  </style>
+</html>
