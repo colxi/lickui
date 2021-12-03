@@ -3,6 +3,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="UTF-8" />
+    <script src="./index.js" type="module"></script>
   </head>
   <body>
     <div id="container">
@@ -12,19 +13,6 @@
       </div>
     </div>
   </body>
-
-  <script type="module">
-    import config from '/SERVER_CONFIG'
-
-    const container = document.getElementById('network')
-    for (const server of config.network) {
-      const entry = document.createElement('div')
-      entry.innerText = server.name
-      entry.className = 'server'
-      entry.addEventListener('click', () => (document.location = server.url))
-      container.appendChild(entry)
-    }
-  </script>
   <style>
     html,
     body {

@@ -36,6 +36,8 @@ export default async function initHTMLServerService() {
       return
     }
 
+    console.log('-----')
+    console.log(uri)
     const basePath = path.join(process.cwd(), httpDocsPath)
     let filename = path.join(basePath, uri)
 
@@ -55,7 +57,13 @@ export default async function initHTMLServerService() {
         return
       }
 
-      if (fs.statSync(filename).isDirectory()) filename += '/index.html'
+      if (fs.statSync(filename).isDirectory()) {
+        if (uri.slice(-1) !== '/') {
+          response.writeHead(302, { 'Location': `${uri}/index.html` });
+          response.end()
+          return
+        } else filename += '/index.html'
+      }
 
       fs.readFile(filename, "binary", function (err, file) {
         if (err) {
